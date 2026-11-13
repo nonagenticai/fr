@@ -17,7 +17,7 @@
   The hub's blocked cards and WIP now live on the Board; its phase rail on the Overview.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { onInvalidate } from '$lib/agent/invalidation';
   import { askAgentAbout } from '$lib/agent/ask';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
@@ -49,7 +49,7 @@
     type MemberRunIn,
   } from '$lib/components/board/board';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   type Read<T> = { state: 'loading' } | { state: 'ready'; data: T } | { state: 'error'; message: string };
   const loading = { state: 'loading' } as const;
@@ -124,7 +124,7 @@
     return onInvalidate([`board:${id}`, `project:${id}`], () => loadAll(id));
   });
   $effect(() => {
-    setPageTitle($page.url.pathname, projectName);
+    setPageTitle(page.url.pathname, projectName);
   });
 
   const memberRuns = $derived.by((): MemberRunIn[] => {

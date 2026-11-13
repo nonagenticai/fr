@@ -14,7 +14,7 @@
   Needs-you queue's artifact review. No new decision path.
 -->
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { browser } from '$app/env';
   import { goto } from '$app/navigation';
   import { assetFetch, AssetError } from '$lib/api/assets';
   import { downloadDocumentPdf, fetchDocumentHtml } from '$lib/api/project-outputs';

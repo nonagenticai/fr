@@ -22,7 +22,7 @@
       day charts are labelled "whole project" and only the by-card stacks follow the phase filter.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fetchProjectCockpit, CockpitNotFoundError } from '$lib/api/cockpit';
   import { hasData, type Panel } from '$lib/types/panel';
   import type { CockpitProjectCosts, CostBoardState, ProjectCockpit } from '$lib/types/cockpit';
@@ -48,7 +48,7 @@
   } from '$lib/components/cost/cost';
   import { moneyWords } from '$lib/projects/cockpit-status';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let cockpit = $state<ProjectCockpit | null>(null);
   let loaded = $state(false);

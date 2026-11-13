@@ -8,7 +8,7 @@
   A failed read says so (never an empty register); a project with no RM link says it keeps none.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fetchProjectRegisters } from '$lib/api/project-registers';
   import { fetchProjectCockpit } from '$lib/api/cockpit';
   import { hasData } from '$lib/types/panel';
@@ -17,7 +17,7 @@
   import ProjectRegisters from '$lib/components/registers/ProjectRegisters.svelte';
   import type { DecisionLogView } from '$lib/components/registers/registers';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let registers = $state<RegistersView>({ kind: 'reading' });
   let log = $state<DecisionLogView>({ kind: 'reading' });

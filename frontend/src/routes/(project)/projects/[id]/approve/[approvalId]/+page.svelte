@@ -7,7 +7,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { apiClient } from '$lib/api/unified-client';
   import { toast } from '$lib/stores/toast.svelte';
@@ -33,8 +33,8 @@
   import { approvalUserLabel } from '$lib/approvals/user-label';
   import type { Approval } from '$lib/types/api';
 
-  const projectId = $derived($page.params.id ?? '');
-  const approvalId = $derived($page.params.approvalId ?? '');
+  const projectId = $derived(page.params.id ?? '');
+  const approvalId = $derived(page.params.approvalId ?? '');
 
   let approval = $state<Approval | null>(null);
   let loading = $state(true);

@@ -10,7 +10,7 @@
 // `GET /api/me/workspaces`, not from the JWT (there is no `workspace-admin`
 // realm role; see stores/auth.svelte.ts). Gating before that resolves would
 // bounce every workspace admin on a cold load.
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { redirect } from '@sveltejs/kit';
 import { auth } from '$lib/stores/auth.svelte';
 import { workspaces } from '$lib/stores/workspaces.svelte';

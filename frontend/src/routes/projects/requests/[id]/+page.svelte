@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { setPageTitle } from '$lib/layout/pageTitle.svelte';
 	import { goto } from '$app/navigation';
 	import { apiClient, ApiError } from '$lib/api/unified-client';
@@ -33,7 +33,7 @@
 	const FR_REPO_SENTINEL = 'https://example.invalid/REPLACE-IN-FR';
 
 	// `[id]` route param is always present.
-	let id = $derived($page.params.id as string);
+	let id = $derived(page.params.id as string);
 
 	let request = $state<ProjectRequest | null>(null);
 	let loading = $state(true);
@@ -470,7 +470,7 @@
 
 	// ⚠️ PRE-EXISTING AND DELIBERATELY NOT FIXED HERE — it predates this PR. This
 	// mounts ONCE and there is no `$effect` on `id` (which is `$derived` from
-	// `$page.params.id` above), so a SAME-ROUTE param change — /requests/A →
+	// `page.params.id` above), so a SAME-ROUTE param change — /requests/A →
 	// /requests/B with no remount — leaves BOTH `request` and `deniedRepos`
 	// describing request A, and the access panel would attribute A's refusals to
 	// B. Fixing it is an `$effect`-on-`id` reload plus a decision about what that
@@ -681,7 +681,7 @@
 	// whose path no longer matches, which is what makes a stale tab title
 	// impossible. `null` while loading falls back to the static map entry.
 	$effect(() => {
-		setPageTitle($page.url.pathname, request?.payload?.name ?? null);
+		setPageTitle(page.url.pathname, request?.payload?.name ?? null);
 	});
 </script>
 

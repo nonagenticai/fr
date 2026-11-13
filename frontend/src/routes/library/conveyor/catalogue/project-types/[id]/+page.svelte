@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { Button, Input, Skeleton } from '$lib/components/ui';
   import CatalogueHeader from '$lib/components/conveyor-catalogue/CatalogueHeader.svelte';
   import FailureNotice from '$lib/components/conveyor-catalogue/FailureNotice.svelte';
@@ -47,7 +47,7 @@
   import { currentCatalogueMode } from '$lib/conveyor-catalogue/mode.svelte';
   import { CATALOGUE_PREFIX } from '$lib/conveyor-catalogue/sections';
 
-  const id = $derived($page.params.id ?? '');
+  const id = $derived(page.params.id ?? '');
   const mode = $derived(currentCatalogueMode());
   const editable = $derived(mode === 'edit');
 

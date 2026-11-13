@@ -6,11 +6,11 @@
   is suppressed automatically because `manifest.api.update` is undefined.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { AssetWorkspace } from '$lib/asset-workspace';
   import { secretsManifest } from '$lib/manifests/secrets';
 
-  const id = $derived(decodeURIComponent($page.params.secret_id ?? ''));
+  const id = $derived(decodeURIComponent(page.params.secret_id ?? ''));
 </script>
 
 <AssetWorkspace manifest={secretsManifest} mode="detail" {id} />

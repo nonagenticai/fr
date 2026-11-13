@@ -4,7 +4,7 @@
   // SPEC §7.3 "Agent"). Once the server has returned the thread, the view moves
   // to where the thread's bound project says it lives (§7.5). The chat itself
   // renders only once that binding matches this surface (see `surface`).
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { threadPreviewText } from '$lib/api/agent-redact';
   import { goto } from '$app/navigation';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
@@ -71,7 +71,7 @@
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
     setPageTitle(
-      $page.url.pathname,
+      page.url.pathname,
       threads.activeThread?.lastMessagePreview ? threadPreviewText(threads.activeThread.lastMessagePreview, '') : null,
     );
   });

@@ -24,7 +24,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { displayName } from '$lib/utils/displayName';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import {
     createChannel,
@@ -46,8 +46,8 @@
   // for human-readability; the wire/DB columns are
   // snake_case. `kindFromUrl` is the single source of truth for the
   // url-kind parsing convention (used by /channels/[id] too).
-  const scheduleKind = $derived(kindFromUrl($page.url.searchParams));
-  const projectId = $derived($page.url.searchParams.get('project_id') ?? '');
+  const scheduleKind = $derived(kindFromUrl(page.url.searchParams));
+  const projectId = $derived(page.url.searchParams.get('project_id') ?? '');
 
   // Editor state for the scheduled-* branches.
   let intakeValue = $state<Partial<ScheduledTriggerCreate>>({});

@@ -3,7 +3,7 @@
 -->
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import WorkflowCanvas, {
     type LayoutMode,
@@ -47,9 +47,9 @@
   // prev/next so navigation stays inside the same multi-facet selection.
   // Reuse the index page's query string verbatim; it carries the CSV
   // per-facet params (`?domain=a,b&purpose=x&...`).
-  const filterSearch = $derived($page.url.search);
+  const filterSearch = $derived(page.url.search);
   const filterSelection = $derived(
-    parseFacetSelection($page.url.searchParams),
+    parseFacetSelection(page.url.searchParams),
   );
 
   // Restrict prev/next to the same facet selection the user came from —
@@ -111,7 +111,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, data.workflow?.name ?? null);
+    setPageTitle(page.url.pathname, data.workflow?.name ?? null);
   });
 </script>
 

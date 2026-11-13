@@ -6,11 +6,11 @@
   // shown, without a button. Any member of the workspace may press it; the backend refuses a
   // second press while one is being sent, and never offers it while the project is on hold.
   // Read once per project; nothing is shown while unknown or when the read fails.
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fetchProjectConveyorNotices, retryProjectConveyorStart, type ConveyorRetryOffer } from '$lib/api/project-execution';
   import { START_AGAIN_TEXT, startAgainCopy, startAgainErrorText, startAgainNotDoneText } from '$lib/projects/start-again';
 
-  const projectId = $derived($page.params?.id ?? '');
+  const projectId = $derived(page.params?.id ?? '');
   let retry = $state<ConveyorRetryOffer | null>(null);
   let readFor = $state('');
   let busy = $state(false);

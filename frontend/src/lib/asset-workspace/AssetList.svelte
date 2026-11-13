@@ -20,7 +20,7 @@
 <script lang="ts" generics="T">
   import { onMount, untrack } from 'svelte';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     resolveRowTitle,
     rowFieldText,
@@ -111,10 +111,10 @@
   const columnKeys = $derived(
     manifest.list.columns.map((c) => c.key) as (keyof T & string)[],
   );
-  const search = $derived(parseStringParam($page.url.searchParams, 'q'));
-  const selectedTags = $derived(parseCsvSet($page.url.searchParams, 'tags'));
+  const search = $derived(parseStringParam(page.url.searchParams, 'q'));
+  const selectedTags = $derived(parseCsvSet(page.url.searchParams, 'tags'));
   const sortKey = $derived.by<(keyof T & string) | null>(() => {
-    const raw = $page.url.searchParams.get('sort');
+    const raw = page.url.searchParams.get('sort');
     if (raw && (columnKeys as string[]).includes(raw)) {
       return raw as keyof T & string;
     }
@@ -122,7 +122,7 @@
   });
   const sortDir = $derived(
     parseEnumParam(
-      $page.url.searchParams,
+      page.url.searchParams,
       'dir',
       ['asc', 'desc'] as const,
       manifest.list.defaultSort?.dir ?? 'asc',
@@ -186,7 +186,7 @@
     const next = new Set(selectedTags);
     if (next.has(tag)) next.delete(tag);
     else next.add(tag);
-    void setSearchParams($page.url, { tags: csvSetToParam(next) });
+    void setSearchParams(page.url, { tags: csvSetToParam(next) });
   }
 
   // ---- Status facet (opt-in, manifest.list.statusFilterField) ----
@@ -195,7 +195,7 @@
   const statusField = $derived<(keyof T & string) | undefined>(
     manifest.list.statusFilterField,
   );
-  const statusFilter = $derived(parseStringParam($page.url.searchParams, 'status'));
+  const statusFilter = $derived(parseStringParam(page.url.searchParams, 'status'));
   const statusValues = $derived.by<string[]>(() => {
     if (!statusField) return [];
     const vals = new Set<string>();
@@ -211,7 +211,7 @@
   // so a change re-queries instead of narrowing the loaded rows.
   const includeToggle = $derived(manifest.list.includeToggle);
   const includeOn = $derived(
-    includeToggle ? $page.url.searchParams.get(includeToggle.param) === 'true' : false,
+    includeToggle ? page.url.searchParams.get(includeToggle.param) === 'true' : false,
   );
   // Plain (non-reactive) memory of the value the last load used, so the first
   // run of the effect below — onMount already loads — does not load twice.
@@ -323,7 +323,7 @@
     // Clicking the active column flips direction; a new column starts asc.
     const nextDir: 'asc' | 'desc' =
       sortKey === key ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
-    void setSearchParams($page.url, { sort: key, dir: nextDir });
+    void setSearchParams(page.url, { sort: key, dir: nextDir });
   }
 
   const idField = $derived<string>(manifest.idField ?? 'id');
@@ -332,7 +332,7 @@
     const id = (row as Record<string, unknown>)[idField];
     // Carry the list's filter querystring forward so the detail back-link can
     // restore the exact filtered view (the /workflows buildHref pattern).
-    return `${assetItemHref(manifest, String(id))}${$page.url.search}`;
+    return `${assetItemHref(manifest, String(id))}${page.url.search}`;
   }
 
   /**
@@ -630,7 +630,7 @@
         {#if selectedTags.size > 0}
           <button
             type="button"
-            onclick={() => void setSearchParams($page.url, { tags: null })}
+            onclick={() => void setSearchParams(page.url, { tags: null })}
             class="text-xs text-[var(--color-accent)] hover:underline"
           >
             Clear
@@ -671,7 +671,7 @@
           placeholder="Search…"
           value={search}
           oninput={(e) =>
-            void setSearchParams($page.url, {
+            void setSearchParams(page.url, {
               q: (e.currentTarget as HTMLInputElement).value,
             })}
           class="border border-[var(--color-border-strong)] rounded px-3 py-1.5 text-sm w-64 dark:border-[var(--color-border-strong)]"
@@ -682,7 +682,7 @@
             aria-label="Filter by status"
             value={statusFilter}
             onchange={(e) =>
-              void setSearchParams($page.url, {
+              void setSearchParams(page.url, {
                 status: (e.currentTarget as HTMLSelectElement).value,
               })}
             class="border border-[var(--color-border-strong)] rounded px-2 py-1.5 text-sm dark:border-[var(--color-border-strong)]"
@@ -700,7 +700,7 @@
               type="checkbox"
               checked={includeOn}
               onchange={(e) =>
-                void setSearchParams($page.url, {
+                void setSearchParams(page.url, {
                   [includeToggle.param]: (e.currentTarget as HTMLInputElement).checked
                     ? 'true'
                     : null,

@@ -12,7 +12,7 @@
   on one entity (the per-asset neighbour panels deep-link here with a root).
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import {
     fetchTraceabilityGraph,
@@ -29,8 +29,8 @@
   let loading = $state(true);
   let error = $state<string | null>(null);
 
-  const rootType = $derived($page.url.searchParams.get('root_type') ?? undefined);
-  const rootId = $derived($page.url.searchParams.get('root_id') ?? undefined);
+  const rootType = $derived(page.url.searchParams.get('root_type') ?? undefined);
+  const rootId = $derived(page.url.searchParams.get('root_id') ?? undefined);
   const rooted = $derived(Boolean(rootType && rootId));
 
   async function load() {

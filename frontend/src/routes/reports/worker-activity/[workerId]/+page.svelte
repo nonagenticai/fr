@@ -11,12 +11,12 @@
   `since` is a real query param the backend honours, so it is a real control here.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { getWorkerActivity, type WorkerActivity } from '$lib/api/reports';
   import ReportPanel from '$lib/components/reports/ReportPanel.svelte';
 
-  const workerId = $derived($page.params.workerId ?? '');
+  const workerId = $derived(page.params.workerId ?? '');
 
   let data = $state<WorkerActivity | undefined>(undefined);
   let loading = $state(true);
@@ -67,7 +67,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, data ? workerName(data.worker) : null);
+    setPageTitle(page.url.pathname, data ? workerName(data.worker) : null);
   });
 </script>
 

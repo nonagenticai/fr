@@ -10,7 +10,7 @@
 <script lang="ts" generics="T">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     resolveRowTitle,
     rowFieldText,
@@ -466,7 +466,7 @@
     <div class="bg-[var(--color-danger-bg)] border border-[var(--color-danger-bg)] text-[var(--color-danger-text)] px-3 py-2 rounded text-sm">
       {loadError || `${manifest.singular} not found`}
     </div>
-    <a href="{assetListHref(manifest)}{$page.url.search}" class="text-sm text-[var(--color-text)] hover:underline mt-4 inline-block dark:text-[var(--color-text-muted)]">
+    <a href="{assetListHref(manifest)}{page.url.search}" class="text-sm text-[var(--color-text)] hover:underline mt-4 inline-block dark:text-[var(--color-text-muted)]">
       ← Back to {manifest.plural.toLowerCase()}
     </a>
   {:else}
@@ -490,7 +490,7 @@
         {/if}
       </div>
       <div class="flex items-center gap-3">
-        <a href="{assetListHref(manifest)}{$page.url.search}" class="text-sm text-[var(--color-text)] hover:underline dark:text-[var(--color-text-muted)]">← Back</a>
+        <a href="{assetListHref(manifest)}{page.url.search}" class="text-sm text-[var(--color-text)] hover:underline dark:text-[var(--color-text-muted)]">← Back</a>
         <button
           type="button"
           onclick={askAgentImprove}

@@ -5,12 +5,12 @@
 -->
 <script lang="ts">
   import TraceLinksPanel from '$lib/components/modeling/TraceLinksPanel.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { AssetWorkspace } from '$lib/asset-workspace';
   import AssetRelationships from '$lib/asset-workspace/AssetRelationships.svelte';
   import { architectureElementsManifest } from '$lib/manifests/architecture/elements';
 
-  const id = $derived(decodeURIComponent($page.params.id ?? ''));
+  const id = $derived(decodeURIComponent(page.params.id ?? ''));
 </script>
 
 <div class="flex flex-col gap-4">

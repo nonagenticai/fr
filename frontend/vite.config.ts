@@ -1,3 +1,5 @@
+import adapter from '@sveltejs/adapter-node';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type Plugin, type ProxyOptions } from 'vite';
@@ -57,6 +59,37 @@ const proxy: Record<string, ProxyOptions> | undefined = NO_BACKEND
 		};
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), ...(NO_BACKEND ? [noBackend()] : [])],
+	plugins: [
+		tailwindcss(),
+		// SvelteKit configuration lives here since kit 3 — `svelte.config.js` is no
+		// longer supported (https://svelte.dev/e/kit/config_file_unsupported).
+		sveltekit({
+			// Kit 3 removed the built-in `$lib` alias; this is kit's own documented
+			// compatibility path (`module_removed_lib`), avoiding a repo-wide rewrite
+			// to `#lib` subpath imports.
+			alias: {
+				$lib: 'src/lib',
+				// RM's generated client (backend + frontend share it). The frontend imports
+				// TYPES ONLY from it (`import type`): the Docker build context is frontend/,
+				// so a value import would not resolve there.
+				'@fr/service-client-requirements': '../packages/service-clients/requirements/src/index.ts'
+			},
+			preprocess: vitePreprocess(),
+			adapter: adapter({
+				out: 'build'
+			}),
+			// Poll for a new deployment so the client's `updated` store flips when the
+			// server ships a new build. fr rolls retire-first (a single-replica pod on a
+			// CPU-saturated node → a brief 503 window per deploy, by design), so an open
+			// tab holds stale immutable chunk hashes; detecting the new version lets us
+			// force a full reload on next navigation instead of "failed to fetch
+			// dynamically imported module". See +layout.svelte (beforeNavigate) and
+			// hooks.client.ts (handleError).
+			version: {
+				pollInterval: 60_000
+			}
+		}),
+		...(NO_BACKEND ? [noBackend()] : [])
+	],
 	server: { proxy }
 });

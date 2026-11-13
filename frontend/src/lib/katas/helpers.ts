@@ -2,6 +2,7 @@
 // (`/admin/kata`, `/admin/kata/[id]`) and the card view's "Open kata" action.
 // No DOM, no fetch: everything here is unit-tested in helpers.test.ts.
 
+import type { ReadonlyURLSearchParams } from '$app/state';
 import type { KataHolding, KataLinkedCard, KataState, KataView } from '$lib/api/katas';
 
 export type KataTone = 'ok' | 'warn' | 'danger' | 'muted';
@@ -243,7 +244,7 @@ export interface NewKataPrefill {
   execution: string;
 }
 
-export function readNewKataPrefill(params: URLSearchParams): NewKataPrefill {
+export function readNewKataPrefill(params: ReadonlyURLSearchParams): NewKataPrefill {
   return {
     open: params.get('new') === '1',
     tenant: params.get('tenant')?.trim() ?? '',

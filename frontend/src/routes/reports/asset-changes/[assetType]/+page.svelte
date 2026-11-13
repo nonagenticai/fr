@@ -27,7 +27,7 @@
   the field that supplies it.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import {
     getAssetChanges,
@@ -37,7 +37,7 @@
   } from '$lib/api/reports';
   import ReportPanel from '$lib/components/reports/ReportPanel.svelte';
 
-  const rawType = $derived($page.params.assetType ?? '');
+  const rawType = $derived(page.params.assetType ?? '');
   const isKnownType = $derived((ASSET_TYPES as readonly string[]).includes(rawType));
 
   let data = $state<AssetChangeHistory | undefined>(undefined);
@@ -118,7 +118,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, isKnownType ? rawType : null);
+    setPageTitle(page.url.pathname, isKnownType ? rawType : null);
   });
 </script>
 

@@ -1,5 +1,5 @@
-import type { HandleClientError } from '@sveltejs/kit';
-import { version } from '$app/environment';
+import type { HandleClientError } from '@sveltejs/kit/hooks';
+import { version } from '$app/env';
 import { installGlobalErrorReporting, reportError } from '$lib/telemetry/client-errors';
 
 // Attach window.onerror + unhandledrejection once, at client boot. Module scope
@@ -49,7 +49,7 @@ function claimReload(buildVersion: string): boolean {
 	}
 }
 
-export const handleError: HandleClientError = ({ error, message, event }) => {
+export const handleError: HandleClientError = ({ kind, error, event }) => {
 	try {
 		if (typeof window !== 'undefined' && isDynamicImportError(error) && claimReload(version)) {
 			window.location.reload();
@@ -69,5 +69,8 @@ export const handleError: HandleClientError = ({ error, message, event }) => {
 	// the ids and slugs a real URL carries.
 	reportError('svelte', error, event?.route?.id ?? event?.url?.pathname ?? null);
 
-	return { message: typeof message === 'string' ? message : 'Something went wrong' };
+	// Kit 3 dropped the merged `message` field: the caught error carries its own
+	// safe message only for framework errors (404s etc.); app/unknown errors keep
+	// SvelteKit's default by returning nothing.
+	return kind === 'framework' ? { message: error.message } : undefined;
 };

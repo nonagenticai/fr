@@ -4,10 +4,10 @@
   project shell … sourced from RM. Catalogue editing stays in RM").
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import ProjectPmLibrary from '$lib/components/project-pm/ProjectPmLibrary.svelte';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 </script>
 
 <h1 class="mb-3 text-lg font-semibold">Project PM library</h1>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { afterNavigate, beforeNavigate } from '$app/navigation';
   import {
     projectNavGroups,
@@ -389,7 +389,7 @@
   // own zones of NAV_ITEMS — Tenant, Administration or Super-admin.
   // A section's sidebar never shows another section's rows.
   let { section = 'tenant' }: { section?: NavSection } = $props();
-  const inProjectShell = $derived(isProjectShellRoute($page.route.id));
+  const inProjectShell = $derived(isProjectShellRoute(page.route.id));
   const proj = $derived(activeProject.active);
   // Null-safe projections of `proj` for the template below. Leaving a project
   // releases the route's hold on the store (`activeProject.leaveRoute()` in the
@@ -399,7 +399,7 @@
   // Nothing inside the block may dereference `proj` directly.
   // In the project shell the route param is authoritative from the first
   // paint; the store's stub only lands after the project layout's effect runs.
-  const projId = $derived(inProjectShell ? ($page.params?.id ?? proj?.id ?? '') : '');
+  const projId = $derived(inProjectShell ? (page.params?.id ?? proj?.id ?? '') : '');
   const projName = $derived(proj?.name ?? '');
   const projPhase = $derived(proj?.phase);
   // FR-PROJECT-HOME-REDESIGN R1: the main rows (always visible) + the collapsible
@@ -412,7 +412,7 @@
     ...projectNav.kag.items,
     ...projectNav.details.items,
   ];
-  const currentPath = $derived($page.url.pathname);
+  const currentPath = $derived(page.url.pathname);
 
   // Every href the rail renders — used for longest-match active detection so a
   // parent (/library) doesn't false-highlight when a child (/library/kag) is the

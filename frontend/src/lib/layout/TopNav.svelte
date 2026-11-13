@@ -10,7 +10,7 @@
   // tab reads as current (a project lives inside the tenant).
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { auth } from '$lib/stores/auth.svelte';
   import { workspaces } from '$lib/stores/workspaces.svelte';
   import { sidebar } from '$lib/stores/sidebar.svelte';
@@ -36,7 +36,7 @@
 
   const roles = $derived(toNavRoles(auth.tenantRoles));
   const ctx = $derived({ isSuperAdmin: auth.isSuperAdmin });
-  const inProject = $derived(isProjectShellRoute($page.route.id));
+  const inProject = $derived(isProjectShellRoute(page.route.id));
 
   /** A section's landing page: its first visible row, or null when it has none. */
   function firstHref(section: NavSection): string | null {
@@ -53,7 +53,7 @@
     ).filter((t) => t.href !== null),
   );
 
-  const current = $derived(sectionForPath($page.url.pathname));
+  const current = $derived(sectionForPath(page.url.pathname));
 
   let showUserMenu = $state(false);
 

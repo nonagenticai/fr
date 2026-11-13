@@ -39,7 +39,7 @@
 <script lang="ts">
   import CockpitBackLink from '$lib/components/library/CockpitBackLink.svelte';
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { goto } from '$app/navigation';
   import {
@@ -134,7 +134,7 @@
   // Component state.
   // ---------------------------------------------------------------------------
 
-  const rawType = $derived($page.params.type ?? '');
+  const rawType = $derived(page.params.type ?? '');
   const assetType = $derived(
     SLUG_TO_TYPE[rawType] ??
       (VALID_TYPES.includes(rawType as AssetType)
@@ -602,7 +602,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, assetType ? TYPE_LABEL_PLURAL[assetType] : null);
+    setPageTitle(page.url.pathname, assetType ? TYPE_LABEL_PLURAL[assetType] : null);
   });
 </script>
 

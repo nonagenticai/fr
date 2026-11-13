@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { goto, beforeNavigate } from '$app/navigation';
 	import { updated } from '$app/state';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import '../app.css';
 	import favicon from '$lib/assets/favicon.svg';
 	import ShellLayout from '$lib/layout/ShellLayout.svelte';
@@ -103,7 +103,7 @@
 		// SSO session alive (the user comes back silently re-authenticated).
 		if (auth.isLoggingOut) return;
 		if (auth.isLoading) return;
-		const currentPath = $page.url.pathname;
+		const currentPath = page.url.pathname;
 		const isPublicRoute = publicRoutes.includes(currentPath);
 
 		// Redirect to login if not authenticated and not on public route
@@ -126,7 +126,7 @@
 
 	// URL → store: when ?thread=<id> is present, open the rail with that thread.
 	$effect(() => {
-		const t = $page.url.searchParams.get('thread');
+		const t = page.url.searchParams.get('thread');
 		// fr-agui P1c-b: never re-open a thread the rail refused on this surface
 		// (bound to another project) from a stale ?thread= link.
 		if (t && t !== agentRail.activeThreadId && !agentRail.isRefusedThread(t)) {
@@ -157,8 +157,7 @@
 		else url.searchParams.delete('thread');
 		void goto(url.pathname + url.search, {
 			replaceState: true,
-			noScroll: true,
-			keepFocus: true,
+			reset: false,
 		});
 	});
 </script>
@@ -169,7 +168,7 @@
 	     the static route map plus an optional entity-name override published by
 	     the page itself (see setPageTitle). The per-page convention it replaces
 	     left the PREVIOUS page's title mounted on the 139 routes that set none. -->
-	<title>{resolveTitle($page.route.id, $page.url.pathname, getPageTitleOverride(), kagMode)}</title>
+	<title>{resolveTitle(page.route.id, page.url.pathname, getPageTitleOverride(), kagMode)}</title>
 </svelte:head>
 
 {#if auth.isLoading}
@@ -180,12 +179,12 @@
 			<p class="text-[var(--color-text)] text-lg dark:text-[var(--color-text-muted)]">Initializing...</p>
 		</div>
 	</div>
-{:else if !auth.isAuthenticated && publicRoutes.includes($page.url.pathname)}
+{:else if !auth.isAuthenticated && publicRoutes.includes(page.url.pathname)}
 	<!-- Public pages (login, etc.) -->
 	<div class="h-screen bg-[var(--color-surface)] dark:bg-[var(--color-bg)]">
 		{@render children()}
 	</div>
-{:else if auth.isAuthenticated && licenseGate.isBlocked && !licenseRoutes.includes($page.url.pathname)}
+{:else if auth.isAuthenticated && licenseGate.isBlocked && !licenseRoutes.includes(page.url.pathname)}
 	<!-- License missing/expired/revoked (or a live 403 fr_license_required):
 	     full-screen hard block for BOTH products. The renew route is excluded
 	     so the in-app renew page stays reachable. -->
@@ -195,7 +194,7 @@
 	<KagShell>
 		{@render children()}
 	</KagShell>
-{:else if auth.isAuthenticated && isProjectShellRoute($page.route.id)}
+{:else if auth.isAuthenticated && isProjectShellRoute(page.route.id)}
 	<!-- fr-agui SPEC §7.2: every route in the (project) group — every page under
 	     /projects/[id]/** — renders in the PROJECT shell: project nav, project
 	     header, the same licence + support banners and TopNav. Keyed on the route

@@ -8,7 +8,7 @@
 // This is UI shell only. Every endpoint behind these pages re-gates on the
 // server (`gated()` in routes/admin/licenses-admin.ts is super-admin-or-403),
 // so a forged claim buys a rendered page and nothing else.
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { redirect } from '@sveltejs/kit';
 import { auth } from '$lib/stores/auth.svelte';
 import type { LayoutLoad } from './$types';

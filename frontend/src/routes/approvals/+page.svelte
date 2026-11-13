@@ -581,7 +581,7 @@
 			const u = new URL(window.location.href);
 			if (id) u.searchParams.set('project', id);
 			else u.searchParams.delete('project');
-			void goto(`${u.pathname}${u.search}`, { replaceState: true, noScroll: true, keepFocus: true }).catch(() => {});
+			void goto(`${u.pathname}${u.search}`, { replaceState: true, reset: false }).catch(() => {});
 		} catch {
 			// Router not ready (or no window) — the filter still applies.
 		}

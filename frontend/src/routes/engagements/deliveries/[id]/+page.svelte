@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     getDelivery,
     maskRecipient,
@@ -23,7 +23,7 @@
   let loading = $state<boolean>(true);
   let error = $state<string | null>(null);
 
-  const id = $derived($page.params.id ?? '');
+  const id = $derived(page.params.id ?? '');
 
   async function load(): Promise<void> {
     loading = true;

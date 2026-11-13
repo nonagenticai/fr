@@ -3,20 +3,20 @@
   // (Telegram/Teams "review" link). Spec: 2026-04-24-analysis-to-kanban-bridge.md
   // §Frontend bullet 4.
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { goto } from '$app/navigation';
   import { apiClient } from '$lib/api/unified-client';
   import type { KanbanCardDraft, PatchDraftBody } from '$lib/bridge/types';
   import { parseBridgeError, type BridgeError } from '$lib/bridge/errors';
 
-  const draftId = $derived($page.params.id);
+  const draftId = $derived(page.params.id);
   // Bridge backend requires `(user_id, project_id)` scope on every call
   // (see backend/src/routes/tools/bridge.ts). Deep-link contract is
   // `/bridge/[id]?project=<uuid>` (re-homed from /tools/bridge/[id], roadmap
   // Phase 3). Without it, calls 400; we render a clear error and short-circuit
   // load/save/submit/reject.
-  const projectId = $derived($page.url.searchParams.get('project') ?? '');
+  const projectId = $derived(page.url.searchParams.get('project') ?? '');
 
   // Structured load-time error so the UI can render distinct states for
   // bad URL (no :id), broken deep-link (no ?project), and backend fetch
@@ -227,7 +227,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, draft?.title ?? null);
+    setPageTitle(page.url.pathname, draft?.title ?? null);
   });
 </script>
 

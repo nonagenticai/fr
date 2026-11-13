@@ -6,7 +6,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     fetchTocTrees,
     fetchTocGraph,
@@ -27,7 +27,7 @@
   import type { Panel } from '$lib/types/panel';
   import type { ApprovedScope } from '$lib/types/cockpit';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let tree = $state<TocTree | null>(null);
   /** How `tree` was chosen out of the set this project owns. See the banner. */

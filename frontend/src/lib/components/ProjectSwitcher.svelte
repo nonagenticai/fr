@@ -19,7 +19,7 @@
   import { onMount } from 'svelte';
   import { displayName } from '$lib/utils/displayName';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { projectSwitchTarget } from '$lib/projects/project-switch-target';
   import { auth } from '$lib/stores/auth.svelte';
   import { activeProject } from '$lib/stores/activeProject.svelte';
@@ -41,7 +41,7 @@
 
   /** The project the control shows: the open project, once names have loaded; else none (placeholder). */
   const shownId = $derived(
-    isProjectShellRoute($page.route.id) && activeProject.loaded ? (activeProject.activeId ?? '') : '',
+    isProjectShellRoute(page.route.id) && activeProject.loaded ? (activeProject.activeId ?? '') : '',
   );
   /**
    * The ACTIVE project when the list does not carry it — a closed project is left out of
@@ -66,7 +66,7 @@
     }
     if (!next) return;
     activeProject.select(next);
-    void goto(projectSwitchTarget($page.url.pathname, next));
+    void goto(projectSwitchTarget(page.url.pathname, next));
   }
 
   // The label the control is currently DISPLAYING, in full. The <select> is

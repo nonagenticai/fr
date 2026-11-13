@@ -20,7 +20,7 @@
   handled by the linkBuilder prop.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { AssetScopeBadge } from '$lib/components/library';
   import ProjectBindMore from './ProjectBindMore.svelte';
@@ -65,7 +65,7 @@
     artifact: 'artifacts',
   };
 
-  let projectId = $derived($page.params.id ?? '');
+  let projectId = $derived(page.params.id ?? '');
   let rows = $state<Row[]>([]);
   let loading = $state(true);
   let error = $state<string | null>(null);

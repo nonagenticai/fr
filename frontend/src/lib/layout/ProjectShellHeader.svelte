@@ -13,7 +13,7 @@
   // its full read into `projectCockpit`; on every other page this header reads `?scope=header`.
   // The state is DERIVED by the server (R-CK4); this component words it and decides nothing.
   // A failed read is "Status unknown", never a state.
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { untrack } from 'svelte';
   import Play from 'lucide-svelte/icons/play';
   import Hourglass from 'lucide-svelte/icons/hourglass';
@@ -43,7 +43,7 @@
   /** Header poll: slower than the overview page's 15 s, and skipped while a fresh read is here. */
   const POLL_MS = 30_000;
 
-  const projectId = $derived($page.params?.id ?? '');
+  const projectId = $derived(page.params?.id ?? '');
   const view = $derived(projectId ? projectCockpit.for(projectId) : null);
   const project = $derived(view?.project.data ?? null);
   const status = $derived(view?.status.data ?? null);

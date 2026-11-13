@@ -10,11 +10,11 @@
   // project_id sourcing: the bridge backend requires every call to be
   // `(user_id, project_id)`-scoped (see backend/src/routes/tools/bridge.ts).
   // The deep-link contract is `/bridge?project=<uuid>`. We read the
-  // search param via $page; if missing, we render an empty-state pointing
+  // search param via page; if missing, we render an empty-state pointing
   // the user back to a tool output list (the place that knows which project
   // they're working in).
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { apiClient } from '$lib/api/unified-client';
   import { bridgeSelection } from '$lib/bridge/selection.svelte';
   import { openDetailPane } from '$lib/stores/rightPane.svelte';
@@ -25,7 +25,7 @@
     Severity,
   } from '$lib/bridge/types';
 
-  const projectId = $derived($page.url.searchParams.get('project') ?? '');
+  const projectId = $derived(page.url.searchParams.get('project') ?? '');
 
   let drafts = $state<KanbanCardDraft[]>([]);
   let loading = $state(true);
@@ -109,7 +109,7 @@
    * Throws on failure — the caller must NOT turn that into an empty list.
    */
   async function fetchExistingDrafts(): Promise<KanbanCardDraft[]> {
-    // ⚠️ NOT named `page`: this module auto-subscribes to the `$page` store,
+    // ⚠️ NOT named `page`: this module auto-subscribes to the `page` store,
     // and a local binding of that name shadows it inside this function.
     const listing = await apiClient.bridge.listDrafts(projectId, {
       status: ['editing', 'deduped'],

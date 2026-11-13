@@ -4,7 +4,7 @@
 	// "Board and cards", D10). The route passes its own project id (null on the
 	// tenant route); once the card is read, `cardViewRedirect` moves the view to
 	// where the SERVER says the card lives (§7.5: card → board → project).
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { setPageTitle } from '$lib/layout/pageTitle.svelte';
 	import { cardViewRedirect } from '$lib/projects/projectShellRedirects';
@@ -107,7 +107,7 @@
 	// whose path no longer matches, which is what makes a stale tab title
 	// impossible. `null` while loading falls back to the static map entry.
 	$effect(() => {
-		setPageTitle($page.url.pathname, card?.name ?? null);
+		setPageTitle(page.url.pathname, card?.name ?? null);
 	});
 
 	// §7.5 redirect. Keyed on the resolved project alone (not the whole card),
