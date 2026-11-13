@@ -1,0 +1,186 @@
+{
+  "_comment": "SHARED CONTRACT (docs/contracts/u3-a3-ncn-contracts.md \u00a71-\u00a73). R10 recomputes these independently; fr's tests/unit/services/approvals/g12-row.test.ts asserts fr's implementation against them. Expected values were computed once by fr's real functions and are cross-checked in that test against an independent hand-written canonical form. Changing a value here is changing a frozen contract.",
+  "row": [
+    {
+      "name": "A1: ready_signoff + bug_fix_authorization marker",
+      "kind": "execution.ready_signoff",
+      "metadata": {
+        "approval_kind": "bug_fix_authorization"
+      },
+      "row": "A1"
+    },
+    {
+      "name": "A3: feature design",
+      "kind": "execution.feature_design_approval",
+      "metadata": {
+        "design_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+      },
+      "row": "A3"
+    },
+    {
+      "name": "A3: feature design, null metadata (row is keyed on kind)",
+      "kind": "execution.feature_design_approval",
+      "metadata": null,
+      "row": "A3"
+    },
+    {
+      "name": "A4: coverage signoff",
+      "kind": "qa.coverage_signoff",
+      "metadata": {},
+      "row": "A4"
+    },
+    {
+      "name": "A5: landing signoff",
+      "kind": "execution.landing_signoff",
+      "metadata": {},
+      "row": "A5"
+    },
+    {
+      "name": "A6: question",
+      "kind": "execution.question",
+      "metadata": {
+        "question_id": "Q2"
+      },
+      "row": "A6"
+    },
+    {
+      "name": "A6: question, unstamped",
+      "kind": "execution.question",
+      "metadata": {
+        "question_id": null
+      },
+      "row": "A6"
+    },
+    {
+      "name": "plain ready_signoff (no marker)",
+      "kind": "execution.ready_signoff",
+      "metadata": {},
+      "row": null
+    },
+    {
+      "name": "ready_signoff with another approval_kind",
+      "kind": "execution.ready_signoff",
+      "metadata": {
+        "approval_kind": "bug_fix"
+      },
+      "row": null
+    },
+    {
+      "name": "ready_signoff, metadata null",
+      "kind": "execution.ready_signoff",
+      "metadata": null,
+      "row": null
+    },
+    {
+      "name": "ready_signoff, metadata an array",
+      "kind": "execution.ready_signoff",
+      "metadata": [
+        {
+          "approval_kind": "bug_fix_authorization"
+        }
+      ],
+      "row": null
+    },
+    {
+      "name": "generic carrying the marker (ruling a, 10-01: authorises nothing)",
+      "kind": "generic",
+      "metadata": {
+        "approval_kind": "bug_fix_authorization"
+      },
+      "row": null
+    },
+    {
+      "name": "generic",
+      "kind": "generic",
+      "metadata": {},
+      "row": null
+    },
+    {
+      "name": "improvement.design",
+      "kind": "improvement.design",
+      "metadata": {},
+      "row": null
+    },
+    {
+      "name": "unknown kind",
+      "kind": "execution.bug_fix_approval",
+      "metadata": {},
+      "row": null
+    },
+    {
+      "name": "kind case differs",
+      "kind": "Execution.Question",
+      "metadata": {},
+      "row": null
+    }
+  ],
+  "seal": [
+    {
+      "name": "single path",
+      "write_set": [
+        "src/app.py"
+      ],
+      "write_set_seal": "ef4522cd88cb61aeab361b32e790e6bba1e8e89a7c7c863af521129f7a50e5ee"
+    },
+    {
+      "name": "several sorted paths",
+      "write_set": [
+        "README.md",
+        "src/a.ts",
+        "tests/a.test.ts"
+      ],
+      "write_set_seal": "198c4b6bff8775f1ba32611ce2eded5f73d9201082028bdeba2edd3f3b73c6f1"
+    },
+    {
+      "name": "literal ( [ space + { ~ @ # %",
+      "write_set": [
+        "src/(group)/page.tsx",
+        "src/[id].ts",
+        "src/a b.ts",
+        "src/a+b.ts",
+        "src/{x}.ts",
+        "src/~@#%.ts"
+      ],
+      "write_set_seal": "93d3fb1ab46e8e865fbb6ea74c1a100a871d3b49dc610fddbb9a5ce2127603e7"
+    },
+    {
+      "name": "non-ASCII in UTF-8 BYTE order (U+FF5E before U+1F600; UTF-16 order is the reverse)",
+      "write_set": [
+        "a/\u00e9.ts",
+        "a/\uff5e.ts",
+        "a/\ud83d\ude00.ts"
+      ],
+      "write_set_seal": "e3b42c568fb58104a3999d1bb64b7cbc775aa35a4a0e7e36502b3b95ebb6c4e0"
+    }
+  ],
+  "a3_inputs_hash": [
+    {
+      "design_hash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "write_set_seal": "ef4522cd88cb61aeab361b32e790e6bba1e8e89a7c7c863af521129f7a50e5ee",
+      "a3_inputs_hash": "3469efe50386c419c22264a527227ddcef0329b1379510c8c2d9c84b488f2cce"
+    },
+    {
+      "design_hash": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "write_set_seal": "e3b42c568fb58104a3999d1bb64b7cbc775aa35a4a0e7e36502b3b95ebb6c4e0",
+      "a3_inputs_hash": "79a760d6371c8720eeb4af48ad32617838a24307e3d35bc9eadd3ac0884b33f6"
+    }
+  ],
+  "question_text_sha256": [
+    {
+      "question_text": "Should I also bump the lockfile?",
+      "question_text_sha256": "8b9abde4e9b6d581d9646f6cf2ff0327c9d05f9e848fcb408db0d0ff61f57d3c"
+    },
+    {
+      "question_text": "\u00dcn\u00efc\u00f6d\u00e9 \u2014 which branch? \ud83d\ude80\nline 2",
+      "question_text_sha256": "29ee35c70b9a24d9f774a8c3bce5f21d88bf2a5199ae2e4c69abd8a9dda767e2"
+    },
+    {
+      "question_text": "e\u0301",
+      "question_text_sha256": "bf12767b0f2a56b2190075bae8169f656e3ce8d6357d4aff184bc6c7ea48f9f6"
+    },
+    {
+      "question_text": "\"quoted\" \\ back\tslash",
+      "question_text_sha256": "9fbfe643c898bb83ae6f29e4ff4175a41032ca5b3d68efb318216be483590966"
+    }
+  ]
+}

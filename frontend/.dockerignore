@@ -1,0 +1,11 @@
+node_modules
+.svelte-kit
+build
+.git
+.gitignore
+# D8 — every env file (.env.production, .env.development, …) stays out
+# of the build context; only the committed template is allowed in.
+.env*
+!.env.example
+npm-debug.log
+!README.md

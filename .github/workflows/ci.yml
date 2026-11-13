@@ -1,0 +1,123 @@
+# CI for fr, a PUBLIC repository.
+#
+# Why this file is self-contained: a public repository may only call reusable
+# workflows that are themselves public. The shared service archetype this repo
+# was built against lives in a private repository, so calling it from here fails
+# at 0s with "workflow was not found". This workflow therefore carries only the
+# test gates: no deployment, no registry push, no secrets.
+#
+# Runner choice is load-bearing. Every ARC runner group is
+# `allows_public_repositories: false` and must stay that way: a pull request
+# from any fork can edit `runs-on`, so a self-hosted runner opened to this repo
+# would be arbitrary untrusted code inside the estate network. GitHub-hosted
+# runners are the correct blast radius for a public repo.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: install gitleaks 8.30.1 (pinned, sha256-verified)
+        run: |
+          set -euo pipefail
+          version=8.30.1
+          sha=551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+          curl -fsSL -o "$RUNNER_TEMP/gitleaks.tgz" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${version}/gitleaks_${version}_linux_x64.tar.gz"
+          echo "${sha}  $RUNNER_TEMP/gitleaks.tgz" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/gitleaks.tgz" -C "$RUNNER_TEMP" gitleaks
+      - name: scan the tree
+        run: |
+          "$RUNNER_TEMP/gitleaks" dir --redact --exit-code 1 --no-banner .
+
+  private-refs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: scan tracked files
+        run: bash scripts/ci/no-private-refs.sh
+
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+      REDIS_URL: redis://localhost:6379
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.13
+      - name: install
+        working-directory: backend
+        run: bun install --frozen-lockfile
+      - name: static gates (no database needed)
+        working-directory: backend
+        run: bun run ci:verify
+      - name: unit, auth, source and integration suites
+        working-directory: backend
+        run: bun run ci:test
+
+  frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '26.13.0'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: install
+        working-directory: frontend
+        run: npm ci
+      - name: svelte-check
+        working-directory: frontend
+        run: npm run check
+      - name: unit tests
+        working-directory: frontend
+        run: npm run test
+      - name: build
+        working-directory: frontend
+        env:
+          VITE_KEYCLOAK_URL: https://auth.example.com
+          VITE_KEYCLOAK_REALM: example
+          VITE_KEYCLOAK_CLIENT_ID: fr-frontend
+        run: npm run build

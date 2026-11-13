@@ -1,0 +1,17 @@
+{
+  "_doc": "fr#1385 Option 1 — shared predicate vectors. MUST be byte-identical in worker_management and fr. proven(claims, effective) is true iff claims.tenant_id is a non-empty string AND (effective == claims.tenant_id OR effective in member_tenant_ids). member_tenant_ids may be a string or a list; non-string entries are ignored; matching is EXACT (no case-folding, no trimming). A missing/empty effective is never proven.",
+  "vectors": [
+    {"name": "home tenant", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001"}, "effective": "aaaaaaaa-0000-0000-0000-000000000001", "proven": true},
+    {"name": "other tenant, no members", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001"}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": false},
+    {"name": "member via list", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": ["bbbbbbbb-0000-0000-0000-000000000002"]}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": true},
+    {"name": "member via single string", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": "bbbbbbbb-0000-0000-0000-000000000002"}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": true},
+    {"name": "not a member", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": ["bbbbbbbb-0000-0000-0000-000000000002"]}, "effective": "cccccccc-0000-0000-0000-000000000003", "proven": false},
+    {"name": "empty member list, home", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": []}, "effective": "aaaaaaaa-0000-0000-0000-000000000001", "proven": true},
+    {"name": "non-string member entries ignored", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": [42, null, {"x": 1}, "bbbbbbbb-0000-0000-0000-000000000002"]}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": true},
+    {"name": "case differs: exact match only", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": ["BBBBBBBB-0000-0000-0000-000000000002"]}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": false},
+    {"name": "whitespace: exact match only", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001", "member_tenant_ids": [" bbbbbbbb-0000-0000-0000-000000000002"]}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": false},
+    {"name": "missing tenant_id is never proven", "claims": {"member_tenant_ids": ["bbbbbbbb-0000-0000-0000-000000000002"]}, "effective": "bbbbbbbb-0000-0000-0000-000000000002", "proven": false},
+    {"name": "empty effective", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001"}, "effective": "", "proven": false},
+    {"name": "null effective", "claims": {"tenant_id": "aaaaaaaa-0000-0000-0000-000000000001"}, "effective": null, "proven": false}
+  ]
+}

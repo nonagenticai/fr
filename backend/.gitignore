@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+node_modules
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+*.js.map
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+coverage/
+.nyc_output/
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+*.save
+*~
+docker-compose*.backup
+docker-compose*.bak
+.env.backup*
+.env.bak*

@@ -1,0 +1,22 @@
+-- 155 — U3/A3: the `execution.question` approval_kind label (G-12 A6).
+--
+-- A6 is a conveyor QUESTION raised to the user seat during a proof run. The conveyor stamps
+-- `metadata.question_id` from the PRE-REGISTERED answer table (G-12 v2 §3, Q1–Q8) at mint, so
+-- the decision is recomputable from data — matching the question TEXT to the table is a
+-- reading, never a computation, and fr does not do it. This file adds the LABEL only; the
+-- minter/decide gates are src/services/approvals/u3-gates.ts, the registry is
+-- src/services/approvals/question-registry.ts.
+--
+-- Numbering: 155 was reserved for this label and never used by any commit (measured
+-- 2026-10-02: `git log --diff-filter=A -- 'backend/migrations/155_*'` on origin/main → 0).
+--
+-- ⚠️ ENUM SAFETY (same rule 059, 066, 073, 086, 123, 152, 153 and 156 record). The runner
+-- applies a whole run in ONE transaction, and a label ADDED to a pre-existing type cannot be
+-- used in that same transaction. So this file NAMES THE LABEL ONLY HERE, never in a predicate,
+-- index, CHECK, default or DML; the first use is a later runtime approval INSERT. IF NOT EXISTS
+-- makes the file re-runnable (and a no-op on a drizzle-kit-push-built DB, where schema.ts
+-- creates the type with every label).
+--
+-- Probe: src/db/migration-runner.ts keys on the pg_enum label, so 155 stays PENDING on a
+-- pre-155 database and reapplyIfProbeFails re-runs it. Pure DDL; no DML.
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'execution.question';

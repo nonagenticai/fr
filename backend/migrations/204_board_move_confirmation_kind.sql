@@ -1,0 +1,16 @@
+-- 204 — R318 (George-approved 2026-10-20, D1–D8): the `board.move_confirmation` approval_kind label.
+--
+-- A person's cross-list drag on a conveyor board is a REQUEST, not a move. fr pulls the
+-- project's andon cord (migration 206), the conveyor evaluates the move, and any current
+-- member of the project's tenant confirms or cancels it in fr (D4). metadata =
+-- {request_id, card_id, board_id, from_list_id, to_list_id, position, implications[], hash,
+-- card_name, from_list_name, to_list_name}. The row NEVER expires (D7: `expires_at` NULL).
+-- On a decision fr tells the conveyor (E-move `kind='decided'`); the conveyor executes or
+-- drops the move and releases the cord. Minter and decision hook:
+-- src/services/approvals/board-move.ts.
+--
+-- ⚠️ ENUM SAFETY (the 155 / 156 / 200 rule): the runner applies a run in ONE transaction
+-- and a label added to a pre-existing type cannot be used in that transaction, so this file
+-- NAMES THE LABEL ONLY. IF NOT EXISTS makes it re-runnable and a no-op on a push-built DB.
+-- Probe: src/db/migration-runner.ts keys on the pg_enum label. Pure DDL; no DML.
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'board.move_confirmation';

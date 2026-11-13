@@ -1,0 +1,14 @@
+-- 091: coding_analysis_runs.scan_degraded — HONESTY flag for partial/degraded
+-- security scans.
+--
+-- The upstream coding-security scanner can complete a run while truncating
+-- (per-file timeout, cap-hit) — it now returns `scan_degraded: true` alongside a
+-- partial finding set. Before this column fr flattened every terminal scan to a
+-- clean 'succeeded' with no way to tell a complete A-grade pass from a truncated
+-- one that only saw a fraction of the files. Persist the upstream degraded bit so
+-- getJob() can surface "partial / degraded scan — results may be incomplete"
+-- instead of reporting a partial scan as a clean success.
+--
+-- Nullable: pre-091 rows and non-security runs stay NULL (unknown / N-A). Only a
+-- security poll that read the upstream `scan_degraded` field sets it true/false.
+ALTER TABLE coding_analysis_runs ADD COLUMN IF NOT EXISTS scan_degraded BOOLEAN;

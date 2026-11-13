@@ -1,0 +1,188 @@
+{
+  "generated_at": "2026-09-17",
+  "judge": "https://inference-router.example.com",
+  "gate": "PASSED",
+  "benchmarks": [
+    {
+      "benchmark": "hotpotqa",
+      "n": 50,
+      "scored": 250,
+      "ladder": [
+        {
+          "mode": "dense",
+          "n": 50,
+          "n_scored": 50,
+          "n_by_metric": {
+            "recall_at_5": 50,
+            "cover_em": 50,
+            "judge_correct": 50,
+            "chunks_per_q": 50,
+            "facts_per_q": 50
+          },
+          "n_errors": 0,
+          "recall_at_5": 0.89,
+          "cover_em": 0.72,
+          "judge_correct": 0.78,
+          "abstain_rate": 0.08,
+          "bridge_fires": 0,
+          "chunks_per_q": 0,
+          "fact_fires": 0,
+          "facts_per_q": 0
+        },
+        {
+          "mode": "hybrid",
+          "n": 50,
+          "n_scored": 50,
+          "n_by_metric": {
+            "recall_at_5": 50,
+            "cover_em": 50,
+            "judge_correct": 50,
+            "chunks_per_q": 50,
+            "facts_per_q": 50
+          },
+          "n_errors": 0,
+          "recall_at_5": 0.9,
+          "cover_em": 0.68,
+          "judge_correct": 0.7,
+          "abstain_rate": 0.14,
+          "bridge_fires": 0,
+          "chunks_per_q": 0,
+          "fact_fires": 0,
+          "facts_per_q": 0
+        },
+        {
+          "mode": "hybrid_rerank",
+          "n": 50,
+          "n_scored": 50,
+          "n_by_metric": {
+            "recall_at_5": 50,
+            "cover_em": 50,
+            "judge_correct": 50,
+            "chunks_per_q": 50,
+            "facts_per_q": 50
+          },
+          "n_errors": 0,
+          "recall_at_5": 0.93,
+          "cover_em": 0.72,
+          "judge_correct": 0.82,
+          "abstain_rate": 0.06,
+          "bridge_fires": 0,
+          "chunks_per_q": 0,
+          "fact_fires": 0,
+          "facts_per_q": 0
+        },
+        {
+          "mode": "full_nobridge",
+          "n": 50,
+          "n_scored": 50,
+          "n_by_metric": {
+            "recall_at_5": 50,
+            "cover_em": 50,
+            "judge_correct": 50,
+            "chunks_per_q": 50,
+            "facts_per_q": 50
+          },
+          "n_errors": 0,
+          "recall_at_5": 0.96,
+          "cover_em": 0.74,
+          "judge_correct": 0.82,
+          "abstain_rate": 0.06,
+          "bridge_fires": 0,
+          "chunks_per_q": 0,
+          "fact_fires": 0,
+          "facts_per_q": 0
+        },
+        {
+          "mode": "full",
+          "n": 50,
+          "n_scored": 50,
+          "n_by_metric": {
+            "recall_at_5": 50,
+            "cover_em": 50,
+            "judge_correct": 50,
+            "chunks_per_q": 50,
+            "facts_per_q": 50
+          },
+          "n_errors": 0,
+          "recall_at_5": 0.93,
+          "cover_em": 0.78,
+          "judge_correct": 0.84,
+          "abstain_rate": 0.04,
+          "bridge_fires": 50,
+          "chunks_per_q": 2,
+          "fact_fires": 50,
+          "facts_per_q": 32
+        }
+      ],
+      "denominator_parity": {
+        "metric": "judge_correct",
+        "modes": [
+          "dense",
+          "hybrid",
+          "hybrid_rerank",
+          "full_nobridge",
+          "full"
+        ],
+        "by_mode": {
+          "dense": 50,
+          "hybrid": 50,
+          "hybrid_rerank": 50,
+          "full_nobridge": 50,
+          "full": 50
+        },
+        "equal": true,
+        "min": 50,
+        "max": 50,
+        "spread": 0,
+        "coverage": 1
+      },
+      "h1": {
+        "metric": "judge_correct",
+        "full": 0.84,
+        "dense": 0.78,
+        "delta": 0.06,
+        "n_dense": 50,
+        "n_full": 50,
+        "paired": true,
+        "paired_n": 50,
+        "paired_delta": 0.06,
+        "ci_low": -0.0703,
+        "ci_high": 0.1903,
+        "significant": false,
+        "verdict": "INCONCLUSIVE"
+      },
+      "bridge_attribution": [
+        {
+          "metric": "judge_correct",
+          "full": 0.84,
+          "full_nobridge": 0.82,
+          "delta": 0.02,
+          "ci_low": -0.0684,
+          "ci_high": 0.1084,
+          "significant": false,
+          "paired_n": 50
+        },
+        {
+          "metric": "recall_at_5",
+          "full": 0.93,
+          "full_nobridge": 0.96,
+          "delta": -0.03,
+          "ci_low": -0.0632,
+          "ci_high": 0.0032,
+          "significant": false,
+          "paired_n": 50
+        },
+        {
+          "metric": "cover_em",
+          "full": 0.78,
+          "full_nobridge": 0.74,
+          "delta": 0.04,
+          "ci_low": -0.0384,
+          "ci_high": 0.1184,
+          "significant": false,
+          "paired_n": 50
+        }
+      ]
+    }
+  ]
+}

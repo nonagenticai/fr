@@ -1,0 +1,378 @@
+{
+  "__what": "handoff.v2 contract_hash known-answer vector. The fr PR copies this file VERBATIM and asserts the same hash. Shape: 7 units / 12 design ACs split across them (1..7 per unit, INVEST-S), each AC owned by EXACTLY ONE unit — the proof-2B (split) shape.",
+  "__algorithm": "sha256 hex (lowercase) over UTF-8 bytes of canonicalizeJcs(contract minus design_approval_id); canonicalizeJcs = fr backend/src/lib/bug-report-hash.ts (RFC 8785 subset: keys sorted by UTF-16 code unit, no whitespace, strings via JSON.stringify, no Unicode normalisation, arrays in order, safe integers only, anything else throws).",
+  "__how_to_update": "Never regenerate to make a test pass. A change here is a contract change: bump CONTRACT_VERSION and update fr in the same release.",
+  "contract": {
+    "contract_version": "handoff.v2",
+    "decomposition_id": "11111111-2222-3333-4444-555555555555",
+    "design_card_id": "card-design-1",
+    "producing_procedure": "design_packaging.doing.action@3",
+    "design_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "design_approval_id": "9b2f6c1e-4d3a-4e8b-a7c5-0f1e2d3c4b5a",
+    "repository_url": "https://github.com/nonagenticai/fixture",
+    "branch": "main",
+    "container_name": "fixture",
+    "repo_name": "fixture",
+    "units": [
+      {
+        "unit_key": "gamma-3",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/report.py",
+          "function": "render_summary",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement render_summary in src/billing/report.py",
+          "target_files": [
+            "src/billing/report.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": [
+            "el-2"
+          ]
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "render_summary",
+            "signature": "def render_summary(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_f9771de8",
+            "text": "render_summary: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_cc77dd98",
+            "text": "render_summary: criterion 1 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_f9771de8",
+            "path": "tests/billing/test_render_summary_0.py",
+            "code": "def test_render_summary_0():\n    assert False, \"crit_f9771de8\"\n"
+          },
+          {
+            "id": "crit_cc77dd98",
+            "path": "tests/billing/test_render_summary_1.py",
+            "code": "def test_render_summary_1():\n    assert False, \"crit_cc77dd98\"\n"
+          }
+        ],
+        "covers": [
+          "crit_f9771de8",
+          "crit_cc77dd98"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": [
+          "beta-2"
+        ]
+      },
+      {
+        "unit_key": "alpha-1",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/invoice.py",
+          "function": "compute_total",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement compute_total in src/billing/invoice.py",
+          "target_files": [
+            "src/billing/invoice.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": [
+            "el-0"
+          ]
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "compute_total",
+            "signature": "def compute_total(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_5bc434ad",
+            "text": "compute_total: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_9c145554",
+            "text": "compute_total: criterion 1 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_5bc434ad",
+            "path": "tests/billing/test_compute_total_0.py",
+            "code": "def test_compute_total_0():\n    assert False, \"crit_5bc434ad\"\n"
+          },
+          {
+            "id": "crit_9c145554",
+            "path": "tests/billing/test_compute_total_1.py",
+            "code": "def test_compute_total_1():\n    assert False, \"crit_9c145554\"\n"
+          }
+        ],
+        "covers": [
+          "crit_5bc434ad",
+          "crit_9c145554"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": []
+      },
+      {
+        "unit_key": "beta-2",
+        "unit": {
+          "kind": "update",
+          "file": "src/billing/tax.py",
+          "function": "apply_vat"
+        },
+        "scope": {
+          "summary": "Implement apply_vat in src/billing/tax.py",
+          "target_files": [
+            "src/billing/tax.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": [
+            "el-1"
+          ]
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "apply_vat",
+            "signature": "def apply_vat(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_34934b6e",
+            "text": "apply_vat: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_380166be",
+            "text": "apply_vat: criterion 1 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_34934b6e",
+            "path": "tests/billing/test_apply_vat_0.py",
+            "code": "def test_apply_vat_0():\n    assert False, \"crit_34934b6e\"\n"
+          },
+          {
+            "id": "crit_380166be",
+            "path": "tests/billing/test_apply_vat_1.py",
+            "code": "def test_apply_vat_1():\n    assert False, \"crit_380166be\"\n"
+          }
+        ],
+        "covers": [
+          "crit_34934b6e",
+          "crit_380166be"
+        ],
+        "child_card_type": "development_feature_update",
+        "requires": [
+          "alpha-1"
+        ]
+      },
+      {
+        "unit_key": "delta-4",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/discount.py",
+          "function": "apply_discount",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement apply_discount in src/billing/discount.py",
+          "target_files": [
+            "src/billing/discount.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": []
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "apply_discount",
+            "signature": "def apply_discount(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_de6d89d7",
+            "text": "apply_discount: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_32f27847",
+            "text": "apply_discount: criterion 1 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_de6d89d7",
+            "path": "tests/billing/test_apply_discount_0.py",
+            "code": "def test_apply_discount_0():\n    assert False, \"crit_de6d89d7\"\n"
+          },
+          {
+            "id": "crit_32f27847",
+            "path": "tests/billing/test_apply_discount_1.py",
+            "code": "def test_apply_discount_1():\n    assert False, \"crit_32f27847\"\n"
+          }
+        ],
+        "covers": [
+          "crit_de6d89d7",
+          "crit_32f27847"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": [
+          "gamma-3"
+        ]
+      },
+      {
+        "unit_key": "epsilon-5",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/currency.py",
+          "function": "convert_currency",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement convert_currency in src/billing/currency.py",
+          "target_files": [
+            "src/billing/currency.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": []
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "convert_currency",
+            "signature": "def convert_currency(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_76f25ce3",
+            "text": "convert_currency: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_81e5b959",
+            "text": "convert_currency: criterion 1 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_76f25ce3",
+            "path": "tests/billing/test_convert_currency_0.py",
+            "code": "def test_convert_currency_0():\n    assert False, \"crit_76f25ce3\"\n"
+          },
+          {
+            "id": "crit_81e5b959",
+            "path": "tests/billing/test_convert_currency_1.py",
+            "code": "def test_convert_currency_1():\n    assert False, \"crit_81e5b959\"\n"
+          }
+        ],
+        "covers": [
+          "crit_76f25ce3",
+          "crit_81e5b959"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": [
+          "alpha-1"
+        ]
+      },
+      {
+        "unit_key": "zeta-6",
+        "unit": {
+          "kind": "update",
+          "file": "src/billing/rounding.py",
+          "function": "round_amount"
+        },
+        "scope": {
+          "summary": "Implement round_amount in src/billing/rounding.py",
+          "target_files": [
+            "src/billing/rounding.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": []
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "round_amount",
+            "signature": "def round_amount(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_3b79eb98",
+            "text": "round_amount: criterion 0 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_3b79eb98",
+            "path": "tests/billing/test_round_amount_0.py",
+            "code": "def test_round_amount_0():\n    assert False, \"crit_3b79eb98\"\n"
+          }
+        ],
+        "covers": [
+          "crit_3b79eb98"
+        ],
+        "child_card_type": "development_feature_update",
+        "requires": [
+          "delta-4"
+        ]
+      },
+      {
+        "unit_key": "eta-7",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/audit.py",
+          "function": "log_invoice",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement log_invoice in src/billing/audit.py",
+          "target_files": [
+            "src/billing/audit.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": []
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "log_invoice",
+            "signature": "def log_invoice(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_c90fd8fa",
+            "text": "log_invoice: criterion 0 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_c90fd8fa",
+            "path": "tests/billing/test_log_invoice_0.py",
+            "code": "def test_log_invoice_0():\n    assert False, \"crit_c90fd8fa\"\n"
+          }
+        ],
+        "covers": [
+          "crit_c90fd8fa"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": []
+      }
+    ]
+  },
+  "expected_contract_hash": "7762cec255e7b913496f2d663e95b7a1a242ddfe6655f52e3f146b7c27f0c6f6"
+}

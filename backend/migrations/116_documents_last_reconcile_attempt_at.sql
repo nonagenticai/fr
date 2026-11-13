@@ -1,0 +1,73 @@
+-- backend/migrations/116_documents_last_reconcile_attempt_at.sql
+--
+-- HEAD-OF-LINE BLOCKING IN THE BACKGROUND DOCUMENT RECONCILE: THE SWEEP COULD
+-- NOT REACH THE ROWS IT EXISTS TO RESCUE.
+--
+-- ── THE DEFECT ────────────────────────────────────────────────────────────────
+--
+-- `services/document-reconcile.ts listStale` selected the stale in-flight set
+-- ordered by `updated_at` ASC, LIMIT `batchSize` (25 by default):
+--
+--     WHERE status IN ('pending','processing') AND kag_ingestion_id IS NOT NULL
+--       AND tenant_id IS NOT NULL AND updated_at < cutoff
+--     ORDER BY updated_at
+--     LIMIT 25
+--
+-- The sweep then fetches each row's upstream kag job and applies the patch
+-- `integrations/kag.ts mapJobStatusToRow` returns. For a job whose parse is done
+-- but whose KAG indexing is still running, that function returns `{}` — "keep
+-- polling" — and that return is CORRECT. But an empty patch means `applyPatch`
+-- never runs, so `updated_at` never moves, so the row is STILL the oldest member
+-- of the stale set on the next tick, and on every tick after that.
+--
+-- 25 such rows therefore fill the whole batch permanently and row 26 is never
+-- fetched at all. MEASURED by driving the real exported `reconcileStaleDocuments`
+-- through its `__setDocumentReconcileDepsForTests` seam:
+--
+--     blockers=25  ticks=10  ->  settledTotal=0   (a lost-callback row behind
+--                                                  them stayed `processing`)
+--     blockers=24  ticks=1   ->  settledTotal=1   (ONE free slot is enough)
+--     blockers=0   ticks=1   ->  settledTotal=1   (the harness CAN settle)
+--
+-- The 24/25 boundary IS the mechanism. The population starved by it is exactly
+-- the ~21% of jobs whose terminal callback was lost — the population this worker
+-- was built to rescue. They sit at "Processing" on the Documents page forever
+-- while the worker logs nothing and reports `settled=0` as a normal tick.
+--
+-- ── WHY A NEW COLUMN AND NOT A REORDERING TRICK ───────────────────────────────
+--
+-- `updated_at` conflates two different facts: "we CHANGED this row" and "we
+-- LOOKED AT this row". That conflation is the bug. No ORDER BY over the existing
+-- columns can separate them, because the fact "this row was attempted at T" is
+-- not recorded anywhere. So record it.
+--
+-- `last_reconcile_attempt_at` is stamped by the sweep on EVERY attempt — settled,
+-- no-op, or thrown — and never by anything else. It is deliberately NOT
+-- `updated_at`: an attempt that changed nothing must not look like a mutation to
+-- the poll, the UI, or any other consumer of `updated_at`.
+--
+-- ── NULLABLE, AND NOT BACKFILLED ──────────────────────────────────────────────
+--
+-- NULL means "never attempted by the sweep", and the new selector orders
+-- `NULLS FIRST` so those rows LEAD. Backfilling to now() (or to updated_at)
+-- would stamp every existing stale row as recently-attempted and re-create the
+-- starvation this migration removes, on precisely the rows that have been stuck
+-- longest. There is therefore NO backfill and NO DEFAULT: the absence of a value
+-- is the correct, load-bearing encoding.
+--
+-- Consequently this file contains no DML at all — one ADD COLUMN and one
+-- CREATE INDEX — so it needs neither a COLUMN_PROBES entry nor a
+-- `NOT PROBED, DELIBERATELY` annotation: `drizzle-kit push` reproduces a column
+-- and an index from schema.ts, and a stamped-but-unrun apply loses nothing.
+-- (Verified with this repo's own detector:
+-- `findDataEffects(stripSqlComments(src).code)` returns [] for this file.)
+
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS last_reconcile_attempt_at TIMESTAMPTZ;
+
+-- The reconcile selector's exact access path: the in-flight, kag-bearing subset
+-- ordered by attempt age with never-attempted first. Partial, because the stale
+-- set is a tiny slice of `documents` and every other reader of this table filters
+-- on something else entirely.
+CREATE INDEX IF NOT EXISTS ix_documents_reconcile_attempt
+  ON documents (last_reconcile_attempt_at NULLS FIRST, updated_at)
+  WHERE status IN ('pending', 'processing') AND kag_ingestion_id IS NOT NULL;

@@ -1,0 +1,84 @@
+-- backend/migrations/109_approval_callback_delivery_marker.sql
+--
+-- A DECISION THAT WAS NEVER DELIVERED IS INDISTINGUISHABLE FROM ONE THAT WAS.
+--
+-- THE DEFECT. `routes/approvals.ts` completes an approval and then fires the n8n
+-- decision callback fire-and-forget:
+--
+--     if (updated) {
+--       sendN8nCallback(approvalId).catch(err =>
+--         console.error('[approvals] n8n callback error:', err));
+--
+-- The callback is what moves the Planka card BLOCKED -> DOING. Its result was
+-- written NOWHERE: `sendN8nCallback` itself swallowed the send error into a
+-- `console.error`, and the un-awaited promise meant a pod that rolled between the
+-- UPDATE committing and the POST landing dropped the callback entirely with no
+-- record that it had ever been owed. The approvals row said `approved`; the card
+-- stayed BLOCKED; nothing in the database disagreed.
+--
+-- MEASURED ON PROD (worker4, db `fr`, 2026-09-04): **320 kanban cards sit in
+-- BLOCKED behind approvals that are ALL already decided** — 488 approvals, 449
+-- approved and 39 expired. Split by cause:
+--
+--     ~255  (35%)  fr never sent it / n8n never received it.  ← LARGEST TERM
+--       61         n8n received it and its queue gave up:
+--                  "This execution failed to be processed too many times and
+--                   will no longer retry"
+--       20         Planka itself timed out:
+--                  "Move Card failed (approval callback): Request timeout ...
+--                   504 Gateway Time-out ... nginx"
+--    remainder     succeeded-but-still-blocked, not cleanly countable.
+--
+-- Root trigger: 727 approvals were decided in ~7 seconds on 2026-09-02, which
+-- overwhelmed fr -> n8n -> Planka end to end.
+--
+-- ── WHAT THIS COLUMN IS ───────────────────────────────────────────────────────
+--
+-- `callback_delivered_at` is a MEASUREMENT, never an intention. It is stamped in
+-- exactly one place — `services/n8n-callback.ts::deliverDecisionCallback`, after
+-- `n8nClient.sendApprovalDecision` has returned without throwing, i.e. after a
+-- real 2xx from the receiver (the client throws on any non-ok response). Nothing
+-- else may write it. This is the same discipline `notified_at` (migration 101)
+-- established for push delivery: absence must never be optimistically filled in,
+-- because the whole failure mode being closed is "looks delivered, proves
+-- nothing".
+--
+-- NULL therefore reads as "not KNOWN to have been delivered", and that is the
+-- population `workers/deblock-callback-redelivery.ts` re-sends.
+--
+-- ⚠️ NULL IS NOT THE SAME AS "FAILED". A row decided before this migration
+-- carries NULL because the column did not exist, not because its callback
+-- failed. That is deliberate and it is why the worker carries an AGE WINDOW
+-- rather than sweeping all of history: see the worker's header.
+--
+-- ── NULLABLE, NO DEFAULT, NO BACKFILL — deliberately ─────────────────────────
+--
+-- A DEFAULT of now() would stamp every historical row as delivered and erase the
+-- 320-card backlog this exists to find. A backfill would be a guess written as a
+-- fact: for a decided approval there is no evidence anywhere in this database of
+-- whether its callback landed — the send left only a log line, and the logs are
+-- 90 seconds deep at the ingress. NULL is the honest value for every existing
+-- row.
+--
+-- NOT NULL is impossible for the same reason, and would also be wrong going
+-- forward: a web-only approval (`callback_path IS NULL`) has no n8n side and will
+-- never carry a delivery stamp.
+--
+-- No BEGIN/COMMIT — the runner wraps each file in a SAVEPOINT inside an outer
+-- transaction (src/db/migration-runner.ts); an explicit COMMIT breaks the next file.
+
+ALTER TABLE approvals
+  ADD COLUMN IF NOT EXISTS callback_delivered_at TIMESTAMPTZ;
+
+-- The re-delivery worker's exact predicate: DECIDED (not pending), has an n8n
+-- side, and no confirmed delivery. Without this index it is a seq scan over every
+-- approval ever raised, on a 15-minute timer, forever.
+--
+-- ⚠️ The partial WHERE deliberately omits `status <> 'pending'`: a partial index
+-- predicate must be IMMUTABLE and comparing against the full status set here
+-- would still leave the pending rows in the index. `callback_delivered_at IS NULL
+-- AND callback_path IS NOT NULL` is the selective half — decided-ness is cheap to
+-- re-check off the heap.
+CREATE INDEX IF NOT EXISTS approvals_callback_undelivered_idx
+  ON approvals (completed_at)
+  WHERE callback_delivered_at IS NULL AND callback_path IS NOT NULL;

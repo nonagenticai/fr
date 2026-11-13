@@ -1,0 +1,21 @@
+-- Migration: 198_drop_project_github_token_secret_id
+-- Date: 2026-10-18
+--
+-- Phase 2 of removing the per-project GitHub token (George, 2026-10-18):
+-- repository access is the GitHub App's. Phase 1 (fr#1610, live since
+-- 4bd630799) stopped declaring and using projects.github_token_secret_id, so no
+-- running fr image selects or writes it. That makes this drop safe during the
+-- surge rollout, and a rollback to the phase-1 image still works.
+--
+-- Measured on prod before this change (2026-10-18, worker4, read-only):
+-- 0 rows have the column set — earlier today 0 of 38 projects; since a
+-- conveyor-tenant cleanup at 07:53Z `projects` holds 0 rows (RM pm_projects
+-- likewise). No view, index, policy or pg_depend entry references the column;
+-- no `project:%:github_token` secret exists (they were stored with a 7-day TTL).
+--
+-- Pure DDL: schema.ts already omits the column, so `drizzle-kit push` matches
+-- on a fresh database. Migration 009 (ADD COLUMN IF NOT EXISTS) stays as
+-- history. No migration-runner probe names this column.
+-- RM's pm_projects.github_token_secret_id is RM's own column (separate repo).
+
+ALTER TABLE projects DROP COLUMN IF EXISTS github_token_secret_id;

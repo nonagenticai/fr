@@ -1,0 +1,31 @@
+@import 'tailwindcss';
+@import './lib/styles/tokens.css';
+
+/* Tailwind 4: define the `dark` variant against a class on <html>. */
+@variant dark (&:where(.dark *, .dark));
+
+/* Brand typography: IBM Plex Sans for body/UI, Fraunces for display headings.
+   Registered as Tailwind theme fonts so `font-sans` / `font-display` utilities
+   resolve to these. Loaded via Google Fonts <link> in app.html. */
+@theme {
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
+  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* Page/section titles take the brand display serif. Scoped to h1/h2 so the
+   tiny uppercase <h3> sidebar group labels keep the sans UI font. Components
+   that set their own font utility (e.g. font-mono) still win via specificity. */
+h1,
+h2 {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}

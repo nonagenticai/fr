@@ -1,0 +1,14 @@
+node_modules
+.env
+.git
+.gitignore
+*.md
+!README.md
+!src/agent/packs/**/*.md
+tests
+uploads/*
+!uploads/.gitkeep
+.vscode
+.idea
+*.log
+.DS_Store

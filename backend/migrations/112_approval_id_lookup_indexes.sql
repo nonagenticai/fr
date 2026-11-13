@@ -1,0 +1,69 @@
+-- backend/migrations/112_approval_id_lookup_indexes.sql
+--
+-- THE TWO HOTTEST APPROVAL TABLES HAD NO INDEX ON THE COLUMN EVERY QUERY
+-- FILTERS THEM BY.
+--
+-- ── THE DEFECT ────────────────────────────────────────────────────────────────
+--
+-- `approval_decisions` and `required_approvers` are both child tables of
+-- `approvals`, and `approval_id` is their primary access path — "the decisions
+-- on this approval", "the roster for this approval". Neither had an index on it.
+--
+-- What they DID have (measured on prod 2026-09-06):
+--
+--     approval_decisions   pkey(id), idx_approval_decisions_required_approver
+--     required_approvers   pkey(id), (tenant_id, role) WHERE role IS NOT NULL,
+--                          (tenant_id, user_id)
+--
+-- So every per-approval lookup fell back to a sequential scan. `pg_stat_user_tables`
+-- on prod, same day:
+--
+--     table                 rows    seq_scan   idx_scan   % sequential
+--     approval_decisions    1,087      7,370          8        99%
+--     required_approvers    2,588     12,497      5,218        70%
+--
+-- ~20,000 full table scans, on the decision hot path.
+--
+-- ── WHY IT WAS INVISIBLE ──────────────────────────────────────────────────────
+--
+-- Both tables are small — 1,087 and 2,588 rows — so a sequential scan is a few
+-- milliseconds and nothing ever timed out, alerted, or appeared slow to a user.
+-- A missing index does not fail; it just does more work than it needs to, and it
+-- gets quadratically worse as the parent table grows. `approvals` is at 2,830
+-- rows and grows continuously (1,268 pending at the time of writing), and
+-- `routes/approvals.ts:156-160` reads the roster AND the decisions once PER
+-- APPROVAL inside a loop — so the scan count scales with the product, not the sum.
+--
+-- Callers that filter on `approval_id` (all on origin/main at 1493a18f):
+--   approval_decisions — routes/approvals.ts:160, :781 (inArray), :1109, :1123;
+--                        domain/reporting/index.ts:149 (innerJoin)
+--   required_approvers — routes/approvals.ts:156, :511-513, :780 (inArray);
+--                        routes/agui.ts:258; domain/reporting/index.ts:52 (innerJoin)
+--
+-- ── SAFETY ────────────────────────────────────────────────────────────────────
+--
+-- Additive and reversible: two non-unique btree indexes. No column, constraint or
+-- row is touched, so nothing can be rejected that was previously accepted, and no
+-- existing query can change its RESULT — only its plan.
+--
+-- `IF NOT EXISTS` so a re-run is a no-op, matching the runner's expectation that
+-- migrations are idempotent.
+--
+-- ⚠️ Deliberately NOT `CONCURRENTLY`, and it is not an option here rather than a
+-- preference. `CREATE INDEX CONCURRENTLY` cannot run inside a transaction block
+-- at all, and `db/migration-runner.ts:478` wraps the ENTIRE run in one
+-- `sql.begin(...)` — held that way on purpose so the advisory lock spans the
+-- whole run (`pg_advisory_xact_lock` releases at COMMIT/ROLLBACK) — with a
+-- SAVEPOINT per migration inside it. So there is no transaction-free context for
+-- a migration to run in.
+--
+-- That is fine at 1,087 and 2,588 rows: the build is milliseconds and takes only
+-- a SHARE lock, which blocks writes to these two tables for that instant and
+-- nothing else. On a table of millions it would not be, and the runner's
+-- structure — not this file — is what would have to change first.
+
+CREATE INDEX IF NOT EXISTS approval_decisions_approval_id_idx
+  ON approval_decisions (approval_id);
+
+CREATE INDEX IF NOT EXISTS required_approvers_approval_id_idx
+  ON required_approvers (approval_id);

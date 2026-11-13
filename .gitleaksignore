@@ -1,0 +1,34 @@
+# gitleaks allowlist for `gitleaks dir`.
+#
+# Every entry below is an example value, a test fixture, or a content hash —
+# not a credential. Dir-mode fingerprints are `path:rule:line`; the line
+# numbers must move with the file.
+
+# Upstream Planka OpenAPI examples: a documentation cookie carrying a UUID.
+backend/docs/planka-openapi.json:generic-api-key:2325
+backend/docs/planka-openapi.json:generic-api-key:2505
+
+# The committed OpenAPI snapshots' example tokens (fake `ghp_...` placeholder,
+# and upstream Planka's example cookie).
+tooling/openapi/specs/coding.json:github-pat:50885
+tooling/openapi/specs/coding.json:github-pat:53424
+tooling/openapi/specs/kanban.json:generic-api-key:2332
+tooling/openapi/specs/kanban.json:generic-api-key:2594
+
+# The served-spec lock is SHA-256 digests of the capability document.
+backend/src/capabilities/served-spec.lock.json:generic-api-key:22
+backend/src/capabilities/served-spec.lock.json:generic-api-key:23
+backend/src/capabilities/served-spec.lock.json:generic-api-key:24
+backend/tests/unit/capabilities/p4d2d-capabilities.test.ts:generic-api-key:49
+backend/tests/unit/capabilities/p4d2d-capabilities.test.ts:generic-api-key:50
+backend/tests/unit/capabilities/p4d2d-capabilities.test.ts:generic-api-key:51
+backend/tests/unit/capabilities/p4d2d-capabilities.test.ts:generic-api-key:52
+backend/tests/unit/capabilities/p4d2d-capabilities.test.ts:generic-api-key:71
+
+# Test fixtures: a redaction sentinel and a signing key that only exists in
+# the test process.
+backend/tests/unit/telemetry/spans.test.ts:generic-api-key:293
+backend/tests/unit/server-error-boundary.test.ts:generic-api-key:97
+
+# A LinkedIn icon path, not a client secret.
+frontend/src/lib/workflows/iconManifest.ts:linkedin-client-secret:254

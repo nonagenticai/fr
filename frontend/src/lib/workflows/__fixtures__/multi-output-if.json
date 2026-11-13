@@ -1,0 +1,63 @@
+{
+  "id": "wf-fixture-1",
+  "name": "Multi-output IF",
+  "active": true,
+  "tags": [{ "id": "t1", "name": "demo" }],
+  "updatedAt": "2026-05-09T10:00:00.000Z",
+  "nodes": [
+    {
+      "id": "n-webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-200, 0],
+      "parameters": { "path": "demo" }
+    },
+    {
+      "id": "n-if",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "parameters": { "conditions": { "string": [{ "value1": "={{$json.x}}", "value2": "ok" }] } }
+    },
+    {
+      "id": "n-true",
+      "name": "True branch",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [200, -100],
+      "parameters": {}
+    },
+    {
+      "id": "n-false",
+      "name": "False branch",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [200, 100],
+      "parameters": {}
+    },
+    {
+      "id": "n-sticky",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-300, -200],
+      "parameters": { "content": "## Demo flow", "height": 100, "width": 200 }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [{ "node": "IF", "type": "main", "index": 0 }]
+      ]
+    },
+    "IF": {
+      "main": [
+        [{ "node": "True branch", "type": "main", "index": 0 }],
+        [{ "node": "False branch", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}

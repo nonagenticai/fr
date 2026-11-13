@@ -1,0 +1,16 @@
+-- Migration: 152_web_only_approval_kinds
+-- Date: 2026-10-01
+--
+-- One approval kind that is decided in fr ONLY, never from a chat seat (U3, AA-TRACE
+-- §6.13): `execution.feature_design_approval`, decided with structured G-12 reason codes
+-- that Telegram / Signal / Teams cannot carry. Every chat seat refuses it through
+-- `isWebOnlyApproval` (backend/src/domain/engagement/deblock-actions.ts). The label lands
+-- here, ahead of the U3 minter, so the predicate is wired and tested against rows that can
+-- exist. (`execution.bug_fix_approval` is deliberately NOT added: no producer mints it; the
+-- live bug-fix gate is the `metadata.approval_kind = 'bug_fix_authorization'` marker on any
+-- kind. `qa.coverage_signoff` is added by U3's own migration.)
+--
+-- ALTER TYPE ... ADD VALUE is committed here and only referenced by later runtime
+-- transactions (an approval INSERT), never in the same txn — the same constraint
+-- migrations 059, 066, 073, 086 and 123 record. IF NOT EXISTS makes the file re-runnable.
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'execution.feature_design_approval';

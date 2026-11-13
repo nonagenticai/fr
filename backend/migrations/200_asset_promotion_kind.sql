@@ -1,0 +1,13 @@
+-- 200 — G8 / R313: the `asset.promotion` approval_kind label.
+--
+-- A tenant_admin decides whether a PROJECT copy of a governed asset (requirement, principle,
+-- decision) replaces its tenant original. metadata = {asset_type, copy_id, original_id,
+-- project_id, diff}. On approve fr calls requirements_management
+-- `POST /{kind}/{copy_id}/promote` (fr-delegated); on reject nothing changes upstream.
+-- Minter and decision hook: src/services/approvals/asset-promotion.ts.
+--
+-- ⚠️ ENUM SAFETY (same rule 155 and 156 record): the runner applies a run in ONE transaction
+-- and a label added to a pre-existing type cannot be used in that transaction, so this file
+-- NAMES THE LABEL ONLY. IF NOT EXISTS makes it re-runnable and a no-op on a push-built DB.
+-- Probe: src/db/migration-runner.ts keys on the pg_enum label. Pure DDL; no DML.
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'asset.promotion';

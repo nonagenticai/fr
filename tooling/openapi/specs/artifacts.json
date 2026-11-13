@@ -1,0 +1,3108 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Artifact Registry Service",
+    "description": "Multi-tenant artifact storage service. Proxies file uploads/downloads through storage_service (which owns MinIO credentials). Auth: license token via Authorization or X-Tenant-Id Bearer header, validated against license introspection service. Trusted-network callers (RFC 1918) can skip the token. Optional ClamAV virus scanning on upload.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Check service health",
+        "description": "Health check endpoint.\n\nChecks:\n- Database connectivity\n- MinIO connectivity\n- ClamAV connectivity (if enabled)\n\nAll checks run in parallel with 10s overall timeout.",
+        "operationId": "health_check",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ]
+      }
+    },
+    "/health/live": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Kubernetes liveness probe",
+        "description": "Liveness probe for Kubernetes.",
+        "operationId": "health_live",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Live"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ]
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Kubernetes readiness probe",
+        "description": "Readiness probe for Kubernetes.\n\nReturns 200 when the database is reachable, otherwise 503 so that\nKubernetes pulls the pod out of the Service endpoints while the DB is\nunreachable. Only the database is gated here (MinIO/ClamAV are out of\nscope for readiness).",
+        "operationId": "health_ready",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/upload": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Upload an artifact file",
+        "description": "Upload an artifact file.\n\nFiles are proxied through storage_service which handles MinIO storage\nand virus scanning. No presigned URLs are used.\n\nPass X-Visibility: user to make the artifact private to the uploading subject.\nDefault is 'tenant' (visible to all tenant members).",
+        "operationId": "upload_artifact",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "X-Visibility",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "tenant",
+              "title": "X-Visibility"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_artifact"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-n8n-manual": true
+      }
+    },
+    "/projects/{project_id}/artifacts": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "List artifacts with filters",
+        "description": "List artifacts for a project with optional filters.",
+        "operationId": "list_artifacts",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "card_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Card Id"
+            }
+          },
+          {
+            "name": "step",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Step"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ArtifactKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "sensitivity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ArtifactSensitivity"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sensitivity"
+            }
+          },
+          {
+            "name": "name_prefix",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name Prefix"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tags"
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only documents produced in this phase",
+              "title": "Phase"
+            },
+            "description": "Only documents produced in this phase"
+          },
+          {
+            "name": "doc_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only documents of this type",
+              "title": "Doc Type"
+            },
+            "description": "Only documents of this type"
+          },
+          {
+            "name": "planka_card_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only artifacts of this Planka card",
+              "title": "Planka Card Id"
+            },
+            "description": "Only artifacts of this Planka card"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArtifactOut"
+                  },
+                  "title": "Response List Artifacts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get artifact metadata",
+        "description": "Get a specific artifact by ID.",
+        "operationId": "get_artifact",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Delete an artifact",
+        "description": "Delete an artifact.",
+        "operationId": "delete_artifact",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/download": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Download artifact file",
+        "description": "Download an artifact file.\n\nStreams the file content from storage_service. No presigned URLs.",
+        "operationId": "download_artifact",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-n8n-manual": true
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/publish-status": {
+      "patch": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Set an artifact's publish status (draft | published)",
+        "description": "Publish or unpublish an artifact.\n\nOnly callers in the artifact's OWN tenant can change it. The lookup is\nown-tenant (``include_system`` left False), so an inherited system artifact\nis a 404 for every other tenant — the same answer as a nonexistent id, so\nexistence is not leaked — and ``can_mutate`` re-checks the tenant as a\nsecond fence. Publishing a SYSTEM-tenant artifact is what makes it readable\nby every other tenant; unpublishing withdraws it on the next read.\nPublishing requires an explicitly resolved tenant (403 via the fallback).",
+        "operationId": "set_artifact_publish_status",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishStatusIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/metadata": {
+      "patch": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Set an artifact's document metadata (title, doc_type, phase, summary, card_id)",
+        "description": "PARTIAL update of the document metadata on an existing artifact.\n\nOnly fields present in the JSON body are written; an explicit ``null``\nclears a field; unknown fields are a 422. Same write fences as\n``/publish-status``: own-tenant lookup (an inherited system artifact is a\n404, as is a nonexistent id) plus ``can_mutate``.",
+        "operationId": "update_artifact_metadata",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArtifactMetadataIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/render": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Render an artifact as an HTML or PDF document",
+        "description": "Render the artifact as a readable document: ``format=html`` (default) or\n``format=pdf``.\n\nSources: ``document.json`` (``{title, sections:[{heading, body_md, sources}]}``),\nmarkdown / plain text, or any other JSON report (rendered as a definition list /\ntable of its top-level keys). HTML is sanitised (no raw HTML, no script, no\nremote resources) with a table of contents from the headings and section sources\nas footnotes; PDF is WeasyPrint over that HTML. Other content types are 415.\n\nRendered output is cached as a derived object per (artifact id, version, format);\n``X-Render-Cache: hit|miss`` says which. Same tenant + visibility scoping as the\nget-artifact route: a missing or invisible id is 404.",
+        "operationId": "render_artifact",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "html",
+                "pdf"
+              ],
+              "type": "string",
+              "description": "html | pdf",
+              "default": "html",
+              "title": "Format"
+            },
+            "description": "html | pdf"
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/html": {},
+              "application/pdf": {}
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content type cannot be rendered as a document"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-n8n-manual": true
+      }
+    },
+    "/projects/{project_id}/artifacts/manifests/{scope}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get artifact manifest by scope",
+        "description": "Get a manifest of artifacts for a specific scope.\n\n⛔ BEHAVIOUR CHANGE: `artifacts` used to hold EVERY row in the scope, so a\nproject-scope manifest over a large project scanned and serialised the lot.\nIt is now one page, and a caller that reads `artifacts` without reading\n`truncated` will silently see less than it used to.\n\n⚠️ The default `limit` is the CAP (1000), NOT the 100 the list endpoints\nuse, and that asymmetry is deliberate. MEASURED 2026-09-08 against the\nproduction database: one project holds 55,036 artifacts, and the live\n`n8n-nodes-artifacts` `getManifest` sends neither `limit` nor `offset` and\ndiscards response headers. A default of 100 would silently 550x-truncate a\nlive consumer; 1000 makes that 55x while the client is fixed to page. The\nby-card route keeps the 100 default because it matches nothing today\n(`card_id` is NULL on all 55,057 production rows).\n\nA partial manifest is only safe because truncation is VISIBLE in the body:\n`total_count` and `total_size` are computed by the DATABASE over the whole\nscope (which is what their descriptions have always claimed), and\n`truncated` states the comparison outright — `offset + len(artifacts) <\ntotal_count` — so a client cannot miss it by failing to ask. Page by\nraising `offset` until `truncated` is false.",
+        "operationId": "get_manifest",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "scope",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/ManifestScope"
+            }
+          },
+          {
+            "name": "scope_ref",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scope Ref"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 1000,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Manifest"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/review": {
+      "post": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Submit a review decision for an artifact",
+        "description": "Record a human review decision against an artifact.\n\nInserts a row in `artifact_reviews` capturing decision + comment +\nreviewer + timestamp, then updates the artifact's `status` to the\nresulting state (approve→approved, reject→rejected, revise→needs_revision).\n\nTenant + visibility scoping mirrors the delete/get endpoints. The\nartifact must be in the caller's tenant (or visible per X-Visibility=user\nrules). Reviews are persisted under the reviewer's home tenant — recorded\non the review row — so cross-tenant reviews (super-admin) preserve audit\nintegrity.\n\nThe N8N webhook callback (when `artifacts.review_callback_url` is set on\nthe row) is fired by the BFF (fr-backend), not here — this endpoint stays\npure DB. Keeping the callback at the BFF avoids artifact_service\negressing to arbitrary URLs.",
+        "operationId": "submit_artifact_review",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/projects/{project_id}/artifacts/{artifact_id}/reviews": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "List review history for an artifact",
+        "description": "Return one PAGE of an artifact's reviews, oldest-first.\n\n⛔ BEHAVIOUR CHANGE: this returned EVERY review row for the artifact with\nno limit — the same unbounded-read defect as the by-card and manifest\nroutes, on a table that grows once per review submission and is never\npruned. `limit`/`offset` match the list endpoints (default 100, max 1000)\nand the bound is applied in SQL.\n\nTruncation is reported in `X-Total-Count` (the full match count before\nlimit/offset), since the body is a bare array with nowhere to carry it:\ntruncated exactly when `offset + len(body) < X-Total-Count`.\n\nThe 100 default is safe here where the manifest's is not: MEASURED\n2026-09-08 against the production database, `artifact_reviews` holds\nZERO rows, so no live caller can be truncated by it today.",
+        "operationId": "list_artifact_reviews",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewOut"
+                  },
+                  "title": "Response List Artifact Reviews"
+                }
+              }
+            },
+            "headers": {
+              "X-Total-Count": {
+                "description": "Rows matching the query BEFORE limit/offset. The response is truncated when `offset + len(body) < X-Total-Count`.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/artifacts": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "List artifacts across all projects in tenant",
+        "description": "List artifacts across ALL projects in the caller's tenant.\n\nTenant + visibility scoped via `visibility_scope()`; otherwise mirrors the\nper-project `list_artifacts` filter surface. Used by the fr-backend Library\nworkspace tab and other callers that hold tenant context but no project_id.",
+        "operationId": "artifacts_list_cross_project",
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Card Id"
+            }
+          },
+          {
+            "name": "step",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Step"
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ArtifactKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          },
+          {
+            "name": "sensitivity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ArtifactSensitivity"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sensitivity"
+            }
+          },
+          {
+            "name": "name_prefix",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name Prefix"
+            }
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tags"
+            },
+            "style": "form",
+            "explode": true
+          },
+          {
+            "name": "phase",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only documents produced in this phase",
+              "title": "Phase"
+            },
+            "description": "Only documents produced in this phase"
+          },
+          {
+            "name": "doc_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only documents of this type",
+              "title": "Doc Type"
+            },
+            "description": "Only documents of this type"
+          },
+          {
+            "name": "planka_card_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only artifacts of this Planka card",
+              "title": "Planka Card Id"
+            },
+            "description": "Only artifacts of this Planka card"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArtifactOut"
+                  },
+                  "title": "Response Artifacts List Cross Project"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/artifacts/by-card/{card_id}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "List artifacts by card across all projects",
+        "description": "List artifacts matching a card_id across ALL projects.\n\nReturns one PAGE of the artifacts the caller can see (tenant + visibility\nscoped) that have the given `card_id`, regardless of which project the\nartifact belongs to. Required by n8n improvement-loop workflows that hold\ntenant_id + card_id but not project_id.\n\nOptional `name_prefix` filters by `Artifact.filename.startswith(name_prefix)`,\nmatching the per-project list endpoint's semantics.\n\n`limit`/`offset` mirror `list_artifacts` and `list_artifacts_cross_project`\nexactly (default 100, max 1000). ⛔ BEHAVIOUR CHANGE: this route used to\nreturn EVERY matching row, so a long-lived card could make it scan and\nserialise tens of thousands of artifacts. It now returns at most `limit`.\nSo that the truncation is never silent, the full match count for the query\n(ignoring limit/offset) is returned in the `X-Total-Count` header: a caller\nis truncated exactly when `offset + len(body) < X-Total-Count`, and pages\nby raising `offset` until that is false.",
+        "operationId": "artifacts_list_by_card_cross_project",
+        "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Card Id"
+            }
+          },
+          {
+            "name": "name_prefix",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name Prefix"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ArtifactOut"
+                  },
+                  "title": "Response Artifacts List By Card Cross Project"
+                }
+              }
+            },
+            "headers": {
+              "X-Total-Count": {
+                "description": "Rows matching the query BEFORE limit/offset. The response is truncated when `offset + len(body) < X-Total-Count`.",
+                "schema": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/artifacts/{artifact_id}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get artifact metadata by id across all projects in tenant",
+        "description": "Get one artifact by id without knowing its owning project.\n\nTenant + visibility scoped exactly like `list_artifacts_cross_project`\n(published system-tenant rows are inherited read-only). A missing artifact\nand one the caller cannot see are indistinguishable: both are 404, never\n403. Used by fr, whose asset bindings store only the artifact id.",
+        "operationId": "artifacts_get_cross_project",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArtifactOut"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/artifacts/{artifact_id}/render": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Render an artifact as an HTML or PDF document, by id across all projects",
+        "description": "Render the artifact as a readable document: ``format=html`` (default) or\n``format=pdf``.\n\nSources: ``document.json`` (``{title, sections:[{heading, body_md, sources}]}``),\nmarkdown / plain text, or any other JSON report (rendered as a definition list /\ntable of its top-level keys). HTML is sanitised (no raw HTML, no script, no\nremote resources) with a table of contents from the headings and section sources\nas footnotes; PDF is WeasyPrint over that HTML. Other content types are 415.\n\nRendered output is cached as a derived object per (artifact id, version, format);\n``X-Render-Cache: hit|miss`` says which. Same tenant + visibility scoping as the\nget-artifact route: a missing or invisible id is 404.",
+        "operationId": "artifacts_render_cross_project",
+        "parameters": [
+          {
+            "name": "artifact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Artifact Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "html",
+                "pdf"
+              ],
+              "type": "string",
+              "description": "html | pdf",
+              "default": "html",
+              "title": "Format"
+            },
+            "description": "html | pdf"
+          },
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/html": {},
+              "application/pdf": {}
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Content type cannot be rendered as a document"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request — X-Tenant-Id is not a tenant UUID (code INVALID_TENANT_ID)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-n8n-manual": true
+      }
+    },
+    "/": {
+      "get": {
+        "tags": [
+          "meta"
+        ],
+        "summary": "Service info",
+        "description": "Root endpoint.",
+        "operationId": "root",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Root"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TenantIdHeader"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArtifactKind": {
+        "type": "string",
+        "enum": [
+          "doc",
+          "presentation",
+          "image",
+          "dataset",
+          "json",
+          "graph",
+          "other"
+        ],
+        "title": "ArtifactKind",
+        "description": "Types of artifacts that can be stored."
+      },
+      "ArtifactMetadataIn": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Human title"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type",
+            "description": "Document type, e.g. 'analysis_report'"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Project phase that produced it"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary",
+            "description": "One-line summary"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id",
+            "description": "Card this artifact is the output of"
+          },
+          "planka_card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planka Card Id",
+            "description": "Planka card id (any format)"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ArtifactMetadataIn",
+        "description": "PATCH body for an artifact's document metadata.\n\nPARTIAL update: only the fields PRESENT in the body are written. A field sent\nas ``null`` clears it; a field left out is unchanged. ``card_id`` follows the\nsame rule."
+      },
+      "ArtifactOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique artifact identifier"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "description": "Artifact version number"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Original filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME type"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ArtifactKind",
+            "description": "Artifact type"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Project Id",
+            "description": "Project UUID"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id",
+            "description": "Associated card UUID (if any)"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step",
+            "description": "Associated step identifier (if any)"
+          },
+          "container_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Container Name",
+            "description": "Container identifier (if any)"
+          },
+          "sensitivity": {
+            "$ref": "#/components/schemas/ArtifactSensitivity",
+            "description": "Sensitivity level"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "File size in bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256",
+            "description": "SHA256 checksum of the file"
+          },
+          "storage_key": {
+            "type": "string",
+            "title": "Storage Key",
+            "description": "Storage object key"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Creation timestamp (UTC)"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By",
+            "description": "Username who created the artifact"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "description": "Associated tags"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ArtifactStatus",
+            "description": "Review status reflecting the latest review decision",
+            "default": "pending"
+          },
+          "publish_status": {
+            "$ref": "#/components/schemas/PublishStatus",
+            "description": "draft | published. A published SYSTEM-tenant artifact is readable by every tenant (is_system=true); drafts stay in the owning tenant.",
+            "default": "draft"
+          },
+          "is_system": {
+            "type": "boolean",
+            "title": "Is System",
+            "description": "True when this artifact is inherited from the system tenant (read-only for the caller). False for the caller's own artifacts, including the system tenant reading its own.",
+            "default": false
+          },
+          "review_callback_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Review Callback Url",
+            "description": "Optional webhook URL set by the producer (typically an n8n custom node). The fr BFF POSTs the review decision here when a human reviews the artifact. Never set by humans; ignored on user-facing uploads."
+          },
+          "origin_kind": {
+            "type": "string",
+            "title": "Origin Kind",
+            "description": "Provenance: tenant | project | workflow",
+            "default": "tenant"
+          },
+          "origin_project_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Project Id"
+          },
+          "origin_workflow_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Workflow Run Id"
+          },
+          "created_by_user_id": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Created By User Id",
+            "default": ""
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Human title (null = not set)"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type",
+            "description": "Document type (null = not set)"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Producing phase (null = not set)"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary",
+            "description": "One-line summary (null = not set)"
+          },
+          "planka_card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planka Card Id",
+            "description": "Planka card id (null = not set)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "filename",
+          "content_type",
+          "kind",
+          "project_id",
+          "sensitivity",
+          "size",
+          "sha256",
+          "storage_key",
+          "created_at",
+          "created_by"
+        ],
+        "title": "ArtifactOut",
+        "description": "Output model for artifact representation."
+      },
+      "ArtifactSensitivity": {
+        "type": "string",
+        "enum": [
+          "public",
+          "internal",
+          "secret"
+        ],
+        "title": "ArtifactSensitivity",
+        "description": "Sensitivity levels for artifacts."
+      },
+      "ArtifactStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "approved",
+          "rejected",
+          "needs_revision"
+        ],
+        "title": "ArtifactStatus",
+        "description": "Review status of an artifact. Reflects the latest review decision."
+      },
+      "Body_upload_artifact": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "File to upload"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename",
+            "description": "Artifact filename"
+          },
+          "content_type": {
+            "type": "string",
+            "title": "Content Type",
+            "description": "MIME type"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ArtifactKind",
+            "description": "Artifact type"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id",
+            "description": "Card this artifact is the output of. Supply it whenever the upload happens with a card in context — this is the deliverable link, and the only thing that makes /api/artifacts/by-card/{card_id} able to find the artifact later. Omit it ONLY for uploads with genuinely no card (human library uploads, system artefacts): those stay NULL on purpose, not by accident."
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step",
+            "description": "Optional step identifier"
+          },
+          "container_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Container Name",
+            "description": "Optional container name"
+          },
+          "sensitivity": {
+            "$ref": "#/components/schemas/ArtifactSensitivity",
+            "default": "internal"
+          },
+          "tags": {
+            "type": "string",
+            "title": "Tags",
+            "description": "Comma-separated tags",
+            "default": ""
+          },
+          "origin_kind": {
+            "type": "string",
+            "title": "Origin Kind",
+            "description": "Provenance: tenant (human library upload) | project | workflow",
+            "default": "tenant"
+          },
+          "origin_project_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Project Id",
+            "description": "Required when origin_kind='project'"
+          },
+          "origin_workflow_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Workflow Run Id",
+            "description": "Required when origin_kind='workflow' (n8n run id, max 200 chars)"
+          },
+          "created_by_user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By User Id",
+            "description": "Subject id of the creator. Defaults to the authenticated X-Subject-Id when omitted; empty string when the caller is tenant-only."
+          },
+          "publish_status": {
+            "$ref": "#/components/schemas/PublishStatus",
+            "description": "draft (default) | published. Only meaningful for the system tenant: its PUBLISHED artifacts are inherited read-only by every other tenant.",
+            "default": "draft"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Document title shown to humans (DOC-1)"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type",
+            "description": "Document type, e.g. 'analysis_report' or 'architecture_decision_record'"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Project phase that produced the document"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary",
+            "description": "One-line summary shown in the document trail"
+          },
+          "planka_card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planka Card Id",
+            "description": "Planka card id (any format, max 64). Defaults to the value of a `planka_card:<id>` tag when omitted."
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "filename",
+          "content_type",
+          "kind"
+        ],
+        "title": "Body_upload_artifact"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code",
+            "description": "Stable machine-readable error code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable error description"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "description": "HTTP status code"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id",
+            "description": "Request UUID7 for log correlation"
+          },
+          "timestamp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timestamp",
+            "description": "ISO-8601 UTC timestamp the error was emitted"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details",
+            "description": "Optional debug detail; only populated when LEAK_EXCEPTION_DETAILS=true"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "status"
+        ],
+        "title": "ErrorDetail",
+        "description": "Inner error payload."
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorDetail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "description": "Standard error response envelope."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "service": {
+            "type": "string",
+            "title": "Service"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "checks": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "type": "object",
+            "title": "Checks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "service",
+          "version",
+          "timestamp",
+          "checks"
+        ],
+        "title": "HealthResponse",
+        "description": "Health check response model."
+      },
+      "Manifest": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Project Id",
+            "description": "Project UUID"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/ManifestScope",
+            "description": "Scope type: project, card, or step"
+          },
+          "scope_ref": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope Ref",
+            "description": "Scope reference: card UUID for 'card' scope, step identifier for 'step' scope, null for 'project' scope",
+            "examples": [
+              "123e4567-e89b-12d3-a456-426614174000",
+              "QA:validation"
+            ]
+          },
+          "artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/ArtifactOut"
+            },
+            "type": "array",
+            "title": "Artifacts",
+            "description": "ONE PAGE of the artifacts in this scope (see `limit`/`offset`)"
+          },
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count",
+            "description": "Total number of artifacts in this scope"
+          },
+          "total_size": {
+            "type": "integer",
+            "title": "Total Size",
+            "description": "Total size of all artifacts in bytes"
+          },
+          "truncated": {
+            "type": "boolean",
+            "title": "Truncated",
+            "description": "True when `artifacts` does NOT cover the whole scope, i.e. `offset + len(artifacts) < total_count`. Raise `offset` (or `limit`) until this is false to read the scope in full. ⛔ A client that ignores this field is reading a partial manifest as if it were complete — which is why the flag exists as well as `total_count`: a number a caller never asked for is easy to miss, a boolean named `truncated` is not."
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id",
+          "scope",
+          "artifacts",
+          "total_count",
+          "total_size",
+          "truncated"
+        ],
+        "title": "Manifest",
+        "description": "Manifest of artifacts for a specific scope.\n\nGroups all artifacts within a project, card, or step scope\nwith aggregate statistics.",
+        "examples": [
+          {
+            "artifacts": [],
+            "project_id": "3f2e4d5c-6a7b-8c9d-0e1f-2a3b4c5d6e7f",
+            "scope": "card",
+            "scope_ref": "123e4567-e89b-12d3-a456-426614174000",
+            "total_count": 5,
+            "total_size": 12458960,
+            "truncated": false
+          }
+        ]
+      },
+      "ManifestScope": {
+        "type": "string",
+        "enum": [
+          "project",
+          "card",
+          "step"
+        ],
+        "title": "ManifestScope",
+        "description": "Scope levels for artifact manifests."
+      },
+      "PublishStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "published"
+        ],
+        "title": "PublishStatus",
+        "description": "Publication state. A PUBLISHED system-tenant artifact is inherited read-only\nby every other tenant; a DRAFT one never leaves the system tenant. Separate\naxis from ArtifactStatus (the review decision)."
+      },
+      "PublishStatusIn": {
+        "properties": {
+          "publish_status": {
+            "$ref": "#/components/schemas/PublishStatus",
+            "description": "draft | published"
+          }
+        },
+        "type": "object",
+        "required": [
+          "publish_status"
+        ],
+        "title": "PublishStatusIn",
+        "description": "Body for PATCH /projects/{p}/artifacts/{id}/publish-status."
+      },
+      "ReviewDecision": {
+        "type": "string",
+        "enum": [
+          "approve",
+          "reject",
+          "revise"
+        ],
+        "title": "ReviewDecision",
+        "description": "The verb a reviewer submits. Maps to ArtifactStatus via DECISION_TO_STATUS."
+      },
+      "ReviewIn": {
+        "properties": {
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Review verb: approve, reject, or revise"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Optional reviewer comment (max 4000 chars)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "ReviewIn",
+        "description": "Input model for submitting a review decision against an artifact."
+      },
+      "ReviewOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Review record identifier"
+          },
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Artifact Id",
+            "description": "Artifact being reviewed"
+          },
+          "decision": {
+            "$ref": "#/components/schemas/ReviewDecision",
+            "description": "Decision verb"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment",
+            "description": "Reviewer comment, if any"
+          },
+          "reviewer_id": {
+            "type": "string",
+            "title": "Reviewer Id",
+            "description": "Subject UUID of the reviewer"
+          },
+          "reviewer_tenant_id": {
+            "type": "string",
+            "title": "Reviewer Tenant Id",
+            "description": "Tenant the reviewer belongs to"
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reviewed At",
+            "description": "When the decision was recorded (UTC)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "artifact_id",
+          "decision",
+          "reviewer_id",
+          "reviewer_tenant_id",
+          "reviewed_at"
+        ],
+        "title": "ReviewOut",
+        "description": "Output model for a single review record."
+      },
+      "ReviewResponse": {
+        "properties": {
+          "artifact": {
+            "$ref": "#/components/schemas/ArtifactOut",
+            "description": "Artifact with refreshed status"
+          },
+          "review": {
+            "$ref": "#/components/schemas/ReviewOut",
+            "description": "The newly recorded review row"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact",
+          "review"
+        ],
+        "title": "ReviewResponse",
+        "description": "Response after a review is submitted: updated artifact + the new review row."
+      },
+      "UploadResponse": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Artifact Id",
+            "description": "Unique identifier for the created artifact"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version",
+            "description": "Version number (1 for new artifacts)"
+          },
+          "storage_key": {
+            "type": "string",
+            "title": "Storage Key",
+            "description": "Storage key where the file is stored"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Size of the uploaded file in bytes"
+          },
+          "sha256": {
+            "type": "string",
+            "title": "Sha256",
+            "description": "SHA256 checksum of the uploaded file"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id",
+            "description": "Card this artifact is the output of, as persisted (null = none supplied)"
+          },
+          "origin_kind": {
+            "type": "string",
+            "title": "Origin Kind",
+            "description": "Provenance as persisted: tenant|project|workflow",
+            "default": "tenant"
+          },
+          "origin_project_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Project Id",
+            "description": "Origin project, as persisted"
+          },
+          "origin_workflow_run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Workflow Run Id",
+            "description": "Origin n8n run id, as persisted"
+          },
+          "created_by_user_id": {
+            "type": "string",
+            "title": "Created By User Id",
+            "description": "Creator subject id, as persisted",
+            "default": ""
+          },
+          "publish_status": {
+            "$ref": "#/components/schemas/PublishStatus",
+            "description": "draft | published, as persisted",
+            "default": "draft"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title",
+            "description": "Document title, as persisted"
+          },
+          "doc_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doc Type",
+            "description": "Document type, as persisted"
+          },
+          "phase": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phase",
+            "description": "Producing phase, as persisted"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary",
+            "description": "One-line summary, as persisted"
+          },
+          "planka_card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planka Card Id",
+            "description": "Planka card id, as persisted"
+          }
+        },
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "version",
+          "storage_key",
+          "size",
+          "sha256"
+        ],
+        "title": "UploadResponse",
+        "description": "Response model for successful artifact upload.\n\nReturned after file is uploaded through storage_service and\nartifact record is created in the database.",
+        "examples": [
+          {
+            "artifact_id": "bb4f5a67-c12d-34e5-f678-9012a3b4c5d6",
+            "card_id": "1a3b5c7d-9e0f-4a2b-8c6d-3e5f7a9b1c2d",
+            "created_by_user_id": "0198c2d4-7a10-7c3e-8b91-4f6a2d5e8c07",
+            "origin_kind": "workflow",
+            "origin_workflow_run_id": "n8n:exec:481922",
+            "sha256": "a3c5f7e9b2d4c6a8f0e1d3b5c7a9f1e3d5b7c9a1f3e5d7b9c1a3f5e7d9b1c3a5",
+            "size": 2457600,
+            "storage_key": "projects/3f2.../card/1a3.../bb4.../v1/presentation.pptx",
+            "version": 1
+          }
+        ]
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "License",
+        "description": "License token. Transport: `X-Tenant-Id: Bearer <token>` (not the Authorization header — that is reserved for caller-side auth)."
+      }
+    },
+    "parameters": {
+      "TenantIdHeader": {
+        "name": "X-Tenant-Id",
+        "in": "header",
+        "required": false,
+        "description": "Tenant UUID. A non-uuid value is rejected with 400 INVALID_TENANT_ID; omitting the header is rejected with 401 TENANT_REQUIRED (AUTH_TENANT_FALLBACK_MODE=enforce, the default).",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "0195f48b-d000-7000-8000-000000000001"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Liveness, readiness, dependency probes."
+    },
+    {
+      "name": "Artifacts",
+      "description": "Multi-tenant artifact storage and retrieval."
+    },
+    {
+      "name": "meta",
+      "description": "Service metadata."
+    }
+  ]
+}

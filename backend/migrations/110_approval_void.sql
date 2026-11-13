@@ -1,0 +1,61 @@
+-- backend/migrations/110_approval_void.sql
+--
+-- fr HAD NO WAY TO RETIRE AN APPROVAL WITHOUT DECIDING IT.
+--
+-- `approvals.status` carries four values today: pending, approved, rejected,
+-- expired. The only non-deciding exit is `workers/approval-expiry.ts`
+-- (EXPIRED_STATUS = 'expired'), and it is hard-predicated on `expires_at <=
+-- now()` — it sweeps the clock, it cannot be aimed at a named row set.
+--
+-- An operator has authorised voiding approvals that are unanswerable by
+-- construction (the ask itself was defective, not merely late or declined).
+-- 'voided' is being added as a fifth, semantically distinct status:
+--
+--   rejected  — a human looked at the ask and said no.
+--   expired   — nobody answered before the clock ran out.
+--   voided    — the ask was never answerable and is being withdrawn WITHOUT
+--               a decision, by an operator, on a named row, at a known time,
+--               for a stated reason.
+--
+-- Collapsing 'voided' into 'rejected' would misreport an operator's
+-- housekeeping act as a human decision. Collapsing it into 'expired' would
+-- misreport a deliberate, timestamped, reasoned action as a clock timeout.
+-- Neither existing status can carry `voided_by` / `voided_reason`, and
+-- overloading either would make it impossible to later separate "how many
+-- approvals did a person actually reject" from "how many did we admit could
+-- never have been answered" — exactly the ambiguity migration 101 closed for
+-- `notified_at` vs `expires_at`.
+--
+-- The size of the voidable population is NOT measured in this migration —
+-- that is a separate query against a named row set, not a schema question.
+--
+-- ── STATUS COLUMN — NO CHECK CONSTRAINT EXISTS TO WIDEN ──────────────────────
+-- `approvals.status` is `text NOT NULL DEFAULT 'pending'` (schema.ts) with no
+-- CHECK and no enum type — confirmed by grepping every migration through 109
+-- for a constraint naming `approvals` + `status` (compare
+-- `approvals_triage_verdict_check` in 101, which constrains the sibling
+-- `triage_verdict` column, not `status`). There is therefore nothing to ALTER
+-- here; 'voided' is legal the moment application code writes it. If a CHECK
+-- is ever added to this column, it must include 'voided' alongside the four
+-- existing values.
+--
+-- ── AUDIT COLUMNS ─────────────────────────────────────────────────────────
+-- All three nullable, no default, no backfill: a historical row was never
+-- voided, and NULL is the honest value for it, matching the discipline
+-- `callback_delivered_at` (109) and `notified_at` (101) established — absence
+-- must never be optimistically filled in.
+--
+--   voided_at      WHEN the void happened.
+--   voided_reason  WHY — free text; the operator's stated justification.
+--   voided_by      WHO performed it — an operator/user identifier, not a
+--                  decision-maker, mirroring `triage_actor`'s free-text shape
+--                  rather than a FK, since the acting identity here can be an
+--                  operator account outside `users`.
+--
+-- No BEGIN/COMMIT — the runner wraps each file in a SAVEPOINT inside an outer
+-- transaction (src/db/migration-runner.ts); an explicit COMMIT breaks the next file.
+
+ALTER TABLE approvals
+  ADD COLUMN IF NOT EXISTS voided_at     TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS voided_reason TEXT,
+  ADD COLUMN IF NOT EXISTS voided_by     TEXT;

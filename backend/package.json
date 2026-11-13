@@ -1,0 +1,59 @@
+{
+  "name": "backend",
+  "license": "Apache-2.0",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun run --watch src/server.ts",
+    "start": "bun run src/server.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "openapi:sync": "bun run ../tooling/openapi/sync-specs.ts",
+    "clients:generate": "bun run ../tooling/openapi/generate-clients.ts",
+    "typecheck": "bunx tsc --noEmit",
+    "check-migration-numbers": "bun run scripts/check-migration-numbers.ts",
+    "check-migration-dml-probed": "bun run scripts/check-migration-dml-probed.ts",
+    "tag:n8n-workflows": "bun run scripts/tag-n8n-workflows.ts",
+    "test": "bun test --timeout 60000",
+    "test:unit": "bun test --timeout 60000 tests/unit",
+    "test:integration": "bun test --timeout 60000 tests/integration",
+    "migrate": "bun run scripts/migrate.ts",
+    "void:approvals": "bun src/scripts/void-approvals.ts",
+    "reconcile:orphaned-projects": "bun run scripts/reconcile-orphaned-projects.ts",
+    "types:planka": "bunx openapi-typescript ./docs/planka-openapi.json -o ./src/services/planka/openapi-types.ts",
+    "check-tenant-field-misuse": "bun run scripts/check-tenant-field-misuse.ts",
+    "check-any-bound-array": "bun run scripts/check-any-bound-array.ts",
+    "ci:verify": "bash scripts/ci-verify.sh",
+    "ci:test": "bash scripts/ci-test.sh"
+  },
+  "devDependencies": {
+    "@types/bun": "1.3.13",
+    "drizzle-kit": "^0.31.11",
+    "openapi-typescript": "^7.13.0",
+    "orval": "8.43.0"
+  },
+  "peerDependencies": {
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "bun": ">=1.3.13"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.223.0",
+    "@opentelemetry/resources": "^2.12.0",
+    "@opentelemetry/sdk-node": "^0.223.0",
+    "@opentelemetry/semantic-conventions": "^1.43.0",
+    "bcrypt": "^6.0.0",
+    "cron-parser": "5.10.2",
+    "drizzle-orm": "^0.45.4",
+    "fast-xml-parser": "5.11.2",
+    "jose": "^6.2.12",
+    "jsonpath-plus": "11.2.0",
+    "nodemailer": "^10.1.0",
+    "postgres": "^3.4.9",
+    "zod": "^3.25.76"
+  }
+}

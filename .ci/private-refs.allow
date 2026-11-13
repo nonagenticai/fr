@@ -1,0 +1,52 @@
+# Reviewed allowlist for scripts/ci/no-private-refs.sh.
+# Format: path/glob:pattern  # why this line is safe to publish
+# Every entry is a detector, a guard test, or a code identifier — never a real host.
+
+# The sanitizer's own pattern and examples: the whole point is to name the
+# private TLD it strips from n8n node schemas.
+frontend/scripts/lib/sanitize-node-schema.ts:\.internal
+frontend/scripts/lib/sanitize-node-schema.ts:svc\.cluster\.local
+
+# Guard test: fixtures that MUST be rejected by the sanitizer.
+frontend/src/lib/workflows/nodeSchemaManifest.leak.test.ts:\.internal
+frontend/src/lib/workflows/nodeSchemaManifest.leak.test.ts:svc\.cluster\.local
+frontend/src/lib/workflows/nodeSchemaManifest.leak.test.ts:100\.
+
+# Detector for markup that leaks private infrastructure.
+frontend/src/lib/components/publicMarkupLeak.test.ts:\.internal
+
+# Redaction test: the literal hostname and address the read path must remove.
+backend/tests/unit/lib/run-error-text-ssrf.test.ts:\.internal
+backend/tests/unit/lib/run-error-text-ssrf.test.ts:100\.
+
+# Production-target refusal: the guard's suffix checks and the cases it rejects.
+backend/tests/integration/planka/_setup.ts:\.internal
+backend/tests/integration/planka/_setup.ts:\.cluster\.local
+backend/tests/integration/planka/_setup.ts:100\.
+backend/tests/integration/planka/_setup.test.ts:\.internal
+backend/tests/integration/planka/_setup.test.ts:\.cluster\.local
+backend/tests/integration/planka/_setup.test.ts:100\.
+
+# SSRF guard tests need addresses inside the ranges they prove are blocked.
+backend/tests/unit/utils/ssrf-guard.test.ts:100\.
+backend/tests/unit/connectors/ssrf-blocking.test.ts:100\.
+
+# Assertions that customer-visible error text never contains the cluster suffix.
+backend/tests/unit/integrations/errors-client-redaction.test.ts:svc\.cluster\.local
+backend/tests/unit/integrations/stored-json-caller-input-redaction.test.ts:svc\.cluster\.local
+backend/tests/integration/routes/scheduled-triggers.integration.test.ts:svc\.cluster\.local
+
+# The SSRF guard's own range table and the comment explaining it.
+backend/src/utils/ssrf-guard.ts:100\.
+backend/src/connectors/rss.ts:100\.
+
+# Code identifiers, not hostnames.
+backend/src/capabilities/derive-openapi.ts:\.internal
+backend/src/integrations/inference-router.ts:\.internal
+backend/src/capabilities/platform/_shared.ts:\.internal
+backend/tests/unit/capabilities/account-capabilities.test.ts:\.internal
+frontend/src/lib/api/suggested-schedules.ts:\.internal
+frontend/src/routes/settings/usage/+page.svelte:\.internal
+
+# A filename fixture (`isLanguageVersionFile`), not a machine hostname.
+backend/tests/unit/services/constraint-check.test.ts:\.local

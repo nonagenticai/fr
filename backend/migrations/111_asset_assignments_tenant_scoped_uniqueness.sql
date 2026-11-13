@@ -1,0 +1,171 @@
+-- backend/migrations/111_asset_assignments_tenant_scoped_uniqueness.sql
+--
+-- A UNIQUE INDEX THAT FORGOT THE TENANT. THE FIRST WORKSPACE TO SEE AN ASSET
+-- CLAIMED IT FOR THE WHOLE ESTATE.
+--
+-- ── THE DEFECT ────────────────────────────────────────────────────────────────
+--
+-- Migration 030 created two partial unique indexes on `asset_assignments`:
+--
+--     asset_assignments_uq_workspace   UNIQUE (asset_type, asset_id, scope_level)
+--                                      WHERE target_id IS NULL
+--     asset_assignments_uq_with_target UNIQUE (asset_type, asset_id, scope_level,
+--                                      target_id) WHERE target_id IS NOT NULL
+--
+-- NEITHER INCLUDES `workspace_id`. The column appears only in the NON-unique
+-- `asset_assignments_lookup`. `workspace_id` is fr's tenant key (the table FKs
+-- it to `workspaces.id ON DELETE CASCADE`), so an assignment row that is
+-- conceptually "tenant T owns asset A" was in fact unique GLOBALLY, across every
+-- tenant in the database.
+--
+-- The 030 header explains why there are two indexes ("Postgres treats NULLs as
+-- distinct") and never says why the tenant key is absent. The comment in
+-- src/db/schema.ts repeats the NULL rationale verbatim. There is no recorded
+-- decision to make asset ownership global; it reads as an omission carried
+-- forward, and nothing in the service layer or the effective-set resolver
+-- benefits from it.
+--
+-- ── WHY THAT IS SILENT, NOT LOUD ──────────────────────────────────────────────
+--
+-- The single writer on this path is `services/asset-assignments.ts`:
+--
+--     upsertOwnsMany(...)  .insert(assetAssignments).values(chunk).onConflictDoNothing()
+--     upsertOwns(...)      .insert(assetAssignments).values({...}).onConflictDoNothing()
+--
+-- `.onConflictDoNothing()` is BARE — no `target:`. Drizzle emits a plain
+-- `ON CONFLICT DO NOTHING`, which fires on ANY unique violation on the table,
+-- not just the one the caller had in mind. So the second tenant's insert was not
+-- rejected with an error anybody could see; it was DISCARDED, and the statement
+-- returned success.
+--
+-- Upstream ids make this reachable on every request. `applyEffectiveFilter`
+-- (routes/assets/_lib/effective-query.ts) lazily seeds one workspace-scope
+-- `owns` row per upstream id on the first `?project_id=` list call, and those ids
+-- are PROCESS-GLOBAL: an n8n workflow id, a procedure_management numeric id and a
+-- kag document id are the same string for every tenant. First tenant to list an
+-- asset type therefore claimed the entire upstream catalogue.
+--
+-- The read side then hides the damage completely. `effectiveAssetIds`
+-- (services/effective-set.ts) selects `WHERE workspace_id = $1 AND asset_type = $2`
+-- and builds its answer ADDITIVELY — every returned id comes from a row this
+-- tenant owns. A row that was never written is not an error, it is an absence.
+-- The caller does `visible = new Set(eff.map(...)); upstream.filter(...)`, so the
+-- tenant is answered HTTP 200 with a short list and no indication anything was
+-- dropped.
+--
+-- ── MEASURED ON PROD (worker4, db `fr`, 2026-09-05) ───────────────────────────
+--
+-- Every workspace-scope row, grouped by asset_type — count of rows, count of
+-- DISTINCT asset_ids, and count of asset_ids held by more than one workspace:
+--
+--     asset_type   | rows | distinct asset_ids | ids held by >1 tenant
+--     -------------+------+--------------------+----------------------
+--     procedure    |  836 |                836 |                     0
+--     principle    |  796 |                796 |                     0
+--     requirement  |  363 |                363 |                     0
+--     workflow     |  273 |                273 |                     0
+--     decision     |   20 |                 20 |                     0
+--
+-- 2,288 assignment rows, 2,288 distinct asset ids, ZERO shared. rows == distinct
+-- is the index's signature, not a coincidence of the data: with several tenants
+-- listing the same upstream catalogues, some overlap is the expected shape and
+-- the measured overlap is exactly nil. Per-tenant, the `workflow` catalogue of
+-- 273: tenant …0003 holds 259, tenant …0002 holds 9, tenant …0099 holds 5.
+--
+-- A second, independent corroboration already sat in the tree before this
+-- migration was written. `tests/unit/routes/assets/kag.test.ts` carries a
+-- cross-workspace `DELETE FROM asset_assignments WHERE asset_type='kag_document'
+-- AND asset_id IN (...)` in its `beforeEach`, with a comment stating that
+-- without it "our `upsertOwns(... ON CONFLICT DO NOTHING)` here silently no-ops
+-- and the test's effectiveAssetIds() returns [] even though the test ran
+-- cleanly". The defect was met, worked around at the test boundary, and left in
+-- production.
+--
+-- ── WHAT THIS MIGRATION DOES ──────────────────────────────────────────────────
+--
+-- Drops both partial unique indexes and recreates them with `workspace_id` as
+-- the leading column. Uniqueness becomes per-tenant:
+--
+--     (workspace_id, asset_type, asset_id, scope_level)            WHERE target_id IS NULL
+--     (workspace_id, asset_type, asset_id, scope_level, target_id) WHERE target_id IS NOT NULL
+--
+-- Both partial predicates are unchanged, and both indexes are still needed for
+-- the same reason 030 gave: Postgres treats NULLs as distinct, so a single index
+-- covering `target_id` would not constrain the workspace-scope rows at all.
+--
+-- `workspace_id` leads deliberately. Every read on this table
+-- (`effectiveAssetIds`, `listAssignmentsByScope`, `findParentOwnsId` in
+-- routes/asset-scope/override.ts, the assignments list route) filters on
+-- `workspace_id` first, so a leading tenant key makes these indexes usable for
+-- those lookups rather than purely constraint-bearing.
+--
+-- ── DIRECTION: STRICTLY LOOSENING — THE BUILD CANNOT FAIL ON CURRENT DATA ─────
+--
+-- Adding a column to a unique key can only PERMIT MORE ROWS, never fewer. Any
+-- two rows that were distinct under (asset_type, asset_id, scope_level) remain
+-- distinct under (workspace_id, asset_type, asset_id, scope_level) — prefixing a
+-- key with an extra column cannot merge two previously-distinct tuples. So no
+-- pair of existing rows can collide under the new index, and `CREATE UNIQUE
+-- INDEX` cannot abort with 23505 on any state this table can currently be in.
+-- The prod measurement above is consistent with that and is not what makes it
+-- safe: the argument is structural.
+--
+-- If the direction were REVERSED — dropping a column FROM a unique key, or
+-- adding this constraint to a table that had never had one — the build could
+-- abort mid-transaction on the first duplicate pair, and because the runner
+-- wraps each file in a SAVEPOINT the whole migration batch would roll back at
+-- deploy time. That direction requires a census of the offending rows and an
+-- explicit merge/delete decision BEFORE the index statement, and none of that is
+-- needed here.
+--
+-- Not CONCURRENTLY: `CREATE INDEX CONCURRENTLY` cannot run inside a transaction
+-- block, and the migration runner wraps every file in one. `asset_assignments`
+-- is ~2.3k rows; the exclusive lock is momentary. Any future index on this table
+-- large enough to need CONCURRENTLY needs a runner change, not a comment.
+--
+-- ── EXISTING ROWS: NO BACKFILL, IT SELF-HEALS ────────────────────────────────
+--
+-- Deliberately no backfill. The rows already in the table are correct — each
+-- says a real tenant owns a real asset. What was missing is every OTHER tenant's
+-- row, and those cannot be reconstructed here: this database does not know which
+-- upstream catalogue each tenant is entitled to see. That answer lives upstream
+-- (n8n, procedure_management, kag) and is discovered per-tenant, per-request.
+--
+-- The lazy seed is the backfill. `applyEffectiveFilter` re-issues its
+-- `INSERT ... ON CONFLICT DO NOTHING` covering the FULL upstream list on EVERY
+-- `?project_id=` request, not only on first sight — so once this index ships,
+-- the next filtered list call per (tenant, asset_type) tops that tenant up to the
+-- whole catalogue in one batched insert. No code change is required for that;
+-- the writer was always issuing the rows, the index was discarding them.
+--
+-- Verify after deploy — the signature to watch is `rows > distinct asset_ids`:
+--
+--     SELECT asset_type,
+--            count(*)                          AS rows,
+--            count(DISTINCT asset_id)          AS distinct_asset_ids,
+--            count(DISTINCT workspace_id)      AS tenants
+--       FROM asset_assignments
+--      WHERE scope_level = 'workspace'
+--      GROUP BY asset_type
+--      ORDER BY rows DESC;
+--
+-- Before: rows == distinct_asset_ids for every type. After a tenant has issued
+-- one filtered list, rows exceeds distinct_asset_ids for that type. Absence of
+-- movement means no tenant has hit the `?project_id=` path yet, NOT that the fix
+-- failed — the seed is request-driven and a silent asset type is an unexercised
+-- path, not a refutation.
+--
+-- No BEGIN/COMMIT — the runner wraps each file in a SAVEPOINT inside an outer
+-- transaction (src/db/migration-runner.ts); an explicit COMMIT breaks the next
+-- file. See the deviation note in 035 for the incident that established this.
+
+DROP INDEX IF EXISTS asset_assignments_uq_workspace;
+DROP INDEX IF EXISTS asset_assignments_uq_with_target;
+
+CREATE UNIQUE INDEX IF NOT EXISTS asset_assignments_uq_workspace
+  ON asset_assignments (workspace_id, asset_type, asset_id, scope_level)
+  WHERE target_id IS NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS asset_assignments_uq_with_target
+  ON asset_assignments (workspace_id, asset_type, asset_id, scope_level, target_id)
+  WHERE target_id IS NOT NULL;

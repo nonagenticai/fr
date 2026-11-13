@@ -1,0 +1,77 @@
+-- 115: analytics_rollup_meta drop-accounting — make "wrote nothing because
+-- Prometheus returned nothing" distinguishable from "wrote nothing because
+-- every sample was dropped".
+--
+-- THE DEFECT (issue #1027)
+-- -----------------------
+-- `analytics_rollups` has never held a row, while every tick has recorded
+-- `prom-5m | ok | metrics_written 0 | prom_queries 9 | last_error NULL`. That
+-- reading is ACCURATE — all nine PromQL queries return HTTP 200 with an empty
+-- vector because none of the counter names in DEFAULT_METRIC_MAP has ever been
+-- emitted — but it is not INFORMATIVE, and that is why the worker read healthy
+-- for its entire life.
+--
+-- `prom_queries` counts queries ISSUED, not series RETURNED, and
+-- `metrics_written` counts rows that survived every filter. Between those two
+-- numbers sit three sample-consuming paths in
+-- `src/workers/analytics-rollup.ts::writeRollupRows`, none of which the meta
+-- row can see:
+--
+--   1. missing `tenant_id`  -> sample dropped (spec §6.2 refuses the insert);
+--   2. non-finite `value`   -> sample dropped, and until now counted NOWHERE
+--                              AT ALL, in memory or on disk;
+--   3. missing `initiator`  -> row IS written, with initiator='unknown'.
+--
+-- So `ok / metrics_written = 0` was the single reading for "Prometheus
+-- returned nothing", "Prometheus returned series and we refused all of them",
+-- and "Prometheus returned series and their values were garbage". Three very
+-- different operator responses, one indistinguishable row.
+--
+-- WHAT THE COLUMNS BUY
+-- --------------------
+-- `prom_series` is the count of series Prometheus actually returned across the
+-- queries that SUCCEEDED. It is the number that splits the cases: with
+-- metrics_written = 0, `prom_series = 0` means the upstream slice has not
+-- landed (the documented, intended, do-nothing signal — analytics-rollup.ts
+-- header), whereas `prom_series > 0` means data arrived and this worker threw
+-- it away, which is a defect to chase.
+--
+-- The three drop/degrade counters then say WHICH way it was thrown away.
+-- Together they make the row self-checking: when `last_error IS NULL` (no
+-- upsert raised, so no sample was consumed by a failed insert),
+--
+--     prom_series = metrics_written + rows_dropped_no_tenant
+--                                   + rows_dropped_bad_value
+--
+-- must hold. A row that violates it is reporting a fourth path nobody has
+-- named yet.
+--
+-- `unknown_initiator_rows` is deliberately NOT part of that identity: those
+-- rows ARE written (they are inside `metrics_written`). It is a data-quality
+-- degradation counter, not a loss counter — hence a separate column rather
+-- than a fourth term.
+--
+-- NULLABLE, AND THE NULL IS LOAD-BEARING
+-- --------------------------------------
+-- Same reasoning as 099 (documents.kag_degraded). `metrics_written` and
+-- `prom_queries` are NOT NULL DEFAULT 0, and copying that here would be a
+-- mistake of exactly the kind this migration exists to fix: the single
+-- pre-existing `prom-5m` row would silently acquire `prom_series = 0`, which
+-- is not "unmeasured" — it is the specific, actionable reading "Prometheus
+-- returned nothing". The migration would fabricate the very conclusion the
+-- operator is trying to draw, for every tick that ran before it.
+--
+-- So NULL means NOT MEASURED (this tick predates the instrumentation), 0 means
+-- MEASURED ZERO, and nothing may read a NULL as either. The gap is one tick
+-- wide: the worker writes concrete integers on every subsequent tick, so the
+-- first post-deploy tick (<= 5 min) replaces the NULLs.
+--
+-- Pure DDL, additive, idempotent. No data rewrite, no drops, no NOT NULL, no
+-- backfill — and therefore no DML for the migration runner's backfill probe to
+-- need (`scripts/check-migration-dml-probed.ts`): `drizzle-kit push` from
+-- schema.ts reproduces these columns exactly on the CI bootstrap path where
+-- the runner stamps-without-running.
+ALTER TABLE analytics_rollup_meta ADD COLUMN IF NOT EXISTS prom_series            INTEGER;
+ALTER TABLE analytics_rollup_meta ADD COLUMN IF NOT EXISTS rows_dropped_no_tenant INTEGER;
+ALTER TABLE analytics_rollup_meta ADD COLUMN IF NOT EXISTS rows_dropped_bad_value INTEGER;
+ALTER TABLE analytics_rollup_meta ADD COLUMN IF NOT EXISTS unknown_initiator_rows INTEGER;

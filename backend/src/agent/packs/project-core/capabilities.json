@@ -1,0 +1,371 @@
+{
+  "schema": "capability-pack/v1",
+  "consumer": "fr",
+  "id": "project-core",
+  "version": 9,
+  "summary": "The project agent (fr-agui SPEC \u00a74.1, \u00a75.7, \u00a78.1 P1 + P2; OQ-17 = c): the bound project's core flow, its assets (repositories, documents, governed assets with OQ-16 copy-on-write, asset scope: bind / unbind / override / block, the read-only PM library), its people (knowledge allocation) and code quality, its architecture conformance (the Governance tab), its outputs (artifact review and download), its settings (provision, archive), its execution observability (runs of every member, WIP, blocked and typed cards, agent activity, conveyor runs, the conveyor's failure notices and the start retry) and the actions re-homed from the retired tenant rail, and the project's ArchiMate models (versions, validation, review and publication, exchange import / export, diagrams), the contents of its ArchiMate models (elements, relationships, views with their shapes and lines, from the ArchiMate metamodel), its UML models (elements, relationships, sequences, diagrams) and the trace links between requirements, decisions, principles, model items and code.",
+  "capabilities": [
+    "projects.get",
+    "approvals.decide",
+    "kanban.create_card",
+    "kanban.add_comment",
+    "kanban.verify_liveness",
+    "kanban.request_move",
+    "artifacts.list",
+    "artifacts.get",
+    "artifacts.preview",
+    "artifacts.manifest",
+    "artifacts.download",
+    "artifacts.review",
+    "n8n.list_executions",
+    "requirements.list",
+    "requirements.get",
+    "decisions.list",
+    "decisions.get",
+    "principles.list",
+    "principles.get",
+    "agent.create_asset",
+    "agent.update_asset",
+    "toc.list_trees",
+    "toc.get_graph",
+    "coding.list_jobs",
+    "coding.get_job_status",
+    "capabilities.search",
+    "ui.navigate",
+    "ui.open_board",
+    "ui.open_approval",
+    "ui.open_area",
+    "projects.get_cockpit",
+    "projects.get_phase",
+    "projects.get_brief",
+    "projects.get_plan",
+    "projects.get_board",
+    "projects.list_approvals",
+    "cards.get",
+    "approvals.get",
+    "approvals.get_document",
+    "projects.list_agent_threads",
+    "projects.list_repositories",
+    "project_assets.edit",
+    "project_assets.request_promotion",
+    "projects.list_executions",
+    "projects.get_wip",
+    "projects.list_blocked_cards",
+    "projects.get_quality",
+    "projects.list_conveyor_notices",
+    "projects.get_andon",
+    "architecture.get_governance_conformance",
+    "architecture.list_models",
+    "architecture.get_model",
+    "architecture.list_model_revisions",
+    "architecture.list_validation_findings",
+    "architecture.list_elements",
+    "architecture.get_element",
+    "architecture.list_relationships",
+    "architecture.get_relationship",
+    "architecture.list_views",
+    "architecture.get_view",
+    "architecture.get_entity_graph",
+    "architecture.list_uml_elements",
+    "architecture.list_uml_diagrams",
+    "architecture.list_trace_links",
+    "architecture.get_metamodel_concepts",
+    "architecture.query_metamodel_relationships",
+    "architecture.list_view_objects",
+    "architecture.list_view_connections"
+  ],
+  "searchable": [
+    "requirements.search",
+    "requirements.list_versions",
+    "decisions.search",
+    "decisions.list_versions",
+    "principles.search",
+    "principles.list_versions",
+    "toc.get_tree",
+    "toc.get_quality",
+    "toc.get_config",
+    "toc.build_io_map",
+    "toc.evaporate_conflict",
+    "toc.evaluate_lenses",
+    "coding.trigger_analysis",
+    "coding.get_findings",
+    "coding.list_analysis_types",
+    "architecture.get_standard",
+    "architecture.list_standards",
+    "architecture.get_model_revision",
+    "architecture.list_validation_runs",
+    "architecture.get_validation_run",
+    "architecture.list_rulesets",
+    "architecture.get_ruleset",
+    "architecture.list_revision_reviews",
+    "architecture.list_model_publications",
+    "architecture.list_change_sets",
+    "architecture.get_change_set",
+    "architecture.get_view_diagram",
+    "architecture.export_model",
+    "architecture.create_model",
+    "architecture.update_model",
+    "architecture.delete_model",
+    "architecture.seal_model_revision",
+    "architecture.run_model_validation",
+    "architecture.review_model_revision",
+    "architecture.publish_model_revision",
+    "architecture.import_model_exchange",
+    "architecture.apply_change_set",
+    "architecture.reject_change_set",
+    "architecture.get_uml_element",
+    "architecture.list_uml_relationships",
+    "architecture.get_uml_relationship",
+    "architecture.list_uml_interactions",
+    "architecture.get_uml_interaction",
+    "architecture.get_uml_diagram",
+    "architecture.list_uml_diagram_objects",
+    "architecture.list_uml_diagram_connections",
+    "architecture.get_uml_diagram_picture",
+    "architecture.download_diagram_png",
+    "architecture.get_uml_profile",
+    "architecture.get_trace_link",
+    "architecture.create_uml_element",
+    "architecture.update_uml_element",
+    "architecture.delete_uml_element",
+    "architecture.create_uml_relationship",
+    "architecture.update_uml_relationship",
+    "architecture.delete_uml_relationship",
+    "architecture.create_uml_interaction",
+    "architecture.update_uml_interaction",
+    "architecture.delete_uml_interaction",
+    "architecture.create_uml_diagram",
+    "architecture.update_uml_diagram",
+    "architecture.delete_uml_diagram",
+    "architecture.add_uml_diagram_object",
+    "architecture.update_uml_diagram_object",
+    "architecture.remove_uml_diagram_object",
+    "architecture.add_uml_diagram_connection",
+    "architecture.update_uml_diagram_connection",
+    "architecture.remove_uml_diagram_connection",
+    "architecture.create_trace_link",
+    "architecture.delete_trace_link",
+    "architecture.create_element",
+    "architecture.create_relationship",
+    "architecture.create_view",
+    "architecture.delete_element",
+    "architecture.delete_relationship",
+    "architecture.delete_view",
+    "architecture.add_view_object",
+    "architecture.add_view_connection",
+    "architecture.remove_view_object",
+    "architecture.remove_view_connection",
+    "projects.list_brief_versions",
+    "projects.get_brief_version",
+    "repositories.get",
+    "projects.attach_repository",
+    "projects.detach_repository",
+    "projects.set_primary_repository",
+    "documents.list",
+    "documents.upload",
+    "documents.get_status",
+    "projects.list_pm_projects",
+    "projects.list_pm_programmes",
+    "projects.list_pm_risks",
+    "projects.list_agent_actions",
+    "projects.list_cards_by_type",
+    "projects.list_conveyor_executions",
+    "projects.list_flow_runs",
+    "projects.get_quality_history",
+    "projects.analyze_quality",
+    "projects.get_knowledge_allocation",
+    "projects.set_knowledge_allocation",
+    "project_assets.bind",
+    "project_assets.unbind",
+    "project_assets.override",
+    "project_assets.block",
+    "projects.provision",
+    "projects.archive",
+    "projects.retry_conveyor_start"
+  ],
+  "requires": {
+    "fr_registry": ">=1"
+  },
+  "examples": [
+    {
+      "user": "show me the board",
+      "capabilities": [
+        "ui.open_board"
+      ]
+    },
+    {
+      "user": "what needs me?",
+      "capabilities": [
+        "projects.list_approvals",
+        "approvals.decide"
+      ]
+    },
+    {
+      "user": "add a card: fix the login timeout",
+      "capabilities": [
+        "kanban.create_card"
+      ]
+    },
+    {
+      "user": "move the card Write the import job to READY",
+      "capabilities": [
+        "kanban.request_move"
+      ]
+    },
+    {
+      "user": "why is this project paused?",
+      "capabilities": [
+        "projects.get_andon"
+      ]
+    },
+    {
+      "user": "change the wording of requirement R-12 for this project",
+      "capabilities": [
+        "project_assets.edit"
+      ]
+    },
+    {
+      "user": "ask the admins to make this project's version of principle P-3 the workspace version",
+      "capabilities": [
+        "project_assets.request_promotion"
+      ]
+    },
+    {
+      "user": "does the code still match the architecture?",
+      "capabilities": [
+        "architecture.get_governance_conformance"
+      ]
+    },
+    {
+      "user": "upload the vendor contract to this project",
+      "capabilities": [
+        "documents.upload"
+      ]
+    },
+    {
+      "user": "attach my repo github.com/acme/api",
+      "capabilities": [
+        "projects.attach_repository"
+      ]
+    },
+    {
+      "user": "why is card Fix login timeout blocked?",
+      "capabilities": [
+        "projects.list_blocked_cards",
+        "ui.open_area"
+      ]
+    },
+    {
+      "user": "what ran today?",
+      "capabilities": [
+        "projects.list_executions"
+      ]
+    },
+    {
+      "user": "how close are we to the WIP limit?",
+      "capabilities": [
+        "projects.get_wip"
+      ]
+    },
+    {
+      "user": "how is the code quality of this project?",
+      "capabilities": [
+        "projects.get_quality"
+      ]
+    },
+    {
+      "user": "run a quality analysis",
+      "capabilities": [
+        "projects.analyze_quality"
+      ]
+    },
+    {
+      "user": "who covers testing on this project?",
+      "capabilities": [
+        "projects.get_knowledge_allocation"
+      ]
+    },
+    {
+      "user": "allocate Ana to testing on this project",
+      "capabilities": [
+        "projects.get_knowledge_allocation",
+        "projects.set_knowledge_allocation"
+      ]
+    },
+    {
+      "user": "add the security principle to this project",
+      "capabilities": [
+        "principles.list",
+        "project_assets.bind"
+      ]
+    },
+    {
+      "user": "hide the workspace logging requirement from this project",
+      "capabilities": [
+        "requirements.list",
+        "project_assets.block"
+      ]
+    },
+    {
+      "user": "review the test report artifact",
+      "capabilities": [
+        "artifacts.list",
+        "artifacts.review"
+      ]
+    },
+    {
+      "user": "download the release notes",
+      "capabilities": [
+        "artifacts.list",
+        "artifacts.download"
+      ]
+    },
+    {
+      "user": "archive this project",
+      "capabilities": [
+        "projects.archive"
+      ]
+    },
+    {
+      "user": "validate the payments model",
+      "capabilities": [
+        "architecture.list_models",
+        "architecture.run_model_validation",
+        "architecture.list_validation_findings"
+      ]
+    },
+    {
+      "user": "import this ArchiMate file into the payments model",
+      "capabilities": [
+        "architecture.list_models",
+        "architecture.import_model_exchange"
+      ]
+    },
+    {
+      "user": "add a Payment class to the order model",
+      "capabilities": [
+        "architecture.list_models",
+        "architecture.create_uml_element"
+      ]
+    },
+    {
+      "user": "add an Order Service realized by the Order System to the payments model and show both on its main view",
+      "capabilities": [
+        "architecture.list_models",
+        "architecture.get_metamodel_concepts",
+        "architecture.create_element",
+        "architecture.query_metamodel_relationships",
+        "architecture.create_relationship",
+        "architecture.add_view_object",
+        "architecture.add_view_connection"
+      ]
+    },
+    {
+      "user": "link requirement R-12 to the Payments API component",
+      "capabilities": [
+        "architecture.list_trace_links",
+        "architecture.create_trace_link"
+      ]
+    }
+  ]
+}

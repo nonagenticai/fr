@@ -1,0 +1,196 @@
+{
+  "version": 1,
+  "algorithm": "canonical-scenarios-hash v1",
+  "vectors": [
+    {
+      "name": "single_basic",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "f4890332435c69b90316669b355c559f7c26a9d5384b28b5038fedb495ba131c"
+    },
+    {
+      "name": "crlf_equals_lf",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login\r\n  Given a user\r\n  When they log in\r\n  Then status is 200\r\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "f4890332435c69b90316669b355c559f7c26a9d5384b28b5038fedb495ba131c"
+    },
+    {
+      "name": "trailing_ws_and_blank_lines",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login  \t\n  Given a user  \t\n  When they log in  \t\n  Then status is 200  \t\n\n\n\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "f4890332435c69b90316669b355c559f7c26a9d5384b28b5038fedb495ba131c"
+    },
+    {
+      "name": "no_trailing_newline",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "f4890332435c69b90316669b355c559f7c26a9d5384b28b5038fedb495ba131c"
+    },
+    {
+      "name": "order_independent_input",
+      "input": [
+        {
+          "scenario_id": "scn_bbbbbbbb",
+          "criterion_id": "crit_bbbbbbbb",
+          "title": "B",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        },
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "A",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"A\"},{\"criterion_id\":\"crit_bbbbbbbb\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_bbbbbbbb\",\"title\":\"B\"}]",
+      "sha256": "20988de5f086700e7558578e8d4857c5bfa0b2c38705ffb6b15dd395a67f5493"
+    },
+    {
+      "name": "order_independent_input_sorted",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "A",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        },
+        {
+          "scenario_id": "scn_bbbbbbbb",
+          "criterion_id": "crit_bbbbbbbb",
+          "title": "B",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"A\"},{\"criterion_id\":\"crit_bbbbbbbb\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_bbbbbbbb\",\"title\":\"B\"}]",
+      "sha256": "20988de5f086700e7558578e8d4857c5bfa0b2c38705ffb6b15dd395a67f5493"
+    },
+    {
+      "name": "null_gherkin_bug_path",
+      "input": [
+        {
+          "scenario_id": "scn_0123abcd",
+          "criterion_id": "crit_0123abcd",
+          "title": "off_by_one @ src/a.py:12",
+          "gherkin": null,
+          "status": "approved",
+          "failing_test": {
+            "path": "tests/test_a.py",
+            "name": "test_x"
+          }
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_0123abcd\",\"gherkin\":null,\"scenario_id\":\"scn_0123abcd\",\"title\":\"off_by_one @ src/a.py:12\"}]",
+      "sha256": "e96404467c49fce92018e2ce6d4485d620b20da98a5c2990c240ae2b7bc92907"
+    },
+    {
+      "name": "whitespace_only_is_null",
+      "input": [
+        {
+          "scenario_id": "scn_0123abcd",
+          "criterion_id": "crit_0123abcd",
+          "title": "off_by_one @ src/a.py:12",
+          "gherkin": "  \r\n\t\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_0123abcd\",\"gherkin\":null,\"scenario_id\":\"scn_0123abcd\",\"title\":\"off_by_one @ src/a.py:12\"}]",
+      "sha256": "e96404467c49fce92018e2ce6d4485d620b20da98a5c2990c240ae2b7bc92907"
+    },
+    {
+      "name": "extra_fields_ignored",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n",
+          "status": "frozen",
+          "source": {
+            "kind": "feature_design",
+            "approval_id": "x"
+          }
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n  Given a user\\n  When they log in\\n  Then status is 200\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "f4890332435c69b90316669b355c559f7c26a9d5384b28b5038fedb495ba131c"
+    },
+    {
+      "name": "unicode_kept_as_is",
+      "input": [
+        {
+          "scenario_id": "scn_cccccccc",
+          "criterion_id": "crit_cccccccc",
+          "title": "Ünïcødé — “quotes”",
+          "gherkin": "Scenario: é\n  Then ✓ 200\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_cccccccc\",\"gherkin\":\"Scenario: é\\n  Then ✓ 200\\n\",\"scenario_id\":\"scn_cccccccc\",\"title\":\"Ünïcødé — “quotes”\"}]",
+      "sha256": "02d07741cd61ad76bd22deddc649d7911d03c1405d013611c038a087db6b97f1"
+    },
+    {
+      "name": "inner_whitespace_preserved",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "Login works",
+          "gherkin": "Scenario: login\n    Given   a user\n"
+        }
+      ],
+      "canonical": "[{\"criterion_id\":\"crit_aaaaaaaa\",\"gherkin\":\"Scenario: login\\n    Given   a user\\n\",\"scenario_id\":\"scn_aaaaaaaa\",\"title\":\"Login works\"}]",
+      "sha256": "fa93373450012f6dd394efeb785cd003811c8d586eaed1cce2ae5646a948d390"
+    },
+    {
+      "name": "empty_list",
+      "input": [],
+      "canonical": "[]",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ],
+  "must_throw": [
+    {
+      "name": "duplicate_scenario_id",
+      "input": [
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_aaaaaaaa",
+          "title": "A",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        },
+        {
+          "scenario_id": "scn_aaaaaaaa",
+          "criterion_id": "crit_bbbbbbbb",
+          "title": "B",
+          "gherkin": "Scenario: login\n  Given a user\n  When they log in\n  Then status is 200\n"
+        }
+      ]
+    }
+  ]
+}

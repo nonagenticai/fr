@@ -1,0 +1,2557 @@
+{
+  "sources": {
+    "registry": "n8n_custom_nodes/AA_IMPLEMENTATION/trigger_registry.md @ d469ca1c6 + the 4 py2rust rewrite_* card types added 2026-10-26 (RS-D4, George 10-25) (vendored: scripts/sources/trigger_registry.md)",
+    "card_type_definitions": "n8n-designs/design/choices/v4/capabilities/*.yaml (R193, R228: every file; archetype outputs inherited per (list, slot) from the reference type): inputs = the explicit `inputs:` section only (R194; [] when absent); outputs = every releasing key (minus handoff_comment_id); acceptance = every inspecting check as '<LIST>: <check>'",
+    "definition_of_done": "n8n_custom_nodes/AA_IMPLEMENTATION/landing_predicates.json @ e21ee10f0 (vendored: scripts/sources/landing_predicates.json)",
+    "name_fixes": {
+      "prompt_performanc_statistics_analysis": "prompt_performance_statistics_analysis"
+    },
+    "human_tasks": [],
+    "unplaced_card_types": 21,
+    "priority_levels": "fr backend/src/services/improvement-cards/request-schema.ts CARD_PRIORITIES; backend/src/lib/priority-change.ts assertConveyorNotP0",
+    "board_lists": "fr backend/src/services/planka/intake.ts DEFAULT_LIST_NAMES",
+    "custom_field_groups": "RM master (George 10-13 v4 ruling 12): seeded from fr backend/src/services/improvement-cards/field-groups.ts GROUP_FIELDS @ feat/fr-rm-pm-catalogue de6c7763 (retired stopwatch_timeout excluded); + project_type, phase, capability (D4); + released (ruling 10; R66: no rework_count); + source_artifact_id, source_item_id (R188); + wait_for_phase (bool, R190); + spec_hash in Metadata (R311: the card birth key, kanban-coach-errors.md §7 item 1); + criterion_ids in Relations (R-CK10: the acceptance-criterion ids a card serves, a JSON or comma list like required_by, read by name by ct.project_closure.doing)",
+    "v4_rulings": {
+      "scope": "George 10-13 R184: one IT project type `it` (replaces bug_hunt_fix, feature_new, feature_update, integration_report); program, meta_prompt, meta_procedure, kaizen unchanged; George 2026-10-31 Kata K15: the `kata` type, with the first-build phases of `it` (setup, preliminary, execution), the setup card types of `it` and (Kata WP4, George 2026-11-01) the four kata-only preliminary workflow_engineering card types, plus (Kata WP5, George 2026-11-03) the execution-phase wf_change",
+      "phases": "R185; George 2026-11-03: it = setup -> preliminary -> analysis -> design -> execution -> test (closure is fr's, not RM's)",
+      "setup_phase": "George 10-13 v4 ruling 2 (D16)",
+      "matrix": "R185 phases; R228 (George 10-14): it places every v4-defined card type; George 2026-11-03 by capability: analysis -> analysis; architecture, design, bdd_tdd -> design; testing -> test; choice_option_development (R331) and decision_development (its upstream) -> execution; every other type in its design `phase` (development_bug_fix execution); PM types fixed (project_closure in test); entry card type project_start_request_analysis (R88); EXCEPT the KATA-ONLY workflow_engineering types (Kata WP4, George 2026-11-01: wf_observe, wf_probe, wf_root_cause, wf_andon_scope; Kata WP5, George 2026-11-03: wf_change), which are placed on `kata` alone",
+      "additions": "George 10-13 v4 ruling 9: capability kanban_coach; card types project_phase_start, project_phase_closure (project_management), text from n8n-designs design/choices/v4 (kanban_coach: model.md, first designed in capabilities/kanban_coach.yaml @ afcf981; project_management.yaml); phase_coverage_check: retired by R347 (4)",
+      "capabilities": [
+        "kanban_coach"
+      ],
+      "card_types": [
+        "project_phase_start",
+        "project_phase_closure"
+      ]
+    },
+    "card_type_rules": "n8n_custom_nodes AA_IMPLEMENTATION/coding_card_types.json @ bd97bbede (repo_write, container_read_exec, setup); no_reclassify_target and dependency_upgrade per the fr computed-gating brief",
+    "skipped_rule_targets": {
+      "container_read_exec": [
+        "verification_test"
+      ],
+      "no_reclassify_target": [
+        "bug_hunt_sweep",
+        "verification_test"
+      ]
+    }
+  },
+  "project_phases": [
+    {
+      "name": "setup",
+      "title": "Setup",
+      "description": "The system phase every project starts in, before its first work phase (George 10-13 v4 ruling 2).",
+      "output": null,
+      "exit_rule": null
+    },
+    {
+      "name": "preliminary",
+      "title": "Preliminary",
+      "description": "Research and change management before the analysis: frame what the later phases act on (R185; George 2026-11-03).",
+      "output": "published research and change-management documents (research, change_management)",
+      "exit_rule": "project_phase_closure released after an approved phase sign-off; it starts the next phase (R88, R92)"
+    },
+    {
+      "name": "analysis",
+      "title": "Analysis",
+      "description": "Find what the work acts on (George 2026-11-03).",
+      "output": "a published findings report, every finding with its status (bug_analysis, R163)",
+      "exit_rule": "project_phase_closure released after an approved phase sign-off; approval approves every confirmed finding (R88, R92, R186)"
+    },
+    {
+      "name": "design",
+      "title": "Design",
+      "description": "Shape the work before it is built: architecture, design and the tests that come first (George 2026-11-03).",
+      "output": "published architecture and design documents and RM assets, and the tests written first (architecture, design, bdd_tdd)",
+      "exit_rule": "project_phase_closure released after an approved phase sign-off; it starts the next phase (R88, R92)"
+    },
+    {
+      "name": "execution",
+      "title": "Execution",
+      "description": "The work: act on what the earlier phases found (R185).",
+      "output": "one merged pull request per confirmed finding (development_bug_fix, R167)",
+      "exit_rule": "project_phase_closure released after an approved phase sign-off; it starts the next phase (R88, R92)"
+    },
+    {
+      "name": "test",
+      "title": "Test",
+      "description": "Test what the execution phase built (George 2026-11-03).",
+      "output": "published testing documents and test reports, and merged tests (testing)",
+      "exit_rule": "project_phase_closure released after an approved phase sign-off; it creates project_closure (R88, R92)"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "program_management",
+      "title": "Program management",
+      "description": "Card types that deal with program management."
+    },
+    {
+      "name": "project_management",
+      "title": "Project management",
+      "description": "Card types that deal with project management."
+    },
+    {
+      "name": "change_management",
+      "title": "Change management",
+      "description": "Card types that deal with change management."
+    },
+    {
+      "name": "meta_prompt",
+      "title": "Prompt improvement",
+      "description": "Card types for prompt improvement in flows."
+    },
+    {
+      "name": "meta_procedure",
+      "title": "Procedure improvement",
+      "description": "Card types for procedure improvements for agents."
+    },
+    {
+      "name": "kaizen",
+      "title": "Kaizen",
+      "description": "Card types for flow improvements."
+    },
+    {
+      "name": "asset_library_statistics",
+      "title": "Asset library statistics",
+      "description": "Card types for principle, requirement and decision library statistics."
+    },
+    {
+      "name": "research",
+      "title": "Research",
+      "description": "Card types for research."
+    },
+    {
+      "name": "analysis",
+      "title": "Analysis",
+      "description": "Card types for analysis."
+    },
+    {
+      "name": "architecture",
+      "title": "Architecture",
+      "description": "Card types for architecture."
+    },
+    {
+      "name": "design",
+      "title": "Design",
+      "description": "Card types for design."
+    },
+    {
+      "name": "testing",
+      "title": "Testing",
+      "description": "Card types for testing."
+    },
+    {
+      "name": "bdd_tdd",
+      "title": "BDD / TDD",
+      "description": "Card types for behaviour- and test-driven development."
+    },
+    {
+      "name": "development",
+      "title": "Development",
+      "description": "Card types for development."
+    },
+    {
+      "name": "refactoring",
+      "title": "Refactoring",
+      "description": "Card types for refactoring."
+    },
+    {
+      "name": "workflow_engineering",
+      "title": "Workflow engineering",
+      "description": "Card types for changing the workflow itself: observe, probe, root cause and andon scope."
+    },
+    {
+      "name": "kanban_coach",
+      "title": "Kanban coach",
+      "description": "Protector of flow. Any card interruption invokes a card for the kanban coach. Owns all flow-related decisions and fr/human interaction during a phase: blocked cards, comments, human input and answers, in-flow approvals, and rework limit reached (R34)."
+    }
+  ],
+  "card_types": [
+    {
+      "name": "project_start_request_analysis",
+      "title": "Project start request analysis",
+      "description": "analyzes the project brief of the project start request from the user or other source",
+      "capability": "project_management",
+      "inputs": [
+        "problem_statement",
+        "desired_outcome",
+        "success_criteria",
+        "in_scope"
+      ],
+      "outputs": [],
+      "acceptance": [
+        "READY: brief_unchanged",
+        "QA: no_open_approval_on_card",
+        "QA: all_gaps_closed"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": "none"
+    },
+    {
+      "name": "project_setup",
+      "title": "Project setup",
+      "description": "special card for setting up project and confirming setup was successful",
+      "capability": "project_management",
+      "inputs": [],
+      "outputs": [
+        "brief_version_created"
+      ],
+      "acceptance": [
+        "READY: phase_is_setup",
+        "READY: project_type_set",
+        "DOING: board_matches_template",
+        "DOING: brief_base_is_latest",
+        "DOING: every_answer_in_clarifications",
+        "DONE: phase_still_setup"
+      ],
+      "rules": [
+        "setup"
+      ],
+      "human_task": false,
+      "definition_of_done": "none"
+    },
+    {
+      "name": "project_closure",
+      "title": "Project closure",
+      "description": "special card for closing projects",
+      "capability": "project_management",
+      "inputs": [],
+      "outputs": [
+        "final_report_artifact_id",
+        "final_brief_version",
+        "status_set",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "DOING: every_phase_report_linked",
+        "DONE: project_not_closed_yet"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": "none"
+    },
+    {
+      "name": "stakeholder_comms",
+      "title": "Stakeholder comms",
+      "description": "Planning and executing communication strategies with various stakeholders.",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "release_planning",
+      "title": "Release planning",
+      "description": "Defining preparing releases",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "future_state_analysis",
+      "title": "Future state analysis",
+      "description": "Identifying discrepancies between current state and strategic goals.",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "change_principle_development",
+      "title": "Change principle development",
+      "description": "Defining overarching program principles and guidelines.",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "change_requirement_development",
+      "title": "Change requirement development",
+      "description": "Capturing high-level strategic requirements.",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "change_decision_development",
+      "title": "Change decision development",
+      "description": "Documenting key program-level strategic decisions.",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "rewrite_cutover_readiness",
+      "title": "Rewrite cutover readiness",
+      "description": "collect the G4 cutover evidence for a language rewrite: parity results true on the pinned source SHAs and a data-copy plan; the cutover itself is a session action; upstream rewrite_parity_qa (added 2026-10-26, py2rust RS-D4, George 10-25)",
+      "capability": "change_management",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: parity_qa_released",
+        "DOING: parity_results_true_on_pinned_shas",
+        "DOING: data_copy_plan_present",
+        "QA: g4_evidence_complete",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": "asset_persisted"
+    },
+    {
+      "name": "research_spike",
+      "title": "Research spike",
+      "description": "gain knowledge on a given topic",
+      "capability": "research",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "prototype_experiment",
+      "title": "Prototype experiment",
+      "description": "minimal prototype development to explore research_spike results",
+      "capability": "research",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "findings_artifact_id"
+      ],
+      "acceptance": [
+        "READY: planned_files_allowed",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_after",
+        "QA: prototype_answers_question",
+        "QA: capability_acceptance_met",
+        "DONE: report_cites_evidence",
+        "DONE: recommendation_follows_result"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "feasibility_study",
+      "title": "Feasibility study",
+      "description": "study based on prototype_experiment and research_spike outcomes to decide feasibility for implementation into the repo",
+      "capability": "research",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "domain_analysis",
+      "title": "Domain analysis",
+      "description": "study to prepare for architecture, design and/or feature development",
+      "capability": "research",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "technology_landscape_survey",
+      "title": "Technology landscape survey",
+      "description": "study to state-of-the-art technologies, tools, libraries, frameworks, design patterns relevant to a planned project or change — for decision support, comparison, and selection.",
+      "capability": "research",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "bug_analysis",
+      "title": "Bug analysis",
+      "description": "uses tools to find bugs and analyze root cause",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_location_exists",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec",
+        "no_reclassify_target"
+      ],
+      "human_task": false,
+      "definition_of_done": "none"
+    },
+    {
+      "name": "security_analysis",
+      "title": "Security analysis",
+      "description": "uses tools to find security flaws",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "READY: manifest_files_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_code_location_exists",
+        "DOING: every_dependency_listed_vulnerable",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec",
+        "no_reclassify_target"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "code_quality_analysis",
+      "title": "Code quality analysis",
+      "description": "uses tools to evaluate code quality",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_location_exists",
+        "DOING: no_style_only_findings",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "structure_analysis",
+      "title": "Structure analysis",
+      "description": "uses tools to evaluate the structure of the codebase",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_path_exists",
+        "DOING: every_finding_is_structural",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec",
+        "no_reclassify_target"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "consistency_analysis",
+      "title": "Consistency analysis",
+      "description": "uses tools to evaluate consistency of the codebase",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_location_exists",
+        "DOING: convention_has_majority_examples",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "gap_analysis",
+      "title": "Gap analysis",
+      "description": "delta analysis between current and future states",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_gap_cites_a_brief_item",
+        "DOING: every_update_location_exists",
+        "DOING: every_new_gap_absent_in_code",
+        "DOING: one_acceptance_sentence_each",
+        "QA: every_confirmed_gap_in_brief",
+        "QA: every_confirmed_update_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "plateau_planning_analysis",
+      "title": "Plateau planning analysis",
+      "description": "analysis of intermediate stable states between current and future state",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "change_risk_analysis",
+      "title": "Change risk analysis",
+      "description": "risk analysis scoped to the risk of changes planned to be made",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "change_impact_analysis",
+      "title": "Change impact analysis",
+      "description": "analysis to the magnitude and complexity of achieving the future state given the current state",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "rewrite_plan",
+      "title": "Rewrite plan",
+      "description": "draft the target architecture and an ordered slice list for a language rewrite from the source repos at pinned SHAs; the user confirms the draft (R212) (added 2026-10-26, py2rust RS-D4, George 10-25)",
+      "capability": "analysis",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_location_exists",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "architecture_spike",
+      "title": "Architecture spike",
+      "description": "defines the objective of the spike and a directive for architecture_epics to follow",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "architecture_epic",
+      "title": "Architecture epic",
+      "description": "defines the objective of the epic and a directive for the architecture_tasks to follow",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "architecture_task",
+      "title": "Architecture task",
+      "description": "defines the task and how it will be evaluated and a directive for architecture_subtasks to follow",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": "asset_persisted"
+    },
+    {
+      "name": "architecture_subtask",
+      "title": "Architecture subtask",
+      "description": "applies the directive to the work to be executed",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "principle_development",
+      "title": "Principle development",
+      "description": "creation, review, and updating",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "requirement_development",
+      "title": "Requirement development",
+      "description": "creation, review, and updating",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "choice_option_development",
+      "title": "Choice option development",
+      "description": "creation, review, and updating",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "decision_development",
+      "title": "Decision development",
+      "description": "capturing, review, and revision",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "changes_artifact_id",
+        "reviewed_changes_artifact_id",
+        "published_artifact_id",
+        "written_ids"
+      ],
+      "acceptance": [
+        "READY: every_ask_cites_the_brief",
+        "DOING: every_change_cites_a_source",
+        "DOING: every_ask_has_a_change",
+        "QA: every_revise_addressed",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "architecture_baseline_harvest",
+      "title": "Architecture baseline harvest",
+      "description": "populate the baseline architecture model from the running system and bind each element to the code that realises it (added 2026-09-30 from the roster)",
+      "capability": "architecture",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "diagram_design",
+      "title": "Diagram design",
+      "description": "creation of design diagrams for getting approval on a design before development can start",
+      "capability": "design",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "narrative_design",
+      "title": "Narrative design",
+      "description": "creation of narrative for the design to communicate design intent",
+      "capability": "design",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "design_packaging",
+      "title": "Design packaging",
+      "description": "bundle design and architecture and analysis artifacts in order to present the design",
+      "capability": "design",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "testing_strategy",
+      "title": "Testing strategy",
+      "description": "sets the objectives, principles, goals and structure for testing",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "testing_plan",
+      "title": "Testing plan",
+      "description": "defines how tests will be executed and what the evaluation process is",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "test_development",
+      "title": "Test development",
+      "description": "creation of or updating tests",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: test_files_in_test_dirs",
+        "DOING: every_case_written",
+        "DOING: suite_green_after",
+        "QA: tests_check_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "testing_execution",
+      "title": "Testing execution",
+      "description": "running tests",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_location_exists",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "testing_evaluation",
+      "title": "Testing evaluation",
+      "description": "evaluating test results",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "test_process_evaluation",
+      "title": "Test process evaluation",
+      "description": "evaluating of the test procedures and organization",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "reviewed_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: outline_within_card_scope",
+        "DOING: every_claim_cites_a_source",
+        "DOING: every_cited_source_exists",
+        "QA: no_unsupported_claims",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "rewrite_parity_qa",
+      "title": "Rewrite parity qa",
+      "description": "prove a rewrite equals its sources at pinned SHAs: schema-diff equal, openapi-diff equal against the union of the source specs, behaviour replay/compare equal, all computed with no judgement; upstream rewrite_slice (added 2026-10-26, py2rust RS-D4, George 10-25)",
+      "capability": "testing",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: source_shas_pinned",
+        "DOING: schema_diff_equal",
+        "DOING: openapi_diff_equal_to_source_union",
+        "DOING: behaviour_replay_equal",
+        "QA: parity_computed_without_judgement",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec"
+      ],
+      "human_task": false,
+      "definition_of_done": "asset_persisted"
+    },
+    {
+      "name": "bdd_test_development",
+      "title": "Bdd test development",
+      "description": "gherkin defined test use cases and acceptance criteria",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: test_files_in_test_dirs",
+        "DOING: every_case_written",
+        "DOING: suite_green_after",
+        "QA: tests_check_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "bdd_test_evaluation",
+      "title": "Bdd test evaluation",
+      "description": "evaluation of quality and alignment of bdd tests with project objectives and the subject of the test",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_scenario_exists",
+        "DOING: every_missing_scenario_cites_a_brief_item",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "bdd_test_improvement",
+      "title": "Bdd test improvement",
+      "description": "improvement of the bdd tests based on the evaluation",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: test_files_in_test_dirs",
+        "DOING: every_case_written",
+        "DOING: suite_green_after",
+        "QA: tests_check_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "tdd_test_development",
+      "title": "Tdd test development",
+      "description": "test creation (prior to development)",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: test_files_in_test_dirs",
+        "READY: marker_is_strict",
+        "DOING: every_case_written",
+        "DOING: every_new_test_marked",
+        "DOING: suite_green_after",
+        "QA: tests_check_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "tdd_test_evaluation",
+      "title": "Tdd test evaluation",
+      "description": "evaluation of created tests",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "draft_artifact_id",
+        "report_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: scope_paths_exist",
+        "DOING: every_finding_cites_evidence",
+        "DOING: every_cited_test_exists",
+        "DOING: every_missing_test_subject_exists",
+        "QA: every_confirmed_location_exists",
+        "QA: capability_acceptance_met",
+        "DONE: artifact_is_qa_version"
+      ],
+      "rules": [
+        "container_read_exec"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "tdd_test_improvement",
+      "title": "Tdd test improvement",
+      "description": "improvement of tests based on evaluation",
+      "capability": "bdd_tdd",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: test_files_in_test_dirs",
+        "DOING: every_case_written",
+        "DOING: suite_green_after",
+        "QA: tests_check_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "development_poc",
+      "title": "Development poc",
+      "description": "proof of concept development",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "findings_artifact_id"
+      ],
+      "acceptance": [
+        "READY: planned_files_allowed",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_after",
+        "QA: poc_answers_question",
+        "QA: capability_acceptance_met",
+        "DONE: report_cites_evidence",
+        "DONE: recommendation_follows_result"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_bug_fix",
+      "title": "Development bug fix",
+      "description": "can be single file or multiple file bug analysis for the same bug",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: finding_location_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: regression_test_added",
+        "DOING: failed_before_on_new_test_only",
+        "DOING: suite_green_after",
+        "QA: fix_addresses_root_cause",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_feature_new",
+      "title": "Development feature new",
+      "description": "development of a new feature",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_allowed",
+        "DOING: diff_only_planned_files",
+        "DOING: acceptance_test_added",
+        "DOING: failed_before_on_new_test_only",
+        "DOING: suite_green_after",
+        "QA: change_meets_acceptance",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_feature_update",
+      "title": "Development feature update",
+      "description": "enhancement of an existing feature",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: current_location_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: acceptance_test_added",
+        "DOING: failed_before_on_new_test_only",
+        "DOING: suite_green_after",
+        "QA: change_meets_acceptance",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_security_patch",
+      "title": "Development security patch",
+      "description": "security patch implementation",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: finding_location_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: regression_test_or_upgrade",
+        "DOING: failed_before_on_new_test_only",
+        "DOING: package_no_longer_vulnerable",
+        "DOING: suite_green_after",
+        "QA: fix_addresses_root_cause",
+        "QA: package_no_longer_vulnerable",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_chore",
+      "title": "Development chore",
+      "description": "uncategorized coding job",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: finding_location_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: issue_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write",
+        "no_reclassify_target",
+        "dependency_upgrade"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_iac_security_patch",
+      "title": "Development iac security patch",
+      "description": "fix an infrastructure-as-code misconfiguration and open a pull request (added 2026-09-30 from the roster)",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: finding_file_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: rule_not_reported_after",
+        "QA: change_fixes_misconfiguration",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "development_source_security_patch",
+      "title": "Development source security patch",
+      "description": "fix a source-code security finding and open a pull request (added 2026-09-30 from the roster)",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: finding_location_exists",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: regression_test_added",
+        "DOING: failed_before_on_new_test_only",
+        "DOING: suite_green_after",
+        "QA: fix_addresses_root_cause",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "rewrite_slice",
+      "title": "Rewrite slice",
+      "description": "Rust code for one slice of the confirmed rewrite plan in the target repo, opened as a PR; done when the unified workspace test run (pytest + nextest) is green and openapi-diff shows the slice's routes present and equal; upstream rewrite_plan (added 2026-10-26, py2rust RS-D4, George 10-25)",
+      "capability": "development",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_allowed",
+        "DOING: diff_only_planned_files",
+        "DOING: workspace_test_run_green",
+        "DOING: openapi_diff_slice_routes_present_and_equal",
+        "QA: change_meets_acceptance"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "re_engineering",
+      "title": "Re engineering",
+      "description": "full fletched reconsideration of existing repo",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: component_paths_exist",
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: change_follows_plan",
+        "QA: change_preserves_behaviour",
+        "QA: change_achieves_target",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "architecture_refactoring",
+      "title": "Architecture refactoring",
+      "description": "architectural refactoring of repo",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "decoupling_refactoring",
+      "title": "Decoupling refactoring",
+      "description": "architectural refactoring scoped to coupling of repo",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "library_refactoring",
+      "title": "Library refactoring",
+      "description": "refactoring of library choices and library version configurations",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "code_smell_refactoring",
+      "title": "Code smell refactoring",
+      "description": "refactoring scoped to finding and resolving code smells",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "optimization_refactoring",
+      "title": "Optimization refactoring",
+      "description": "refactoring scoped to performance optimization",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "function_class_reallocation",
+      "title": "Function class reallocation",
+      "description": "refactoring scoped to reconfiguring function class layout of the repo structure",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "dependency_refactoring",
+      "title": "Dependency refactoring",
+      "description": "refactoring scoped to resolving, reducing or removing dependencies",
+      "capability": "refactoring",
+      "inputs": [],
+      "outputs": [
+        "commit_sha",
+        "pr_number",
+        "pr_url",
+        "head_sha",
+        "fix_report_artifact_id",
+        "merge_sha"
+      ],
+      "acceptance": [
+        "READY: planned_files_exist",
+        "DOING: diff_only_planned_files",
+        "DOING: suite_green_before",
+        "DOING: suite_green_after",
+        "DOING: item_gone_at_location",
+        "QA: change_preserves_behaviour",
+        "QA: change_removes_item",
+        "QA: capability_acceptance_met"
+      ],
+      "rules": [
+        "repo_write"
+      ],
+      "human_task": false,
+      "definition_of_done": "pr_merged"
+    },
+    {
+      "name": "wf_observe",
+      "title": "Wf observe",
+      "description": "writes a five-line observation from the evidence: what, where, when, how often",
+      "capability": "workflow_engineering",
+      "inputs": [],
+      "outputs": [
+        "observation_artifact_id",
+        "published_artifact_id"
+      ],
+      "acceptance": [
+        "READY: evidence_artifact_present",
+        "DOING: five_lines_exactly",
+        "DOING: every_line_cites_the_evidence",
+        "QA: every_quote_found_in_the_evidence",
+        "DONE: artifact_is_the_qa_version"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "wf_probe",
+      "title": "Wf probe",
+      "description": "checks /health and Prometheus up for every node-module app the failing flow uses",
+      "capability": "workflow_engineering",
+      "inputs": [],
+      "outputs": [
+        "probe_result"
+      ],
+      "acceptance": [
+        "READY: every_app_has_a_health_url",
+        "DOING: every_app_has_a_probe_result",
+        "QA: every_probe_recomputed",
+        "DONE: probe_result_matches_qa"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "wf_root_cause",
+      "title": "Wf root cause",
+      "description": "chooses one root-cause class and quotes the evidence line that proves it",
+      "capability": "workflow_engineering",
+      "inputs": [],
+      "outputs": [
+        "root_cause_class",
+        "evidence_quote"
+      ],
+      "acceptance": [
+        "READY: observation_reviewed",
+        "READY: probe_result_known",
+        "DOING: class_is_one_of_the_enum",
+        "DOING: evidence_quote_found_in_the_evidence",
+        "QA: confirmation_quotes_the_evidence",
+        "DONE: root_cause_class_is_one_of_the_enum"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "wf_andon_scope",
+      "title": "Wf andon scope",
+      "description": "decides whether a defect in a shared machine reaches other running projects",
+      "capability": "workflow_engineering",
+      "inputs": [],
+      "outputs": [
+        "andon_scope"
+      ],
+      "acceptance": [
+        "READY: computed_scope_known",
+        "DOING: scope_is_one_of_the_enum",
+        "DOING: scope_matches_the_computed_rule_or_says_why",
+        "QA: every_rule_rechecked",
+        "DONE: cord_state_matches_the_scope"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "wf_change",
+      "title": "Wf change",
+      "description": "applies one op list to a copy of the failing flow, proves it by replay, publishes it and releases the cord",
+      "capability": "workflow_engineering",
+      "inputs": [],
+      "outputs": [
+        "op_list",
+        "copy_workflow_id",
+        "copy_version_id",
+        "replay_report_artifact_id",
+        "live_version_id"
+      ],
+      "acceptance": [
+        "READY: cord_engaged_with_the_kata_as_holder",
+        "READY: evidence_artifact_present",
+        "READY: every_op_is_in_the_vocabulary",
+        "DOING: every_op_applied",
+        "DOING: copy_passes_lint",
+        "DOING: diff_touches_only_the_op_nodes",
+        "DOING: replay_ran",
+        "QA: three_replays_ran",
+        "QA: two_of_three_replays_pass_without_error",
+        "QA: original_failing_check_passes",
+        "DONE: live_flow_read_back_matches_the_copy",
+        "DONE: only_the_kata_nodes_changed",
+        "DONE: cord_released",
+        "DONE: blocked_cards_moved_back_and_commented",
+        "DONE: kata_closed_in_fr"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "project_phase_start",
+      "title": "Project phase start",
+      "description": "each phase decisions of which capabilities and card types will be needed and creating the initial set of cards for that phase",
+      "capability": "project_management",
+      "inputs": [],
+      "outputs": [
+        "plan_artifact_id"
+      ],
+      "acceptance": [
+        "READY: card_phase_is_rm_phase",
+        "READY: allowed_card_types_not_empty",
+        "DOING: every_goal_has_a_card",
+        "DOING: every_card_has_a_goal"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    },
+    {
+      "name": "project_phase_closure",
+      "title": "Project phase closure",
+      "description": "closing out the phase which also triggers the start of the next phase (or better asks the user to approve the phase)",
+      "capability": "project_management",
+      "inputs": [],
+      "outputs": [
+        "report_artifact_id"
+      ],
+      "acceptance": [
+        "DOING: every_link_exists",
+        "DONE: phase_unchanged_since_readying"
+      ],
+      "rules": [],
+      "human_task": false,
+      "definition_of_done": null
+    }
+  ],
+  "project_types": [
+    {
+      "name": "program",
+      "title": "Program",
+      "description": "project of projects managing the dependencies between the projects and the overal direction",
+      "phases": [],
+      "card_types": {},
+      "entry_card_types": {}
+    },
+    {
+      "name": "meta_prompt",
+      "title": "Meta prompt",
+      "description": "project about the continuous and incremental improvement of prompts used in projects",
+      "phases": [],
+      "card_types": {},
+      "entry_card_types": {}
+    },
+    {
+      "name": "meta_procedure",
+      "title": "Meta procedure",
+      "description": "project about the continuous and incremental improvement of procedures used in projects",
+      "phases": [],
+      "card_types": {},
+      "entry_card_types": {}
+    },
+    {
+      "name": "kaizen",
+      "title": "Kaizen",
+      "description": "project about the continuous and incremental improvement of workflows used in the system",
+      "phases": [],
+      "card_types": {},
+      "entry_card_types": {}
+    },
+    {
+      "name": "it",
+      "title": "It",
+      "description": "project that starts with receipt of a github repo url (and optional credentials) and ends with a pull request. Scope Levels: multi_repo, repo, app, module, component, file, class, function",
+      "phases": [
+        "setup",
+        "preliminary",
+        "analysis",
+        "design",
+        "execution",
+        "test"
+      ],
+      "card_types": {
+        "setup": [
+          "project_setup",
+          "project_start_request_analysis"
+        ],
+        "preliminary": [
+          "change_decision_development",
+          "change_principle_development",
+          "change_requirement_development",
+          "development_poc",
+          "domain_analysis",
+          "feasibility_study",
+          "future_state_analysis",
+          "project_phase_closure",
+          "project_phase_start",
+          "prototype_experiment",
+          "release_planning",
+          "research_spike",
+          "stakeholder_comms",
+          "technology_landscape_survey"
+        ],
+        "analysis": [
+          "bug_analysis",
+          "change_impact_analysis",
+          "change_risk_analysis",
+          "code_quality_analysis",
+          "consistency_analysis",
+          "gap_analysis",
+          "plateau_planning_analysis",
+          "project_phase_closure",
+          "project_phase_start",
+          "rewrite_plan",
+          "security_analysis",
+          "structure_analysis"
+        ],
+        "design": [
+          "architecture_baseline_harvest",
+          "architecture_epic",
+          "architecture_spike",
+          "architecture_subtask",
+          "architecture_task",
+          "bdd_test_development",
+          "bdd_test_evaluation",
+          "bdd_test_improvement",
+          "design_packaging",
+          "diagram_design",
+          "narrative_design",
+          "principle_development",
+          "project_phase_closure",
+          "project_phase_start",
+          "requirement_development",
+          "tdd_test_evaluation",
+          "tdd_test_improvement"
+        ],
+        "execution": [
+          "architecture_refactoring",
+          "choice_option_development",
+          "code_smell_refactoring",
+          "decision_development",
+          "decoupling_refactoring",
+          "dependency_refactoring",
+          "development_bug_fix",
+          "development_chore",
+          "development_feature_new",
+          "development_feature_update",
+          "development_iac_security_patch",
+          "development_security_patch",
+          "development_source_security_patch",
+          "function_class_reallocation",
+          "library_refactoring",
+          "optimization_refactoring",
+          "project_phase_closure",
+          "project_phase_start",
+          "re_engineering",
+          "rewrite_cutover_readiness",
+          "rewrite_parity_qa",
+          "rewrite_slice",
+          "tdd_test_development"
+        ],
+        "test": [
+          "development_bug_fix",
+          "project_closure",
+          "project_phase_closure",
+          "project_phase_start",
+          "test_development",
+          "test_process_evaluation",
+          "testing_evaluation",
+          "testing_execution",
+          "testing_plan",
+          "testing_strategy"
+        ]
+      },
+      "entry_card_types": {
+        "setup": [
+          "project_start_request_analysis"
+        ]
+      }
+    },
+    {
+      "name": "kata",
+      "title": "Kata",
+      "description": "A short project the kanban coach opens when a card is blocked by a conveyor defect: find the root cause, change the workflow, prove it by replaying the failing input, publish it, and let the stopped project resume (Kata K1-K21).",
+      "phases": [
+        "setup",
+        "preliminary",
+        "execution"
+      ],
+      "card_types": {
+        "setup": [
+          "project_setup",
+          "project_start_request_analysis"
+        ],
+        "preliminary": [
+          "wf_andon_scope",
+          "wf_observe",
+          "wf_probe",
+          "wf_root_cause"
+        ],
+        "execution": [
+          "wf_change"
+        ]
+      },
+      "entry_card_types": {
+        "setup": [
+          "project_start_request_analysis"
+        ]
+      }
+    }
+  ],
+  "recipes": [],
+  "wip_limits": [
+    {
+      "project_type": "program",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    },
+    {
+      "project_type": "meta_prompt",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    },
+    {
+      "project_type": "meta_procedure",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    },
+    {
+      "project_type": "kaizen",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    },
+    {
+      "project_type": "it",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    },
+    {
+      "project_type": "kata",
+      "phase": null,
+      "capability": null,
+      "card_type": null,
+      "wip_limit": 1
+    }
+  ],
+  "priority_levels": [
+    {
+      "name": "p0",
+      "title": "P0",
+      "description": "Highest priority; set by humans only.",
+      "rank": 0,
+      "is_default": false,
+      "conveyor_may_set": false
+    },
+    {
+      "name": "p1",
+      "title": "P1",
+      "description": "High priority.",
+      "rank": 1,
+      "is_default": false,
+      "conveyor_may_set": true
+    },
+    {
+      "name": "p2",
+      "title": "P2",
+      "description": "Normal priority; the default.",
+      "rank": 2,
+      "is_default": true,
+      "conveyor_may_set": true
+    },
+    {
+      "name": "p3",
+      "title": "P3",
+      "description": "Low priority.",
+      "rank": 3,
+      "is_default": false,
+      "conveyor_may_set": true
+    }
+  ],
+  "deliverable_kinds": [
+    {
+      "name": "deliverable",
+      "title": "Deliverable",
+      "description": "A result the project hands over.",
+      "counts_for_phase_exit": true
+    },
+    {
+      "name": "intermediate",
+      "title": "Intermediate",
+      "description": "A result a later card in the project consumes.",
+      "counts_for_phase_exit": true
+    }
+  ],
+  "milestone_kinds": [
+    {
+      "name": "preliminary_done",
+      "title": "Preliminary done",
+      "description": "The preliminary phase is done.",
+      "phase": "preliminary"
+    },
+    {
+      "name": "analysis_done",
+      "title": "Analysis done",
+      "description": "The analysis phase is done.",
+      "phase": "analysis"
+    },
+    {
+      "name": "design_done",
+      "title": "Design done",
+      "description": "The design phase is done.",
+      "phase": "design"
+    },
+    {
+      "name": "executed",
+      "title": "Executed",
+      "description": "The execution phase is done.",
+      "phase": "execution"
+    },
+    {
+      "name": "tested",
+      "title": "Tested",
+      "description": "The test phase is done.",
+      "phase": "test"
+    }
+  ],
+  "gates": [],
+  "board_templates": [
+    {
+      "name": "default",
+      "title": "Default board",
+      "description": "The board every project starts with.",
+      "project_type": null,
+      "lists": [
+        {
+          "name": "TODO",
+          "position": 0,
+          "closed": false
+        },
+        {
+          "name": "READY",
+          "position": 1,
+          "closed": false
+        },
+        {
+          "name": "DOING",
+          "position": 2,
+          "closed": false
+        },
+        {
+          "name": "QA",
+          "position": 3,
+          "closed": false
+        },
+        {
+          "name": "BLOCKED",
+          "position": 4,
+          "closed": false
+        },
+        {
+          "name": "DONE",
+          "position": 5,
+          "closed": true
+        },
+        {
+          "name": "DROPPED",
+          "position": 6,
+          "closed": true
+        }
+      ],
+      "labels": [
+        {
+          "name": "TEMPLATE",
+          "color": null
+        }
+      ],
+      "custom_field_groups": [
+        {
+          "name": "Metadata",
+          "fields": [
+            "work_type",
+            "card_group",
+            "priority",
+            "scope_level",
+            "requestor",
+            "creator_role",
+            "project_id",
+            "constraints",
+            "stream_id",
+            "stream_slug",
+            "card_type",
+            "project_type",
+            "phase",
+            "capability",
+            "asset_id",
+            "asset_kind",
+            "detector_severity",
+            "manual_trigger",
+            "worker_name",
+            "keycloak_tenant_id",
+            "user_id",
+            "subtype",
+            "authored_asset_id",
+            "version_stamp",
+            "plan_pin",
+            "source_artifact_id",
+            "source_item_id",
+            "spec_hash"
+          ]
+        },
+        {
+          "name": "Relations",
+          "fields": [
+            "parent_card",
+            "child_cards",
+            "requires",
+            "required_by",
+            "criterion_ids"
+          ]
+        },
+        {
+          "name": "Acceptance Criteria",
+          "fields": [
+            "criterion_1",
+            "criterion_2",
+            "criterion_3",
+            "criterion_4",
+            "criterion_5"
+          ]
+        },
+        {
+          "name": "Validation",
+          "fields": [
+            "scenario_titles",
+            "gherkin_summary",
+            "qa_exit_rule",
+            "blocked_conditions"
+          ]
+        },
+        {
+          "name": "Requirements",
+          "fields": [
+            "requirement_1",
+            "requirement_2",
+            "requirement_3",
+            "requirement_4",
+            "requirement_5"
+          ]
+        },
+        {
+          "name": "Principles",
+          "fields": [
+            "principle_1",
+            "principle_2",
+            "principle_3",
+            "principle_4",
+            "principle_5"
+          ]
+        },
+        {
+          "name": "Decisions",
+          "fields": [
+            "decision_1",
+            "decision_2",
+            "decision_3",
+            "decision_4",
+            "decision_5"
+          ]
+        },
+        {
+          "name": "Procedures",
+          "fields": [
+            "readying_procedure",
+            "doing_procedure",
+            "qa_procedure",
+            "done_procedure"
+          ]
+        },
+        {
+          "name": "Runtime State",
+          "fields": [
+            "prefetch_results",
+            "counts",
+            "sparse_dimensions",
+            "expansion",
+            "keywords_used",
+            "output_summary",
+            "step_results",
+            "container_name",
+            "status",
+            "artifact_id",
+            "reasoning_verdict",
+            "execution_tier",
+            "procedure_used",
+            "deliverables",
+            "pr_url",
+            "pr_number",
+            "pr_repo_owner",
+            "pr_repo_name",
+            "pr_is_draft",
+            "verdict",
+            "recommendation",
+            "issues",
+            "qa_exit_rule_applied",
+            "oracle_tier",
+            "blocking_gate",
+            "escalate",
+            "escalation_reason",
+            "decision_id",
+            "principles_applied",
+            "completion_summary",
+            "kaizen_log_id",
+            "finalized",
+            "notification_status",
+            "block_reason",
+            "old_workflow_id",
+            "new_workflow_id",
+            "proposal",
+            "is_analysis_only",
+            "phase_run_id",
+            "validation_ok",
+            "validation_violations",
+            "commit_sha",
+            "qa_chain",
+            "acs_count",
+            "cause",
+            "split_request",
+            "wip_slot_id",
+            "priority_set_by",
+            "priority_base",
+            "job_pending",
+            "context_pack_ref",
+            "context_pack_output_ref",
+            "context_pack_qa_output_ref",
+            "check_json_sha256",
+            "analysis_report",
+            "hunt_result_id",
+            "grid_handover_ready",
+            "grid_handover_doing",
+            "released",
+            "wait_for_phase"
+          ]
+        }
+      ]
+    }
+  ]
+}

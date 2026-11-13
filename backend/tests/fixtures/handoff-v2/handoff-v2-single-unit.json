@@ -1,0 +1,84 @@
+{
+  "__what": "handoff.v2 contract_hash known-answer vector, 1 unit / 3 ACs — the proof-2A (no split) shape. The contract carries no proof-specific floor, so this valid shape must be ACCEPTED.",
+  "__algorithm": "sha256 hex (lowercase) over UTF-8 bytes of canonicalizeJcs(contract minus design_approval_id); canonicalizeJcs = fr backend/src/lib/bug-report-hash.ts (RFC 8785 subset: keys sorted by UTF-16 code unit, no whitespace, strings via JSON.stringify, no Unicode normalisation, arrays in order, safe integers only, anything else throws).",
+  "__how_to_update": "Never regenerate to make a test pass. A change here is a contract change: bump CONTRACT_VERSION and update fr in the same release.",
+  "contract": {
+    "contract_version": "handoff.v2",
+    "decomposition_id": "11111111-2222-3333-4444-555555555555",
+    "design_card_id": "card-design-1",
+    "producing_procedure": "design_packaging.doing.action@3",
+    "design_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "design_approval_id": "9b2f6c1e-4d3a-4e8b-a7c5-0f1e2d3c4b5a",
+    "repository_url": "https://github.com/nonagenticai/fixture",
+    "branch": "main",
+    "container_name": "fixture",
+    "repo_name": "fixture",
+    "units": [
+      {
+        "unit_key": "alpha-1",
+        "unit": {
+          "kind": "new",
+          "file": "src/billing/invoice.py",
+          "function": "compute_total",
+          "insert_after": null
+        },
+        "scope": {
+          "summary": "Implement compute_total in src/billing/invoice.py",
+          "target_files": [
+            "src/billing/invoice.py",
+            "src/billing/__init__.py"
+          ],
+          "element_ids": [
+            "el-0"
+          ]
+        },
+        "interfaces": [
+          {
+            "direction": "provides",
+            "name": "compute_total",
+            "signature": "def compute_total(...)"
+          }
+        ],
+        "acceptance_criteria": [
+          {
+            "id": "crit_5bc434ad",
+            "text": "compute_total: criterion 0 — résumé ✓"
+          },
+          {
+            "id": "crit_9c145554",
+            "text": "compute_total: criterion 1 — résumé ✓"
+          },
+          {
+            "id": "crit_90bb6902",
+            "text": "compute_total: criterion 2 — résumé ✓"
+          }
+        ],
+        "acceptance_tests": [
+          {
+            "id": "crit_5bc434ad",
+            "path": "tests/billing/test_compute_total_0.py",
+            "code": "def test_compute_total_0():\n    assert False, \"crit_5bc434ad\"\n"
+          },
+          {
+            "id": "crit_9c145554",
+            "path": "tests/billing/test_compute_total_1.py",
+            "code": "def test_compute_total_1():\n    assert False, \"crit_9c145554\"\n"
+          },
+          {
+            "id": "crit_90bb6902",
+            "path": "tests/billing/test_compute_total_2.py",
+            "code": "def test_compute_total_2():\n    assert False, \"crit_90bb6902\"\n"
+          }
+        ],
+        "covers": [
+          "crit_5bc434ad",
+          "crit_9c145554",
+          "crit_90bb6902"
+        ],
+        "child_card_type": "development_feature_new",
+        "requires": []
+      }
+    ]
+  },
+  "expected_contract_hash": "dbdf647fbc93fa98b9c071a792ed02930f2530058d5c288ca87855c78b920a0e"
+}

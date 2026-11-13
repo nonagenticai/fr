@@ -1,0 +1,35 @@
+-- Migration: 223_drop_telegram_pending_answers
+-- Date: 2026-10-31
+--
+-- DROP the Telegram-only "the bot asked this sender for an answer" marker table
+-- (migration 146). George, 2026-10-31, verbatim: "telegram does not have anything of its
+-- own. all channels SAME flow! adapters only do the minimal work to make the unified
+-- multi-cast and first-response-counts single implementation function! rip out and delete
+-- all tests and code that does anything otherwise!"
+--
+-- The state machine is deleted in the same change: `routes/telegram-webhook.ts` no longer
+-- asks a follow-up question and no longer remembers the next message, so a bare `1` on a
+-- row that owes an answer now falls through to `decideAsChannelSender` and is refused with
+-- the SAME answer-required sentence every other channel gives (the fix is the one the
+-- shared menu already advertises everywhere: `approve: <your answer>`). Nothing reads or
+-- writes this table any more.
+--
+-- ⛔ LOSING THESE ROWS COSTS NOTHING. They were ephemeral 30-minute markers (the only
+-- "consequence" of dropping one was that the sender's next message was not read as an
+-- answer, which is now the only behaviour), and they are written and consumed entirely
+-- within one conversation turn. There is no user data here to restore.
+--
+-- RUNNER CONTRACT: pure DDL, no DML; mirrored in src/db/schema.ts (the table declaration is
+-- removed there, so `drizzle-kit push` reproduces this on a fresh database). No BEGIN/COMMIT
+-- (the runner wraps each file in a SAVEPOINT inside an outer transaction). IF EXISTS keeps a
+-- replay and a push-built CI database a no-op.
+--
+-- ⚠️ migration 142's destructive-statement guard also names this table in its EXEMPT list,
+-- and that entry IS removed in the same change. It has to be: 142's lists are the input
+-- scripts/check-destructive-guard-coverage.ts parses, and it refuses an exemption naming a
+-- table that src/db/schema.ts no longer declares ("a stale exemption is an exemption nobody
+-- re-read"). Removing the entry is safe for a database that already ran 142 — the triggers
+-- it installed on this table are dropped with the table on the next line — and for a fresh
+-- one, which never had them.
+
+DROP TABLE IF EXISTS telegram_pending_answers;

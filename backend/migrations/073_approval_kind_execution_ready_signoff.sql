@@ -1,0 +1,26 @@
+-- Migration: 073_approval_kind_execution_ready_signoff
+-- Date: 2026-06-05
+-- Plan ref: ~/.claude/plans/exec-tenant-has-staged-clock.md (Part B)
+--
+-- Adds the `execution.ready_signoff` discriminator to the `approval_kind`
+-- enum. This is the kind the AA ready-prefetch policy gate uses when it parks
+-- a card in BLOCKED awaiting a human stakeholder sign-off before the card may
+-- resume into DOING. The notification render layer + the new
+-- execution-ready-signoff-callback receiver dispatch per-kind, so the label
+-- must exist before any approval row carries it.
+--
+-- NOTE ON TRANSACTION SAFETY (corrects the stale comment in 059): the
+-- migration-runner wraps the ENTIRE run in ONE outer transaction and runs each
+-- file inside a SAVEPOINT — a file is NOT its own commit boundary. Postgres
+-- forbids USING a newly added enum value in the same transaction that added it,
+-- UNLESS the enum type itself was created earlier in that same transaction. On
+-- a fresh CI DB the `approval_kind` type is created (migration 042) within the
+-- same outer transaction as this ALTER, so the value is immediately usable; on
+-- prod the type predates the runner and this file is backfill-applied (never
+-- re-run). Either way is safe here because this migration NEVER uses the label
+-- in SQL — no CHECK, no DEFAULT references it. Keep it that way: any statement
+-- that USES 'execution.ready_signoff' must live in a separate, later file.
+--
+-- Forward-only / idempotent: ADD VALUE IF NOT EXISTS guards re-runs.
+
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'execution.ready_signoff';

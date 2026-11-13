@@ -1,0 +1,22 @@
+-- 156 — U4: the `execution.landing_signoff` approval_kind label (G-12 A5).
+--
+-- A5 is the BLOCKING landing sign-off: a PR-bearing proof card merges only through an
+-- approved A5 whose write-set check (constraint-check `diff_outside_write_set`) passed at the
+-- PR head. This file adds the LABEL only; the minter (A5 card_type, question_id stamping) is
+-- implement-multi-repo's, the consumer (approval-callback) is the U4 ncn PR.
+--
+-- Numbering: 154 = fr#1338, 155 = implement-multi-repo's `execution.question` (A6). Gaps are
+-- expected while those land.
+--
+-- ⚠️ ENUM SAFETY (same rule 059, 066, 073, 086, 123, 152 and 153 record). The runner applies a
+-- whole run in ONE transaction, and a label ADDED to a pre-existing type cannot be used in
+-- that same transaction ("unsafe use of new value ... New enum values must be committed
+-- before they can be used"). So this file NAMES THE LABEL ONLY HERE, never in a predicate,
+-- index, CHECK, default or DML; the first use is a later runtime approval INSERT. IF NOT EXISTS
+-- makes the file re-runnable (and a no-op on a drizzle-kit-push-built DB, where schema.ts
+-- creates the type with every label).
+--
+-- Probe: src/db/migration-runner.ts keys on the pg_enum label (drizzle-kit push never adds a
+-- label to an EXISTING type), so 156 stays PENDING on a pre-156 database and
+-- reapplyIfProbeFails re-runs it. Pure DDL; no DML.
+ALTER TYPE approval_kind ADD VALUE IF NOT EXISTS 'execution.landing_signoff';

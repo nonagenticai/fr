@@ -1,0 +1,18 @@
+-- Migration 044 — credentials encryption cutover marker.
+--
+-- Phase 4 of confirmed-spec-2-spicy-breeze, cutover date 2026-05-01.
+--
+-- This migration is intentionally a NO-OP. Phase 4 is a service-layer
+-- change: `channels.credentials_enc` swaps from plaintext storage to a
+-- base64-of-JSON AES-GCM envelope `{v:1, iv, ct}`. The column type is
+-- already `text` (migration 030); no DDL change is required.
+--
+-- The companion backfill script `backend/scripts/encrypt-channel-credentials.ts`
+-- migrates pre-cutover plaintext rows in place. Run it against the
+-- target cluster via `kubectl exec` once after deploy.
+--
+-- This marker file exists so the `_migrations` ledger records the
+-- cutover date — there's no other on-disk artifact identifying when
+-- a given environment switched. Keep the file even though it has no
+-- statements; the migration runner records the filename.
+SELECT 1;

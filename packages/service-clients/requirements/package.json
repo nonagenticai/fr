@@ -1,0 +1,18 @@
+{
+  "name": "@fr/service-client-requirements",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./pm-catalogue-defaults": {
+      "types": "./src/generated/pm-catalogue-defaults.ts",
+      "default": "./src/generated/pm-catalogue-defaults.ts"
+    }
+  }
+}

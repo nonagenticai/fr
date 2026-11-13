@@ -1,0 +1,54 @@
+{
+  "tenant_id": "t-1",
+  "card_id": "c-9",
+  "card_type": "development_bug_fix",
+  "reason": "PROPOSITION for card c-9 (development_bug_fix)\nBLOCK REASON [no_computed_check, source=derived-from-block-reason-field]: block reason: no_computed_check:development_bug_fix:crit_a1,crit_b2\nCOMPUTED EVIDENCE:\n  - REASON PREFIX: no_computed_check: (suffix: development_bug_fix:crit_a1,crit_b2)\n  - RECORDED REASON: block reason: no_computed_check:development_bug_fix:crit_a1,crit_b2\n  - qa_criteria_results: not recorded on this card\n  - COVERAGE REQUEST (DERIVED from the card's block_reason + criteria; no check executed): qa_head_sha null, commit_sha null, test_summary {\"passed\":0,\"failed\":0,\"skipped\":0}\n  - AC crit_a1 [scenario sc_1] computed={\"executed\":false,\"outcome\":\"not_run\"} reason_not_computed=no computed check executed | text: login rejects a bad password\n  - AC crit_b2 [scenario none] computed={\"executed\":false,\"outcome\":\"not_run\"} reason_not_computed=no computed check executed | text: crit_b2: audit row is written\nPROCEDURE: (none resolved)\nLEARNING: none filed — no procedure could be derived (prev_list_name=\"\", card_type=\"development_bug_fix\", procedure_name=null)  [signature no-computed-check::development-bug-fix::development-bug-fix]\nPROPOSED_ACTION: coverage sign-off — approve = covered, reject = gap (minted deblock_action COVERAGE)\nON APPROVE: the listed criteria are signed off as COVERED at an unrecorded head. approval-callback routes the minted COVERAGE today: the criteria you approve are recorded as COVERED by your review. With none rejected the card moves to DONE; any rejected criterion returns the card to TODO with a split_request naming exactly the rejected criteria. QA is never re-run on this decision.\nON REJECT: a GAP — the rejected criteria (rejected_criterion_ids; none named = every listed AC) return the card to TODO with a split_request naming them; QA is not re-run.",
+  "deblock_action": "COVERAGE",
+  "block_reason_class": "no_computed_check",
+  "gate_terms": [
+    "open_questions"
+  ],
+  "change_summary": "block reason: no_computed_check:development_bug_fix:crit_a1,crit_b2",
+  "impact_analysis": "COMPUTED EVIDENCE:\n- REASON PREFIX: no_computed_check: (suffix: development_bug_fix:crit_a1,crit_b2)\n- RECORDED REASON: block reason: no_computed_check:development_bug_fix:crit_a1,crit_b2\n- qa_criteria_results: not recorded on this card\n- COVERAGE REQUEST (DERIVED from the card's block_reason + criteria; no check executed): qa_head_sha null, commit_sha null, test_summary {\"passed\":0,\"failed\":0,\"skipped\":0}\n- AC crit_a1 [scenario sc_1] computed={\"executed\":false,\"outcome\":\"not_run\"} reason_not_computed=no computed check executed | text: login rejects a bad password\n- AC crit_b2 [scenario none] computed={\"executed\":false,\"outcome\":\"not_run\"} reason_not_computed=no computed check executed | text: crit_b2: audit row is written\n\nCOVERAGE SIGN-OFF (qa.coverage_signoff): APPROVE = the listed criteria are covered; REJECT = a gap (name rejected_criterion_ids in the comment; none named = every listed AC).\n\nBLOCK CLASS: no_computed_check | MINTED TYPE: COVERAGE | LEARNING: no-computed-check::development-bug-fix::development-bug-fix",
+  "rationale": "Coverage sign-off owed: card c-9 (development_bug_fix) is BLOCKED no_computed_check — 2 acceptance criteria have no executed passing BDD scenario at an unrecorded head. APPROVE = covered by your review; REJECT = a gap.",
+  "metadata": {
+    "coverage_request": {
+      "source": "derived",
+      "card_id": "c-9",
+      "card_type": "development_bug_fix",
+      "qa_head_sha": null,
+      "pr_url": null,
+      "commit_sha": null,
+      "criteria": [
+        {
+          "criterion_id": "crit_a1",
+          "text": "login rejects a bad password",
+          "scenario_id": "sc_1",
+          "scenario_gherkin": "Given a user\nWhen a bad password\nThen 401",
+          "computed": {
+            "executed": false,
+            "outcome": "not_run"
+          },
+          "reason_not_computed": "no computed check executed"
+        },
+        {
+          "criterion_id": "crit_b2",
+          "text": "crit_b2: audit row is written",
+          "scenario_id": null,
+          "scenario_gherkin": null,
+          "computed": {
+            "executed": false,
+            "outcome": "not_run"
+          },
+          "reason_not_computed": "no computed check executed"
+        }
+      ],
+      "artifacts": [],
+      "test_summary": {
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  }
+}

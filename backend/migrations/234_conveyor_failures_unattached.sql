@@ -1,0 +1,13 @@
+-- Migration: 234_conveyor_failures_unattached
+-- Date: 2026-11-04
+--
+-- (233 is taken by fr#1721, 233_drop_procedures.sql.)
+--
+-- R345 / R351: fr keeps no RM pm_project id, so a `coach_failed` notice that names ONLY an RM id is
+-- resolved through requirements_management. When RM cannot resolve it (down, or no such project in
+-- the tenant) the notice is still STORED, unattached (project_id NULL, the raw rm_project_id kept),
+-- instead of being refused and lost. So project_id becomes nullable; the FK (ON DELETE CASCADE) and
+-- every partial unique index are unchanged (a NULL project_id never collides in the start key).
+--
+-- Pure DDL, idempotent. Probed in src/db/migration-runner.ts (column nullable).
+ALTER TABLE project_conveyor_failures ALTER COLUMN project_id DROP NOT NULL;

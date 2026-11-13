@@ -1,0 +1,60 @@
+[
+  {
+    "name": "workers",
+    "liveUrl": "https://workers.example.com/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/workers.json",
+    "clientDir": "packages/service-clients/workers"
+  },
+  {
+    "name": "requirements",
+    "liveUrl": "https://requirements.example.com/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/requirements.json",
+    "clientDir": "packages/service-clients/requirements",
+    "artifacts": [
+      {
+        "name": "pm-catalogue-defaults",
+        "repo": "nonagenticai/requirements_management",
+        "ref": "main",
+        "path": "src/data/pm_catalogue_defaults.json",
+        "snapshotFile": "tooling/openapi/specs/requirements.pm-catalogue-defaults.json",
+        "exportName": "PM_CATALOGUE_DEFAULTS"
+      }
+    ]
+  },
+  {
+    "name": "kanban",
+    "liveUrl": "https://kanban.example.com/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/kanban.json",
+    "clientDir": "packages/service-clients/kanban"
+  },
+  {
+    "name": "kag",
+    "liveUrl": "https://kag.example.com/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/kag.json",
+    "clientDir": "packages/service-clients/kag"
+  },
+  {
+    "name": "secrets",
+    "liveUrl": "https://secrets.example.com/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/secrets.json",
+    "clientDir": "packages/service-clients/secrets"
+  },
+  {
+    "name": "artifacts",
+    "liveUrl": "http://artifacts.example.com:8556/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/artifacts.json",
+    "clientDir": "packages/service-clients/artifacts"
+  },
+  {
+    "name": "n8n",
+    "liveUrl": "http://n8n.example.com:5678/api/v1/openapi.yml",
+    "snapshotFile": "tooling/openapi/specs/n8n.json",
+    "clientDir": "packages/service-clients/n8n"
+  },
+  {
+    "name": "coding",
+    "liveUrl": "http://coding-gateway.example.com:8687/openapi.json",
+    "snapshotFile": "tooling/openapi/specs/coding.json",
+    "clientDir": "packages/service-clients/coding"
+  }
+]

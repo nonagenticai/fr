@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    // Environment setup & latest features
+    "lib": ["ESNext"],
+    "target": "ESNext",
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "jsx": "react-jsx",
+    "allowJs": true,
+
+    // Bundler mode
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // Monorepo paths — Bun respects tsconfig paths for runtime resolution.
+    "paths": {
+      "@fr/service-client-artifacts": ["../packages/service-clients/artifacts/src/index.ts"],
+      "@fr/service-client-coding": ["../packages/service-clients/coding/src/index.ts"],
+      "@fr/service-client-kag": ["../packages/service-clients/kag/src/index.ts"],
+      "@fr/service-client-kanban": ["../packages/service-clients/kanban/src/index.ts"],
+      "@fr/service-client-n8n": ["../packages/service-clients/n8n/src/index.ts"],
+      "@fr/service-client-requirements": ["../packages/service-clients/requirements/src/index.ts"],
+      "@fr/service-client-requirements/pm-catalogue-defaults": ["../packages/service-clients/requirements/src/generated/pm-catalogue-defaults.ts"],
+      "@fr/service-client-secrets": ["../packages/service-clients/secrets/src/index.ts"],
+      "@fr/service-client-workers": ["../packages/service-clients/workers/src/index.ts"]
+    },
+
+    // Best practices
+    "strict": true,
+    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    // Some stricter flags (disabled by default)
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noPropertyAccessFromIndexSignature": false
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "capability-pack/v1",
+  "consumer": "fr",
+  "id": "request-intake",
+  "version": 1,
+  "summary": "The doorway agent (fr-agui SPEC §6.0, OQ-15 = a): create a project or run the project-request lifecycle. Nothing else.",
+  "capabilities": [
+    "conveyor.list_project_types",
+    "conveyor.list_priority_levels",
+    "projects.list",
+    "projects.get",
+    "ui.open_project",
+    "projects.create",
+    "project_requests.draft_from_text",
+    "project_requests.list",
+    "project_requests.get",
+    "project_requests.patch",
+    "project_requests.submit",
+    "project_requests.withdraw",
+    "project_requests.approve",
+    "project_requests.reject",
+    "project_requests.list_outlines",
+    "project_requests.verify_repo_access",
+    "github_app.install_url",
+    "ui.navigate"
+  ],
+  "searchable": [],
+  "requires": { "fr_registry": ">=1" },
+  "examples": [
+    { "user": "I want a bug hunt on our payments repo", "capabilities": ["conveyor.list_project_types", "projects.create"] },
+    { "user": "show my open requests", "capabilities": ["project_requests.list"] }
+  ]
+}

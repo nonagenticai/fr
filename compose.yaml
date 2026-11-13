@@ -1,0 +1,40 @@
+# Local dependencies for the backend test suite and development.
+#
+#   docker compose up -d
+#   cd backend && bun run ci:test
+#
+# ci:test creates its own seed schema and a fresh integration database on the
+# same server, so this database only needs to be disposable.
+name: fr
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fr
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # PostgreSQL 18 images expect a single mount at /var/lib/postgresql;
+      # the data directory lives in a versioned subdirectory below it.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  pgdata:

@@ -1,0 +1,23 @@
+[test]
+# ⛔ NO `timeout` key here (fr#1347): bun 1.3.14 IGNORES `[test] timeout` for
+# test bodies AND hooks (measured). The per-test timeout comes ONLY from the
+# explicit `--timeout 60000` CLI flag — on every `bun test` script in
+# package.json and every `bun test` line in scripts/ci-test.sh. 60s because the
+# migration-runner tests boot an ephemeral postgres:18 container and 5s (bun's
+# default) is not enough when CREATE DATABASE serialises.
+# Preload runs before any test module is loaded — sets AUTH_BYPASS so the
+# kanban route + auth-middleware tests can short-circuit Keycloak. See
+# `tests/setup.ts` for the full rationale (Bun parallel-loader race on Linux).
+# `setup-env.ts` MUST be listed first — it has no imports, so its env-var
+# assignments run before any module evaluation. `setup.ts` then has
+# side-effect imports (e.g. middleware/auth → src/config.ts) that capture
+# env vars eagerly; if we set those vars inside setup.ts they land too late.
+#
+# `setup-db-guard.ts` is THIRD and last. It registers a global
+# `beforeEach(() => expect.hasAssertions())` so a test body that early-returns
+# without asserting FAILS instead of reporting the notorious
+# "N pass, 0 expect() calls" fake green. It is gated on `FR_TEST_REQUIRE_DB=1`
+# and is completely inert otherwise — deliberately NOT keyed on `CI` or
+# `DATABASE_URL` (see that file's header). Ordering is irrelevant to its correctness, but keeping it last
+# matches the env-first / links-second / assertions-last reading order.
+preload = ["./tests/setup-env.ts", "./tests/setup.ts", "./tests/setup-db-guard.ts"]

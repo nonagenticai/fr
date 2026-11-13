@@ -1,0 +1,134 @@
+/* Design tokens — semantic CSS custom properties.
+   Light values live on :root; dark values inside .dark.
+   Palette: the Non-Agentic brand language (teal + midnight/navy + coral),
+   shared with the nonagentic.ai marketing site. Spec history:
+   docs/archive/2026-04-27-foundation-design.md §10. */
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-surface-muted: #f8fafc;
+  --color-surface-strong: #f1f5f9;
+  --color-text: #1e293b;
+  --color-text-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-accent: #0d9488;
+  --color-accent-strong: #0f766e;
+  --color-accent-bg: #f0fdfa;
+  --color-accent-border: #ccfbf1;
+  --color-accent-text: #0f766e;
+  --color-link: #0f766e;
+  --color-success: #16a34a;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-success-text: #15803d;
+  --color-warning: #d97706;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-warning-text: #92400e;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fef2f2;
+  --color-danger-bg-deep: #450a0a;
+  --color-danger-border: #fecaca;
+  --color-danger-text: #991b1b;
+  --color-warning-bg-deep: #422006;
+
+  --color-info: #7c3aed;
+  --color-info-strong: #c026d3;
+  --color-info-bg: #faf5ff;
+  --color-info-bg-strong: #fdf4ff;
+  --color-info-border: #e9d5ff;
+  --color-info-border-strong: #f5d0fe;
+  --color-info-text: #6b21a8;
+  --color-info-text-strong: #86198f;
+
+  /* Coral — brand secondary, for non-semantic brand pops + secondary tags. */
+  --color-secondary: #ea580c;
+  --color-secondary-strong: #c2410c;
+  --color-secondary-bg: #ffedd5;
+  --color-secondary-border: #fed7aa;
+  --color-secondary-text: #c2410c;
+
+  /* Primary call-to-action — aliases accent so legacy usage keeps working. */
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent-strong);
+  --color-on-primary: #ffffff;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}
+
+.dark {
+  /* Monotone dark mode — neutral-gray chrome + ONE cool slate-blue accent.
+     Replaces the old navy + teal/green/violet/coral rainbow. Light :root unchanged. */
+
+  /* Neutral-gray chrome (no navy) */
+  --color-bg: #0e1014;
+  --color-surface: #16191f;
+  --color-surface-muted: #16191f;
+  --color-surface-strong: #1f242b;
+  --color-text: #e7e9ec;            /* ~13:1 on bg */
+  --color-text-muted: #9aa2ad;      /* ~6.5:1 on bg */
+  --color-border: #272d35;
+  --color-border-strong: #3a414b;
+
+  /* Single cool accent — muted slate-blue (the only routine hue) */
+  --color-accent: #5b82c4;
+  --color-accent-strong: #486aa6;
+  --color-accent-bg: #141c28;
+  --color-accent-border: #2a3a52;
+  --color-accent-text: #9bb6e0;
+  --color-link: #9bb6e0;
+
+  /* Success — desaturated sage (state only, no bright fills) */
+  --color-success: #5a8f6e;
+  --color-success-bg: #16241d;
+  --color-success-border: #2c4a39;
+  --color-success-text: #9bc4ac;
+
+  /* Warning — desaturated amber (cool accent keeps it naturally distinct) */
+  --color-warning: #c19a4d;
+  --color-warning-bg: #241f13;
+  --color-warning-border: #463c25;
+  --color-warning-text: #ddc78d;
+  --color-warning-bg-deep: #1f1a10;
+
+  /* Danger — muted red */
+  --color-danger: #cf7b7b;
+  --color-danger-bg: #241616;
+  --color-danger-bg-deep: #241616;
+  --color-danger-border: #4d2f2f;
+  --color-danger-text: #e6a8a8;
+
+  /* Info — de-violeted to neutral cool slate; kept distinct from the blue accent
+     and light enough to read as the architecture-graph node/dot color */
+  --color-info: #7e8893;
+  --color-info-strong: #9aa2ad;
+  --color-info-bg: #191d23;
+  --color-info-bg-strong: #1f242b;
+  --color-info-border: #333a43;
+  --color-info-border-strong: #3a414b;
+  --color-info-text: #c2c9d1;
+  --color-info-text-strong: #d6dbe1;
+
+  /* Secondary — muted clay/terracotta; warm, so it stays distinct from the cool
+     accent. Brand pops only, not decorative fills */
+  --color-secondary: #b9805e;
+  --color-secondary-strong: #9a6849;
+  --color-secondary-bg: #221913;
+  --color-secondary-border: #45301f;
+  --color-secondary-text: #d6a987;
+
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent-strong);
+  --color-on-primary: #0e1014;      /* dark text on the blue fill (4.95:1) */
+}

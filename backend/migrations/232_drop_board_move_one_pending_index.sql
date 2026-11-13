@@ -1,0 +1,13 @@
+-- Migration: 232_drop_board_move_one_pending_index
+-- Date: 2026-11-04
+--
+-- R349 (George 2026-11-04): a person's drag on a conveyor board is the plain Planka move, so fr no
+-- longer creates `board.move_confirmation` approvals and the answerability chokepoint no longer
+-- reserves their metadata shape. Migration 205's partial unique index keyed on that shape
+-- ({request_id, from_list_id, to_list_id}) would now turn a second such pending approval of any
+-- kind into an unhandled 23505 — drop it. 205 stays as history.
+--
+-- (231 is taken by fr#1715, 231_kata_failed_keeps_cord.sql.)
+--
+-- Pure DDL, idempotent. Probed in src/db/migration-runner.ts (index absent).
+DROP INDEX IF EXISTS approvals_one_pending_board_move_per_project_idx;

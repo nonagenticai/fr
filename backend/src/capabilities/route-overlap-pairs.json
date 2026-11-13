@@ -1,0 +1,176 @@
+{
+  "generatedBy": "bun run scripts/route-overlap-pairs.ts --write",
+  "rows": 818,
+  "pairs": [
+    {
+      "before": "GET /api/conveyor/catalogue/enums",
+      "after": "GET /api/conveyor/catalogue/:resource",
+      "probe": "/api/conveyor/catalogue/enums"
+    },
+    {
+      "before": "POST /api/conveyor/catalogue/import-defaults",
+      "after": "POST /api/conveyor/catalogue/:resource",
+      "probe": "/api/conveyor/catalogue/import-defaults"
+    },
+    {
+      "before": "GET /api/conveyor/catalogue/wip-limits/resolve",
+      "after": "GET /api/conveyor/catalogue/:resource/:id",
+      "probe": "/api/conveyor/catalogue/wip-limits/resolve"
+    },
+    {
+      "before": "GET /api/assets/architecture/elements/:eid",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/architecture/elements/bindings"
+    },
+    {
+      "before": "GET /api/assets/architecture/relationships/:rid",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/architecture/relationships/bindings"
+    },
+    {
+      "before": "GET /api/assets/architecture/views/:vid",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/architecture/views/bindings"
+    },
+    {
+      "before": "GET /api/assets/architecture/standards/:sid",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/architecture/standards/bindings"
+    },
+    {
+      "before": "GET /api/assets/toc/config",
+      "after": "GET /api/assets/toc/:treeId",
+      "probe": "/api/assets/toc/config"
+    },
+    {
+      "before": "PUT /api/assets/toc/config",
+      "after": "PUT /api/assets/toc/:treeId",
+      "probe": "/api/assets/toc/config"
+    },
+    {
+      "before": "GET /api/reports/approval-backlog",
+      "after": "GET /api/reports/:reportId",
+      "probe": "/api/reports/approval-backlog"
+    },
+    {
+      "before": "GET /api/assets/workers/providers",
+      "after": "GET /api/assets/workers/:name",
+      "probe": "/api/assets/workers/providers"
+    },
+    {
+      "before": "GET /api/workflows/tags",
+      "after": "GET /api/workflows/:id",
+      "probe": "/api/workflows/tags"
+    },
+    {
+      "before": "POST /api/admin/licenses/grants/user/:subjectId",
+      "after": "POST /api/admin/licenses/grants/:licenseId/regenerate-token",
+      "probe": "/api/admin/licenses/grants/user/regenerate-token"
+    },
+    {
+      "before": "POST /api/admin/licenses/grants/user/:subjectId",
+      "after": "POST /api/admin/licenses/grants/:licenseId/tokens",
+      "probe": "/api/admin/licenses/grants/user/tokens"
+    },
+    {
+      "before": "GET /api/assets/kanban/projects/:projectId",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/kanban/projects/bindings"
+    },
+    {
+      "before": "GET /api/assets/kanban/boards/:boardId",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/kanban/boards/bindings"
+    },
+    {
+      "before": "GET /api/assets/kanban/lists/:listId",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/kanban/lists/bindings"
+    },
+    {
+      "before": "GET /api/assets/kanban/cards/:cardId",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/kanban/cards/bindings"
+    },
+    {
+      "before": "GET /api/approvals/all",
+      "after": "GET /api/approvals/:approvalId",
+      "probe": "/api/approvals/all"
+    },
+    {
+      "before": "GET /api/approvals/bug-fix-for-card/:bugCardId",
+      "after": "GET /api/approvals/:approvalId/document",
+      "probe": "/api/approvals/bug-fix-for-card/document"
+    },
+    {
+      "before": "GET /api/approvals/bug-fix-for-card/:bugCardId",
+      "after": "GET /api/approvals/:approvalId/approved-items",
+      "probe": "/api/approvals/bug-fix-for-card/approved-items"
+    },
+    {
+      "before": "GET /api/approvals/bug-fix-for-card/:bugCardId",
+      "after": "GET /api/approvals/:approvalId/write-set",
+      "probe": "/api/approvals/bug-fix-for-card/write-set"
+    },
+    {
+      "before": "GET /api/assets/requirements/search",
+      "after": "GET /api/assets/requirements/:rid",
+      "probe": "/api/assets/requirements/search"
+    },
+    {
+      "before": "GET /api/assets/principles/search",
+      "after": "GET /api/assets/principles/:pid",
+      "probe": "/api/assets/principles/search"
+    },
+    {
+      "before": "GET /api/assets/decisions/search",
+      "after": "GET /api/assets/decisions/:did",
+      "probe": "/api/assets/decisions/search"
+    },
+    {
+      "before": "GET /api/assets/:kind/:id/quality/history",
+      "after": "GET /api/assets/kag/reviews(.*)",
+      "probe": "/api/assets/kag/reviews/quality/history"
+    },
+    {
+      "before": "POST /api/assets/:kind/:id/bindings",
+      "after": "POST /api/assets/kag/reviews(.*)",
+      "probe": "/api/assets/kag/reviews/bindings"
+    },
+    {
+      "before": "DELETE /api/assets/:kind/:id/bindings/:project_id",
+      "after": "DELETE /api/assets/kag/reviews(.*)",
+      "probe": "/api/assets/kag/reviews/bindings/probe-x"
+    },
+    {
+      "before": "GET /api/assets/artifacts/manifest/:scope",
+      "after": "GET /api/assets/artifacts/:id/reviews",
+      "probe": "/api/assets/artifacts/manifest/reviews"
+    },
+    {
+      "before": "GET /api/assets/artifacts/manifest/:scope",
+      "after": "GET /api/assets/artifacts/:id/preview",
+      "probe": "/api/assets/artifacts/manifest/preview"
+    },
+    {
+      "before": "GET /api/assets/artifacts/manifest/:scope",
+      "after": "GET /api/assets/artifacts/:id/download",
+      "probe": "/api/assets/artifacts/manifest/download"
+    },
+    {
+      "before": "GET /api/assets/artifacts/manifest/:scope",
+      "after": "GET /api/assets/:kind/:id/bindings",
+      "probe": "/api/assets/artifacts/manifest/bindings"
+    },
+    {
+      "before": "GET /api/assets/:kind/:id/bindings",
+      "after": "GET /api/assets/kag/reviews(.*)",
+      "probe": "/api/assets/kag/reviews/bindings"
+    },
+    {
+      "before": "GET /api/assets/:kind/:id/bindings",
+      "after": "GET /api/assets/kag/scrape-sessions/:sessionId",
+      "probe": "/api/assets/kag/scrape-sessions/bindings"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "_comment": "fr-agui SPEC §10.1 step 2 — ONE vector file, asserted by BOTH the backend port (backend/src/capabilities/redact.ts, tests/unit/capabilities/redact.test.ts) and the frontend originals (frontend/src/lib/api/channel-prefs.ts maskAddress, deliveries.ts maskRecipient; frontend/src/lib/api/mask-vectors.test.ts). A drift on either side reds that side.",
+  "maskAddress": [
+    {
+      "channel": "email",
+      "address": "alice@example.com",
+      "expected": "a••••@example.com"
+    },
+    {
+      "channel": "teams",
+      "address": "bob@tenant.onmicrosoft.com",
+      "expected": "b••••@tenant.onmicrosoft.com"
+    },
+    {
+      "channel": "email",
+      "address": "malformed",
+      "expected": "m••••"
+    },
+    {
+      "channel": "email",
+      "address": "@nolocal.com",
+      "expected": "@••••"
+    },
+    {
+      "channel": "email",
+      "address": "",
+      "expected": ""
+    },
+    {
+      "channel": "websocket",
+      "address": "ws-abc123def456",
+      "expected": "ws-abc…"
+    },
+    {
+      "channel": "websocket",
+      "address": "ws-1",
+      "expected": "ws-1"
+    },
+    {
+      "channel": "websocket",
+      "address": "abcdef",
+      "expected": "abcdef"
+    },
+    {
+      "channel": "voice",
+      "address": "+31600000001",
+      "expected": "+31600…"
+    }
+  ],
+  "maskRecipient": [
+    {
+      "channel": "voice",
+      "address": "+31 6 0000 0001",
+      "expected": "••••0001"
+    },
+    {
+      "channel": "voice",
+      "address": "+15555550100",
+      "expected": "••••0100"
+    },
+    {
+      "channel": "voice",
+      "address": "+12",
+      "expected": "••••"
+    },
+    {
+      "channel": "email",
+      "address": "carol@example.org",
+      "expected": "c••••@example.org"
+    },
+    {
+      "channel": "teams",
+      "address": "nodomain",
+      "expected": "••••"
+    },
+    {
+      "channel": "email",
+      "address": "",
+      "expected": ""
+    },
+    {
+      "channel": "websocket",
+      "address": "short-sess",
+      "expected": "short-sess"
+    },
+    {
+      "channel": "inapp",
+      "address": "abcdefghijklmnopqrstuvwxyz",
+      "expected": "…stuvwxyz"
+    },
+    {
+      "channel": "web",
+      "address": "exactly12chr",
+      "expected": "exactly12chr"
+    }
+  ],
+  "_comment_templates": "Strings may contain «rep:S:N» (S repeated N times), expanded by BOTH test files before use, so no secret-shaped literal lives in this file (the repo's secret scanners stay quiet).",
+  "piiByKey": [
+    {
+      "key": "approver_email",
+      "mask": "email",
+      "channel": null,
+      "value": "dana@example.com",
+      "expected": "d••••@example.com"
+    },
+    {
+      "key": "recipient_address",
+      "mask": "recipient",
+      "channel": "voice",
+      "value": "+31 6 1234 5678",
+      "expected": "••••5678"
+    },
+    {
+      "key": "recipient_address",
+      "mask": "recipient",
+      "channel": "teams",
+      "value": "https://contoso.webhook.office.com/webhookb2/«rep:ab12:8»",
+      "expected": "••••"
+    },
+    {
+      "key": "recipient_address",
+      "mask": "recipient",
+      "channel": "email",
+      "value": "erin@example.net",
+      "expected": "e••••@example.net"
+    },
+    {
+      "key": "address",
+      "mask": "address",
+      "channel": "email",
+      "value": "frank@example.com",
+      "expected": "f••••@example.com"
+    }
+  ],
+  "scrub": [
+    {
+      "name": "slack webhook",
+      "input": "posted to https://hooks.slack.com/services/T«rep:0:8»/B«rep:1:8»/«rep:x:24» ok",
+      "expected": "posted to https://hooks.slack.com/services/«redacted» ok"
+    },
+    {
+      "name": "teams webhook",
+      "input": "https://contoso.webhook.office.com/webhookb2/«rep:a:8»-1111-2222-3333-«rep:b:12»@«rep:c:8»/IncomingWebhook/«rep:d:32»/«rep:e:8»",
+      "expected": "https://contoso.webhook.office.com/webhookb2/«redacted»"
+    },
+    {
+      "name": "teams legacy webhook",
+      "input": "https://outlook.office.com/webhook/«rep:f:36»/IncomingWebhook/«rep:g:32»",
+      "expected": "https://outlook.office.com/webhook/«redacted»"
+    },
+    {
+      "name": "discord webhook",
+      "input": "https://discord.com/api/webhooks/«rep:1:18»/«rep:Zz:34»",
+      "expected": "https://discord.com/api/webhooks/«redacted»"
+    },
+    {
+      "name": "telegram bot url",
+      "input": "https://api.telegram.org/bot«rep:1:10»:AA«rep:h:33»/sendMessage",
+      "expected": "https://api.telegram.org/bot«redacted»/sendMessage"
+    },
+    {
+      "name": "telegram bot token bare",
+      "input": "token is «rep:7:9»:AA«rep:Kq:16»x now",
+      "expected": "token is «redacted» now"
+    },
+    {
+      "name": "sig and token query",
+      "input": "https://flow.example.com/run?api-version=1&sp=x&sig=«rep:s:20»&token=«rep:t:12»",
+      "expected": "https://flow.example.com/run?api-version=1&sp=x&sig=«redacted»&token=«redacted»"
+    },
+    {
+      "name": "key query",
+      "input": "https://maps.example.com/q?key=k«rep:9:10»&z=1",
+      "expected": "https://maps.example.com/q?key=«redacted»&z=1"
+    },
+    {
+      "name": "signature query",
+      "input": "https://cdn.example.com/f.pdf?Expires=1&Signature=«rep:Sg:10»",
+      "expected": "https://cdn.example.com/f.pdf?Expires=1&Signature=«redacted»"
+    },
+    {
+      "name": "access_token query",
+      "input": "https://api.example.com/x?access_token=«rep:a:16»",
+      "expected": "https://api.example.com/x?access_token=«redacted»"
+    },
+    {
+      "name": "gitlab pat",
+      "input": "use glpat-«rep:Q:20» here",
+      "expected": "use «redacted» here"
+    },
+    {
+      "name": "hugging face token",
+      "input": "HF hf_«rep:W:34» set",
+      "expected": "HF «redacted» set"
+    },
+    {
+      "name": "licence token (token_urlsafe(32), 43 chars)",
+      "input": "licence «rep:Ab3:14»x issued",
+      "expected": "licence «redacted» issued"
+    },
+    {
+      "name": "40-hex token as repo-URL username",
+      "input": "clone https://«rep:a1:20»@github.com/org/repo.git",
+      "expected": "clone https://«redacted»@github.com/org/repo.git"
+    }
+  ],
+  "scrubUnchanged": [
+    {
+      "name": "uuid in text",
+      "input": "run 0195f48b-d000-7000-8000-00000000b0aa finished"
+    },
+    {
+      "name": "40-hex commit sha in text",
+      "input": "commit «rep:3f78:10» merged"
+    },
+    {
+      "name": "64-hex sha256 in text",
+      "input": "digest «rep:e3b0:16» ok"
+    },
+    {
+      "name": "sha in a repo URL path",
+      "input": "https://github.com/org/repo/commit/«rep:9a1f:10»"
+    },
+    {
+      "name": "ordinary query string",
+      "input": "https://example.com/search?q=login&page=2&sort=asc"
+    },
+    {
+      "name": "plain repo url",
+      "input": "https://github.com/org/repo.git"
+    },
+    {
+      "name": "43-char lowercase identifier",
+      "input": "plain-lowercase-identifier-for-mask-vectors"
+    },
+    {
+      "name": "uuid list",
+      "input": "ids: 0195f48b-d000-7000-8000-00000000b0aa, 0195f48b-d000-7000-8000-00000000b0bb"
+    },
+    {
+      "name": "ratio-like colon",
+      "input": "ticket 12345:resolved at 10:30"
+    }
+  ]
+}
