@@ -28,7 +28,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"@types/node": "^26.6.5",
 		"@vitest/ui": "^5.0.4",
-		"jsdom": "^30.1.2",
+		"jsdom": "^31.0.0",
 		"patch-package": "^8.0.1",
 		"svelte": "^5.57.2",
 		"svelte-check": "^4.7.6",
