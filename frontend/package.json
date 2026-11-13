@@ -38,7 +38,7 @@
 	},
 	"dependencies": {
 		"@dagrejs/dagre": "^3.1.1",
-		"@sveltejs/adapter-node": "^5.5.7",
+		"@sveltejs/adapter-node": "^6.0.2",
 		"@tanstack/svelte-virtual": "^3.13.43",
 		"@types/d3": "^7.4.3",
 		"@xyflow/svelte": "^1.7.0",
