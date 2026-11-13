@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onInvalidate } from '$lib/agent/invalidation';
 	import { onMount, onDestroy } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { setPageTitle } from '$lib/layout/pageTitle.svelte';
 	import { fetchProjectCockpit, CockpitNotFoundError } from '$lib/api/cockpit';
 	import type { ProjectCockpit, CockpitCard, CockpitProjectRepository } from '$lib/types/cockpit';
@@ -47,7 +47,7 @@
 	// opened from "Ask about this project" in the header (D7) — never mounted here.
 	// Every phase placement comes from the read model, exactly; the page guesses none.
 
-	let projectId = $derived($page.params.id);
+	let projectId = $derived(page.params.id);
 
 	let cockpit = $state<ProjectCockpit | null>(null);
 	let loaded = $state(false);
@@ -186,7 +186,7 @@
 
 	// Publish this route's entity name to the single title element in the root layout.
 	$effect(() => {
-		setPageTitle($page.url.pathname, cockpit?.project?.data?.name ?? null);
+		setPageTitle(page.url.pathname, cockpit?.project?.data?.name ?? null);
 	});
 </script>
 

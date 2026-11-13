@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { onDestroy } from 'svelte';
   import { agentRail } from '$lib/stores/agentRail.svelte';
   import { activeProject } from '$lib/stores/activeProject.svelte';
@@ -12,11 +12,11 @@
   // active project so the project rail (main rows + Details) + Header switcher +
   // proj-ctx phase chip render. The full summary (name + phase) resolves from
   // the switcher list; setActive seeds an id-stub so the shell renders at once.
-  // Keyed on the id ALONE (via `$derived`): the effect used to read `$page`
+  // Keyed on the id ALONE (via `$derived`): the effect used to read `page`
   // wholesale, so every in-project navigation re-ran setActive + load() and
   // re-rendered the sidebar's project block — which is why the cockpit sidebar
   // jumped on every click.
-  const projectId = $derived($page.params.id);
+  const projectId = $derived(page.params.id);
   $effect(() => {
     const id = projectId;
     if (id) {

@@ -9,7 +9,7 @@
   list; ?project_id=<id> scopes the list to a project.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import {
     fetchTocTrees,
@@ -45,10 +45,10 @@
   let error = $state<string | null>(null);
 
   const treeTypeFilter = $derived(
-    ($page.url.searchParams.get('tree_type') ?? '') as TocTreeType | '',
+    (page.url.searchParams.get('tree_type') ?? '') as TocTreeType | '',
   );
-  const projectId = $derived($page.url.searchParams.get('project_id') ?? undefined);
-  const selectedId = $derived($page.url.searchParams.get('tree_id') ?? undefined);
+  const projectId = $derived(page.url.searchParams.get('project_id') ?? undefined);
+  const selectedId = $derived(page.url.searchParams.get('tree_id') ?? undefined);
 
   async function loadList() {
     loadingList = true;
@@ -95,10 +95,10 @@
   }
 
   function setParam(key: string, value: string | undefined) {
-    const url = new URL($page.url);
+    const url = new URL(page.url.href);
     if (value) url.searchParams.set(key, value);
     else url.searchParams.delete(key);
-    goto(`${url.pathname}${url.search}`, { keepFocus: true, noScroll: true });
+    goto(`${url.pathname}${url.search}`, { reset: false });
   }
 
   function selectTree(id: string) {

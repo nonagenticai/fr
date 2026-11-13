@@ -5,7 +5,7 @@
   // The event-type filter is URL-synced (shareable / reload-safe) via the shared
   // urlState helpers. Data + polling are owned by the page; this is a pure
   // renderer of the events block it's handed.
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import type { Panel } from '$lib/types/panel';
   import { hasData } from '$lib/types/panel';
   import type { TimelineEvent } from '$lib/types/cockpit';
@@ -35,12 +35,12 @@
   const tabs: TabDef[] = TIMELINE_FILTERS.map((id) => ({ id, label: FILTER_LABELS[id] }));
 
   const activeFilter = $derived(
-    parseEnumParam($page.url.searchParams, 'ev', TIMELINE_FILTERS, 'all'),
+    parseEnumParam(page.url.searchParams, 'ev', TIMELINE_FILTERS, 'all'),
   );
   const shown = $derived(hasData(events) ? filterEvents(events.data, activeFilter) : []);
 
   function selectFilter(id: string): void {
-    void setSearchParams($page.url, { ev: id === 'all' ? null : id });
+    void setSearchParams(page.url, { ev: id === 'all' ? null : id });
   }
 
   function eventTime(at: string): string {

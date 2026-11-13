@@ -14,14 +14,14 @@
   registration order (server.ts:2074).
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { getReport, type ProjectReport } from '$lib/api/reports';
   import ReportPanel from '$lib/components/reports/ReportPanel.svelte';
   import BugReportView from '$lib/components/reports/BugReportView.svelte';
   import { parseBugReportDetails } from '$lib/api/bug-report';
 
-  const reportId = $derived($page.params.reportId ?? '');
+  const reportId = $derived(page.params.reportId ?? '');
 
   let report = $state<ProjectReport | undefined>(undefined);
   let loading = $state(true);
@@ -72,7 +72,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, report?.title ?? null);
+    setPageTitle(page.url.pathname, report?.title ?? null);
   });
 </script>
 

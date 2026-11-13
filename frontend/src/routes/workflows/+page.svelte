@@ -10,7 +10,7 @@
 -->
 <script lang="ts">
   import { goto, invalidateAll } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import TagTree from '$lib/workflows/TagTree.svelte';
   import ErrorMessage from '$lib/components/ErrorMessage.svelte';
   import type { WorkflowSummary } from '$lib/api/workflows';
@@ -33,7 +33,7 @@
   // Selection is derived straight from the URL — the page never holds
   // filter state of its own, so reload / back-forward / shared links all
   // restore the same view.
-  const selection = $derived(parseFacetSelection($page.url.searchParams));
+  const selection = $derived(parseFacetSelection(page.url.searchParams));
   const hasFacetSelection = $derived(!selectionIsEmpty(selection));
 
   // Primary domain / purpose for a workflow card, as display labels.
@@ -59,21 +59,21 @@
   });
 
   // Apply a patch of query-string params in one shot. Two separate
-  // goto() calls would race: the second reads $page.url before the
+  // goto() calls would race: the second reads page.url before the
   // first navigation lands and ends up overwriting the first patch.
   function setParams(patch: Record<string, string | null>) {
-    const url = new URL($page.url);
+    const url = new URL(page.url.href);
     for (const [name, value] of Object.entries(patch)) {
       if (value === null) url.searchParams.delete(name);
       else url.searchParams.set(name, value);
     }
-    goto(url.pathname + url.search, { replaceState: true, noScroll: true });
+    goto(url.pathname + url.search, { replaceState: true, reset: false });
   }
 
   // Toggle one slug in one facet's set, then write the whole selection
   // back to the URL as CSV-per-facet params.
   function toggleFacet(key: FacetKey, slug: string) {
-    const next = parseFacetSelection($page.url.searchParams);
+    const next = parseFacetSelection(page.url.searchParams);
     if (next[key].has(slug)) next[key].delete(slug);
     else next[key].add(slug);
     setParams(selectionToParams(next));
@@ -112,7 +112,7 @@
   }
 
   function buildHref(id: string): string {
-    return `/workflows/${id}${$page.url.search}`;
+    return `/workflows/${id}${page.url.search}`;
   }
 
   // The catalogue read failed. `data.workflows` is [] in that case, but it

@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { auth } from '$lib/stores/auth.svelte';
   import {
     approveSignup,
@@ -99,7 +99,7 @@
 
   onMount(() => {
     void load();
-    const id = $page.url.searchParams.get('signup');
+    const id = page.url.searchParams.get('signup');
     if (id) void loadFocused(id);
   });
 

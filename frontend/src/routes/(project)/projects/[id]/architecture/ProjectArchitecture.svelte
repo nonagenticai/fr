@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { apiClient } from '$lib/api/unified-client';
   import { loadProject } from '$lib/projects/load-project';
@@ -40,7 +40,7 @@
     },
   };
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
   let project = $state<Project | null>(null);
   // true ⇒ the project read FAILED; every 'not provisioned' / 'not found'
   // message below is unearned while this is set.
@@ -73,7 +73,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, project?.name ?? null);
+    setPageTitle(page.url.pathname, project?.name ?? null);
   });
 </script>
 

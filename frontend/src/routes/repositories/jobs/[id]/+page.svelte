@@ -8,7 +8,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     getFindings,
     getJob,
@@ -32,7 +32,7 @@
   }
 
   async function load() {
-    const jobId = $page.params.id ?? '';
+    const jobId = page.params.id ?? '';
     loading = true;
     error = null;
     if (!jobId) {

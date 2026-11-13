@@ -1,6 +1,6 @@
 <script lang="ts">
   import DOMPurify from 'dompurify';
-  import { browser } from '$app/environment';
+  import { browser } from '$app/env';
 
   // The backend preview endpoint returns the RAW decoded artifact bytes — it
   // does NOT sanitize. So for html-shaped bodies we sanitize client-side with

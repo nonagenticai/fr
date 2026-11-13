@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { apiClient } from '$lib/api/unified-client';
   import ProjectInspectHeader from '$lib/components/cockpit/ProjectInspectHeader.svelte';
@@ -31,7 +31,7 @@
   const POLL_MS = 5_000;
   const POLL_MAX_MS = 10 * 60 * 1000;
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
   let data = $state<ProjectQuality | null>(null);
   let loadError = $state<string | null>(null);
   let loaded = $state(false);
@@ -47,7 +47,7 @@
   );
 
   $effect(() => {
-    setPageTitle($page.url.pathname, null);
+    setPageTitle(page.url.pathname, null);
   });
 
   async function load(): Promise<void> {

@@ -3,12 +3,12 @@
 -->
 <script lang="ts">
   import TraceLinksPanel from '$lib/components/modeling/TraceLinksPanel.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { AssetWorkspace } from '$lib/asset-workspace';
   import { requirementsManifest } from '$lib/manifests/requirements';
   import AssetClrPanel from '$lib/components/toc/AssetClrPanel.svelte';
 
-  const id = $derived(decodeURIComponent($page.params.id ?? ''));
+  const id = $derived(decodeURIComponent(page.params.id ?? ''));
 </script>
 
 <AssetWorkspace manifest={requirementsManifest} mode="detail" {id} />

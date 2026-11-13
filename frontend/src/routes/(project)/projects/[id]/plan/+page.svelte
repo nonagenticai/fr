@@ -18,7 +18,7 @@
   so instead of "not recorded", and a milestone on a closed project says how its state was derived.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fetchProjectCockpit, CockpitNotFoundError } from '$lib/api/cockpit';
   import { fetchProjectRegisters } from '$lib/api/project-registers';
   import { hasData } from '$lib/types/panel';
@@ -32,7 +32,7 @@
   import { isFinished } from '$lib/projects/cockpit-status';
   import { isClosedProjectStatus } from '$lib/projects/project-status';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let cockpit = $state<ProjectCockpit | null>(null);
   let cockpitLoaded = $state(false);

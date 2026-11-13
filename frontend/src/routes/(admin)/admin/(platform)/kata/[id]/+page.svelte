@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { KATA_TENANT_ID, getKata, releaseKata, rollbackKata, stopKata, type KataView } from '$lib/api/katas';
   import {
@@ -42,7 +42,7 @@
   const POLL_MS = 15_000;
   const N8N = n8nUiBase();
 
-  const id = $derived($page.params.id ?? '');
+  const id = $derived(page.params.id ?? '');
   let kata = $state<KataView | null>(null);
   let loadError = $state<string | null>(null);
   let now = $state(Date.now());

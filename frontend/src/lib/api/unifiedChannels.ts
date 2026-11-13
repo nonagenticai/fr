@@ -19,6 +19,7 @@
 //
 // Plan: docs/superpowers/plans/2026-04-29-spec-2-plan-c-ui-surfaces.md §Phase 1.
 
+import type { ReadonlyURLSearchParams } from '$app/state';
 import type { Channel } from './channels';
 import type { ScheduledTrigger } from '$lib/types/api';
 import { fetchWithBudget } from '$lib/net/fetchWithBudget';
@@ -142,7 +143,7 @@ export type WireKind = 'scheduled_intake' | 'notification';
  * other than the recognised kebab string (or a missing param) returns
  * `null` — callers treat that as the legacy notification branch.
  */
-export function kindFromUrl(searchParams: URLSearchParams | null): UrlKind {
+export function kindFromUrl(searchParams: ReadonlyURLSearchParams | null): UrlKind {
   const k = searchParams?.get('kind');
   if (k === 'schedule-intake') return k;
   return null;

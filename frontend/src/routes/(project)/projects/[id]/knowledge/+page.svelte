@@ -22,7 +22,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     ScopePill,
     InheritanceBreadcrumb,
@@ -85,7 +85,7 @@
     projectResolved: boolean | null;
   }
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let buckets = $state<TypeBucket[]>([]);
   let loading = $state(true);
@@ -207,7 +207,7 @@
       const responses = await Promise.all(
         TYPES.map(async (t) => {
           try {
-            // Not named `page`: that identifier is the imported $app/stores
+            // Not named `page`: that identifier is the imported /state
             // page store at module scope.
             const res = await assetFetchPage<Record<string, unknown>[]>(
               `/api/assets/${t.slug}${qs}`,

@@ -6,14 +6,14 @@
   open. Three states, never collapsed: reading / failed / not in this project's outputs.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fetchProjectOutputs } from '$lib/api/project-outputs';
   import { findDocument } from '$lib/documents/reader';
   import DocumentReader from '$lib/components/outputs/DocumentReader.svelte';
   import type { ProjectOutputs } from '$lib/types/outputs';
 
-  const projectId = $derived($page.params.id ?? '');
-  const artifactId = $derived($page.params.artifactId ?? '');
+  const projectId = $derived(page.params.id ?? '');
+  const artifactId = $derived(page.params.artifactId ?? '');
 
   type View = { kind: 'reading' } | { kind: 'failed'; message: string } | { kind: 'loaded'; data: ProjectOutputs };
   let view = $state<View>({ kind: 'reading' });

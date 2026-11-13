@@ -9,11 +9,12 @@
 // which stays as-is.
 
 import { goto } from '$app/navigation';
+import type { ReadonlyURL, ReadonlyURLSearchParams } from '$app/state';
 
 export interface SetSearchParamsOptions {
   replaceState?: boolean;
-  noScroll?: boolean;
-  keepFocus?: boolean;
+  /** Kit 3: `false` leaves the reader's scroll position and focus alone. */
+  reset?: boolean;
 }
 
 /**
@@ -24,30 +25,31 @@ export interface SetSearchParamsOptions {
  * routes/workflows/+page.svelte:setParams).
  *
  * Defaults mirror the workflows list — `replaceState` (filters don't pollute
- * browser history) + `noScroll` (toggling a filter shouldn't jump the
- * viewport) — plus `keepFocus`, which a text-input writer needs so typing
- * doesn't lose focus on the same-route navigation. All three are harmless for
- * checkbox/sort writers. The input `url` is never mutated.
+ * browser history) + `reset: false` (kit 3's merged replacement for kit 2's
+ * `noScroll` + `keepFocus`: toggling a filter shouldn't jump the viewport, and
+ * a text-input writer must not lose focus on the same-route navigation). Both
+ * are harmless for checkbox/sort writers. The input `url` is never mutated.
  */
 export function setSearchParams(
-  url: URL,
+  url: URL | ReadonlyURL,
   patch: Record<string, string | null>,
   opts: SetSearchParamsOptions = {},
 ): Promise<void> {
-  const next = new URL(url);
+  // Kit 3 types `$app/state`'s `page.url` as a ReadonlyURL; `href` is the
+  // string form both it and a mutable URL expose.
+  const next = new URL(url.href);
   for (const [name, value] of Object.entries(patch)) {
     if (value === null || value === '') next.searchParams.delete(name);
     else next.searchParams.set(name, value);
   }
   return goto(next.pathname + next.search, {
     replaceState: opts.replaceState ?? true,
-    noScroll: opts.noScroll ?? true,
-    keepFocus: opts.keepFocus ?? true,
+    reset: opts.reset ?? false,
   });
 }
 
 /** Read a CSV param into a de-duped Set (values trimmed, empties dropped). */
-export function parseCsvSet(params: URLSearchParams, key: string): Set<string> {
+export function parseCsvSet(params: ReadonlyURLSearchParams, key: string): Set<string> {
   const raw = params.get(key);
   if (!raw) return new Set();
   const out = new Set<string>();
@@ -66,7 +68,7 @@ export function csvSetToParam(set: Set<string>): string | null {
 
 /** Read a plain string param, falling back when absent. */
 export function parseStringParam(
-  params: URLSearchParams,
+  params: ReadonlyURLSearchParams,
   key: string,
   fallback = '',
 ): string {
@@ -78,7 +80,7 @@ export function parseStringParam(
  * member. Used for `dir` ('asc' | 'desc') and other small closed vocabularies.
  */
 export function parseEnumParam<T extends string>(
-  params: URLSearchParams,
+  params: ReadonlyURLSearchParams,
   key: string,
   allowed: readonly T[],
   fallback: T,

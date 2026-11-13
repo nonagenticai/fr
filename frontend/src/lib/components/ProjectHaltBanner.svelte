@@ -2,7 +2,7 @@
   // The red banner at the top of every project page while a platform operator has paused the
   // project (its reason only, no buttons). Re-read every 20 s while halted so the banner clears
   // itself once the project continues.
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { projectHalt } from '$lib/stores/projectHalt.svelte';
   import { HALT_TEXT, haltHeadline } from '$lib/projects/project-halt';
 
@@ -11,7 +11,7 @@
   let { projectId: forProject = undefined }: { projectId?: string | null } = $props();
 
   const POLL_MS = 20_000;
-  const projectId = $derived(forProject === undefined ? ($page.params?.id ?? '') : (forProject ?? ''));
+  const projectId = $derived(forProject === undefined ? (page.params?.id ?? '') : (forProject ?? ''));
 
   $effect(() => {
     const id = projectId;

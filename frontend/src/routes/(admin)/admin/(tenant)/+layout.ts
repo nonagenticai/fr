@@ -11,7 +11,7 @@
 // stamps each row it offers them `workspace-admin` — the same answer the
 // backend's tenant-admin gates give. So ONE predicate decides, for everybody,
 // and this tier never opens on a workspace whose data calls would 403.
-import { browser } from '$app/environment';
+import { browser } from '$app/env';
 import { redirect } from '@sveltejs/kit';
 import { auth } from '$lib/stores/auth.svelte';
 import type { LayoutLoad } from './$types';

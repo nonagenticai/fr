@@ -4,12 +4,12 @@
   /library/architecture/standards list route.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { AssetWorkspace } from '$lib/asset-workspace';
   import AssetRelationships from '$lib/asset-workspace/AssetRelationships.svelte';
   import { architectureStandardsManifest } from '$lib/manifests/architecture/standards';
 
-  const id = $derived(decodeURIComponent($page.params.id ?? ''));
+  const id = $derived(decodeURIComponent(page.params.id ?? ''));
 </script>
 
 <div class="flex flex-col gap-4">

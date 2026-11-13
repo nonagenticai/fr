@@ -14,14 +14,14 @@
   the error state says exactly that rather than guessing which one it was.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { getProjectStatus, type ProjectStatus } from '$lib/api/reports';
   import ReportPanel from '$lib/components/reports/ReportPanel.svelte';
   import EntityRef from '$lib/components/ui/EntityRef.svelte';
   import { humanizeEnum } from '$lib/utils/humanizeEnum';
 
-  const projectId = $derived($page.params.projectId ?? '');
+  const projectId = $derived(page.params.projectId ?? '');
 
   let data = $state<ProjectStatus | undefined>(undefined);
   let loading = $state(true);
@@ -84,7 +84,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, data ? projectName(data.project) : null);
+    setPageTitle(page.url.pathname, data ? projectName(data.project) : null);
   });
 </script>
 

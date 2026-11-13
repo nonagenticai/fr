@@ -1,5 +1,9 @@
 {
-	"extends": "./.svelte-kit/tsconfig.json",
+	"extends": "$app/tsconfig",
+	// Kit 3's generated config carries no `include`, so the default `**/*` would sweep in
+	// root `server.js` — and that imports the not-yet-built `./build/handler.js`. Mirror the
+	// file set kit 2's generated include covered: src plus the Vite/Vitest configs.
+	"include": ["src", "vite.config.ts", "vitest.config.ts"],
 	"compilerOptions": {
 		"allowJs": true,
 		"checkJs": true,

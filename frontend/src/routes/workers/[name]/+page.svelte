@@ -1,6 +1,6 @@
 <!-- src/routes/workers/[name]/+page.svelte -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
@@ -45,7 +45,7 @@
     output_schema?: unknown;
   };
 
-  const workerName = $derived(decodeURIComponent($page.params.name ?? ''));
+  const workerName = $derived(decodeURIComponent(page.params.name ?? ''));
   let worker = $state<WorkerRecord | null>(null);
   let loading = $state(true);
   let loadError = $state('');
@@ -282,7 +282,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, worker?.name ?? null);
+    setPageTitle(page.url.pathname, worker?.name ?? null);
   });
 </script>
 

@@ -2,7 +2,17 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  // Kit 3 removed the built-in `$lib` alias; the app restores it (plus the shared
+  // service-client type alias) in `vite.config.ts`, but vitest builds its own plugin
+  // instance, so the same aliases have to be declared here too.
+  plugins: [
+    sveltekit({
+      alias: {
+        $lib: 'src/lib',
+        '@fr/service-client-requirements': '../packages/service-clients/requirements/src/index.ts',
+      },
+    }),
+  ],
   resolve: {
     // Svelte's package exports route `default` to `index-server.js`. Tests
     // that mount components into jsdom need the client runtime, so prefer

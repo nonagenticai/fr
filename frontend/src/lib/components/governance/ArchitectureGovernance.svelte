@@ -89,7 +89,7 @@
 
   // Carry the project across the view routes (header note).
   $effect(() => {
-    const url = page.url;
+    const url = new URL(page.url.href);
     const key = memoryKey;
     const pid = url.searchParams.get('projectId') ?? '';
     // Signed out, or user / tenant switched: forget, never carry across.
@@ -102,17 +102,17 @@
     if (!remembered) return;
     const next = new URL(url);
     next.searchParams.set('projectId', remembered.projectId);
-    goto(`${next.pathname}?${next.searchParams.toString()}`, { replaceState: true, keepFocus: true });
+    goto(`${next.pathname}?${next.searchParams.toString()}`, { replaceState: true, reset: false });
   });
 
   /** Forget the selection (this tenant's memory too) and show the picker. */
   function changeProject(): void {
     remembered = null;
     projectIdInput = '';
-    const url = new URL(page.url);
+    const url = new URL(page.url.href);
     url.searchParams.delete('projectId');
     const qs = url.searchParams.toString();
-    goto(qs ? `${url.pathname}?${qs}` : url.pathname, { keepFocus: true });
+    goto(qs ? `${url.pathname}?${qs}` : url.pathname, { reset: false });
   }
 
   $effect(() => {
@@ -142,9 +142,9 @@
     e.preventDefault();
     const id = projectIdInput.trim();
     if (!id) return;
-    const url = new URL(page.url);
+    const url = new URL(page.url.href);
     url.searchParams.set('projectId', id);
-    goto(`${url.pathname}?${url.searchParams.toString()}`, { keepFocus: true });
+    goto(`${url.pathname}?${url.searchParams.toString()}`, { reset: false });
   }
 
   function pct(v: number): string {

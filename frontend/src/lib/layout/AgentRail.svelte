@@ -5,7 +5,7 @@
   import ContextualPane from './ContextualPane.svelte';
   import MessageList from '$lib/components/chat/MessageList.svelte';
   import ChatInput from '$lib/components/chat/ChatInput.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { isDoorwayPath } from '$lib/agent/doorway';
   import { onInvalidate } from '$lib/agent/invalidation';
@@ -52,7 +52,7 @@
   // fr-agui SPEC §6.0: on the create/request doorway pages the agent runs in
   // request-intake mode (create, the request lifecycle, type listing only).
   $effect(() => {
-    threads.mode = isDoorwayPath($page.url.pathname) ? 'intake' : 'default';
+    threads.mode = isDoorwayPath(page.url.pathname) ? 'intake' : 'default';
   });
 
   // Sync the threads store's active thread with the rail's chosen thread.

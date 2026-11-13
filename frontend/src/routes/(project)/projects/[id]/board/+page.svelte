@@ -17,7 +17,7 @@
   `?card=<id>` opens that card's drawer (the cockpit's deep links).
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { onInvalidate } from '$lib/agent/invalidation';
@@ -46,7 +46,7 @@
     type DrawerOutputs,
   } from '$lib/components/board/board';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let cockpit = $state<ProjectCockpit | null>(null);
   let loaded = $state(false);
@@ -141,7 +141,7 @@
 
   // ?card=<id> → open that card's drawer.
   $effect(() => {
-    const fromUrl = $page.url.searchParams.get('card');
+    const fromUrl = page.url.searchParams.get('card');
     if (fromUrl) openCardId = fromUrl;
   });
   $effect(() => {
@@ -156,10 +156,10 @@
   }
   function closeCard(): void {
     openCardId = null;
-    if ($page.url.searchParams.has('card')) {
-      const u = new URL($page.url);
+    if (page.url.searchParams.has('card')) {
+      const u = new URL(page.url.href);
       u.searchParams.delete('card');
-      void goto(`${u.pathname}${u.search}`, { replaceState: true, noScroll: true, keepFocus: true });
+      void goto(`${u.pathname}${u.search}`, { replaceState: true, reset: false });
     }
   }
 
@@ -205,7 +205,7 @@
   const askWip = () => askAgentAbout('How close is this project to its WIP limit?');
 
   $effect(() => {
-    setPageTitle($page.url.pathname, cockpit?.project?.data?.name ?? null);
+    setPageTitle(page.url.pathname, cockpit?.project?.data?.name ?? null);
   });
 
   const filterBtn = (on: boolean) =>

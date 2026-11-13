@@ -5,11 +5,11 @@
   /projects/[id]/threads 308 here. See ProjectNeedsYou for where each row comes from.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import ProjectInspectHeader from '$lib/components/cockpit/ProjectInspectHeader.svelte';
   import ProjectNeedsYou from '$lib/components/needs-you/ProjectNeedsYou.svelte';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 </script>
 
 <ProjectInspectHeader

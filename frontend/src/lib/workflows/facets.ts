@@ -14,6 +14,7 @@
 // Filter semantics: multi-select OR *within* a facet, AND *across* facets.
 // URL state is one CSV query param per facet (`?domain=kag,kanban`).
 
+import type { ReadonlyURLSearchParams } from '$app/state';
 import type { WorkflowSummary } from '$lib/api/workflows';
 
 /** Stage facet pseudo-slug: workflows that carry no `stage:` tag at all. */
@@ -130,7 +131,7 @@ function emptySelection(): FacetSelection {
  * Tolerant of the pre-faceted single-value URLs (`?domain=kanban`) — a
  * lone value is just a one-element set, so old bookmarks still work.
  */
-export function parseFacetSelection(params: URLSearchParams): FacetSelection {
+export function parseFacetSelection(params: ReadonlyURLSearchParams): FacetSelection {
   const sel = emptySelection();
   for (const facet of FACETS) {
     const raw = params.get(facet.key);

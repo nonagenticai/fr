@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { setPageTitle } from '$lib/layout/pageTitle.svelte';
   import { goto } from '$app/navigation';
   import {
@@ -40,7 +40,7 @@
 
   // SvelteKit's params type is `Record<string, string | undefined>`; the
   // route file lives under [id] so the param is always present at runtime.
-  let deptId = $derived($page.params.id as string);
+  let deptId = $derived(page.params.id as string);
 
   let dept = $state<Department | null>(null);
   let members = $state<DepartmentMember[]>([]);
@@ -310,7 +310,7 @@
   // whose path no longer matches, which is what makes a stale tab title
   // impossible. `null` while loading falls back to the static map entry.
   $effect(() => {
-    setPageTitle($page.url.pathname, dept?.name ?? null);
+    setPageTitle(page.url.pathname, dept?.name ?? null);
   });
 </script>
 

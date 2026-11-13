@@ -14,11 +14,11 @@
   that deliberately stays global (Edit), which the subtitle below now states.
 -->
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import RepositoriesTab from '../../../../repositories/RepositoriesTab.svelte';
   import ProjectInspectHeader from '$lib/components/cockpit/ProjectInspectHeader.svelte';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 </script>
 
 <ProjectInspectHeader

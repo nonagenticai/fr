@@ -13,7 +13,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import {
     confirmClaim,
@@ -39,13 +39,13 @@
   let connected = $state<string | null>(null);
   let claimError = $state<string | null>(null);
 
-  const pending = $derived($page.url.searchParams.get('pending') === '1');
-  const errorCode = $derived(claimError ?? $page.url.searchParams.get('github_error'));
+  const pending = $derived(page.url.searchParams.get('pending') === '1');
+  const errorCode = $derived(claimError ?? page.url.searchParams.get('github_error'));
 
   const active = $derived(installations.filter((i) => !i.revoked_at));
 
   onMount(async () => {
-    const handle = $page.url.searchParams.get('claim');
+    const handle = page.url.searchParams.get('claim');
     if (handle) await confirmPendingClaim(handle);
     await load();
   });
@@ -58,9 +58,9 @@
       claimError = e instanceof GithubAppApiError && e.code ? e.code : 'claim_failed';
     } finally {
       confirming = false;
-      const u = new URL($page.url);
+      const u = new URL(page.url.href);
       u.searchParams.delete('claim');
-      await goto(`${u.pathname}${u.search}`, { replaceState: true, noScroll: true, keepFocus: true });
+      await goto(`${u.pathname}${u.search}`, { replaceState: true, reset: false });
     }
   }
 

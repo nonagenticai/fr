@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import {
     fetchTocTrees,
     fetchTocGraph,
@@ -26,7 +26,7 @@
   import EvaporatingCloud from '$lib/components/toc/EvaporatingCloud.svelte';
   import ProjectInspectHeader from '$lib/components/cockpit/ProjectInspectHeader.svelte';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   let trees = $state<TocTree[]>([]);
   let selectedId = $state<string | null>(null);

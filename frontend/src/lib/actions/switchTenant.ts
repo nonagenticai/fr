@@ -40,8 +40,7 @@
 // rebuilt '/'). Staying on the SAME route does not remount anything, and that
 // is the whole bug — so staying put now rebuilds the document instead.
 
-import { get } from 'svelte/store';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { goto, invalidateAll } from '$app/navigation';
 import { workspaces } from '$lib/stores/workspaces.svelte';
 import { kanbanStore } from '$lib/stores/kanbanStore.svelte';
@@ -129,7 +128,7 @@ export async function switchTenant(id: string): Promise<void> {
   agentSession.onWorkspaceSwitch();
 
   // 3. Decide navigation off the CURRENT route (invalidateAll doesn't change it).
-  const mustLeave = routeNeedsLeave(get(page).route.id);
+  const mustLeave = routeNeedsLeave(page.route.id);
 
   // 4. ⛔ STAYING PUT IS THE BUG. Same route ⇒ SvelteKit keeps the page
   //    component mounted ⇒ every surface that fetched in `onMount` never

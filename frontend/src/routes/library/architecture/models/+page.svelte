@@ -67,10 +67,10 @@
   });
 
   function setProjectFilter(id: string): void {
-    const url = new URL(page.url);
+    const url = new URL(page.url.href);
     if (id) url.searchParams.set('project_id', id);
     else url.searchParams.delete('project_id');
-    goto(`${url.pathname}${url.search}`, { keepFocus: true, noScroll: true });
+    goto(`${url.pathname}${url.search}`, { reset: false });
   }
 
   function search(e: Event): void {

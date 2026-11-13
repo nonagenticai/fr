@@ -13,7 +13,7 @@
 -->
 <script lang="ts">
   import favicon from '$lib/assets/favicon.svg';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { auth } from '$lib/stores/auth.svelte';
   import { licenseGate } from '$lib/stores/licenseGate.svelte';
   import { NAV_ITEMS, navHrefMatches } from './navConfig';
@@ -28,7 +28,7 @@
     ...NAV_ITEMS.filter((i) => i.group === 'kag'),
     ...NAV_ITEMS.filter((i) => i.id === 'research'),
   ];
-  const currentPath = $derived($page.url.pathname);
+  const currentPath = $derived(page.url.pathname);
 
   let { children } = $props();
 

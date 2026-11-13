@@ -10,7 +10,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { apiClient } from '$lib/api/unified-client';
   import { deliveredPrsFromApprovals, type DeliveredPr } from '$lib/projects/delivered-prs';
   import { ProjectLibraryTab } from '$lib/components/library';
@@ -20,7 +20,7 @@
   import { fetchProjectOutputs } from '$lib/api/project-outputs';
   import type { ProjectOutputs } from '$lib/types/outputs';
 
-  const projectId = $derived($page.params.id ?? '');
+  const projectId = $derived(page.params.id ?? '');
 
   // No per-id artifact detail route exists, so a row links to the tenant
   // Artifacts page and the fragment names the row to scroll to.

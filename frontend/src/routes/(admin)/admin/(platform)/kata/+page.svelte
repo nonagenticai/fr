@@ -10,7 +10,7 @@
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { authFetch } from '$lib/api/auth-fetch';
   import {
     KATA_STATES,
@@ -201,7 +201,7 @@
   }
 
   onMount(() => {
-    const pre = readNewKataPrefill($page.url.searchParams);
+    const pre = readNewKataPrefill(page.url.searchParams);
     if (pre.open) {
       showNew = true;
       fTenant = pre.tenant || workspaces.activeId || null;

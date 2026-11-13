@@ -6,7 +6,7 @@
   import { sidebar } from '$lib/stores/sidebar.svelte';
   import AgentRail from './AgentRail.svelte';
   import TenantSidePane from './TenantSidePane.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { tenantRailKind } from '$lib/agent/doorway';
   import { agentRail } from '$lib/stores/agentRail.svelte';
 
@@ -16,8 +16,8 @@
   // agent mounts on a tenant page ONLY in doorway mode (projects/new, /intake,
   // /requests[/id]); every other tenant page gets the side pane with "Open a
   // project to use the agent" + a project picker (and the [Detail] pane).
-  const railKind = $derived(tenantRailKind($page.url.pathname));
-  const section = $derived(sectionForPath($page.url.pathname));
+  const railKind = $derived(tenantRailKind(page.url.pathname));
+  const section = $derived(sectionForPath(page.url.pathname));
 </script>
 
 <!-- TopNav (the one app bar) spans the page; below it the active section's sidebar, the page and the right pane. -->
