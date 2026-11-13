@@ -1,5 +1,9 @@
 # FR — Control Plane & Communication Hub
 
+[![CI](https://github.com/nonagenticai/fr/actions/workflows/ci.yml/badge.svg)](https://github.com/nonagenticai/fr/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/nonagenticai/fr)](https://github.com/nonagenticai/fr/releases)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 FR is the portal, control plane and communication hub for an autonomous-agent
 workflow system built on n8n and Planka. Humans and agents use it to submit and
 govern projects, manage a multi-dimensional asset library, run card lifecycles,
@@ -90,3 +94,19 @@ Apache-2.0. See [`LICENSE`](LICENSE).
 
 The upstream Planka and n8n projects keep their own licences; this repository
 only contains code written for FR.
+
+## Security
+
+Report vulnerabilities privately through the repository's Security tab — see
+[`SECURITY.md`](SECURITY.md). Do not open a public issue for a security problem.
+
+## Contributing
+
+Issues and pull requests are welcome. See
+[`CONTRIBUTING.md`](https://github.com/nonagenticai/.github/blob/main/CONTRIBUTING.md) for the
+organisation-wide rules; setup, test and lint commands are in this README. Commits carry DCO
+sign-off.
+
+## License
+
+Apache-2.0 — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
