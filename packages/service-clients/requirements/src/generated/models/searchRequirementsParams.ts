@@ -7,24 +7,18 @@
  */
 
 export type SearchRequirementsParams = {
-q?: string | null;
-k?: number;
-/**
- * Hits to skip in the stable order (pagination)
- * @minimum 0
- * @maximum 10000
- */
-offset?: number;
-/**
- * Only this project
- */
-project_id?: string | null;
-/**
- * Only this version_status
- */
-version_status?: string | null;
-/**
- * Only this origin_kind
- */
-origin_kind?: string | null;
+  q?: string | null;
+  k?: number;
+  /**
+   * Hits to skip in the stable order (pagination)
+   * @minimum 0
+   * @maximum 10000
+   */
+  offset?: number;
+  /** Only this project */
+  project_id?: string | null;
+  /** Only this version_status */
+  version_status?: string | null;
+  /** Only this origin_kind */
+  origin_kind?: string | null;
 };

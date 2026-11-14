@@ -9,31 +9,23 @@ import type { ArtifactKind } from './artifactKind';
 import type { ArtifactSensitivity } from './artifactSensitivity';
 
 export type ListArtifactsParams = {
-card_id?: string | null;
-step?: string | null;
-kind?: ArtifactKind | null;
-sensitivity?: ArtifactSensitivity | null;
-name_prefix?: string | null;
-tags?: string[] | null;
-/**
- * Only documents produced in this phase
- */
-phase?: string | null;
-/**
- * Only documents of this type
- */
-doc_type?: string | null;
-/**
- * Only artifacts of this Planka card
- */
-planka_card_id?: string | null;
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  card_id?: string | null;
+  step?: string | null;
+  kind?: ArtifactKind | null;
+  sensitivity?: ArtifactSensitivity | null;
+  name_prefix?: string | null;
+  tags?: string[] | null;
+  /** Only documents produced in this phase */
+  phase?: string | null;
+  /** Only documents of this type */
+  doc_type?: string | null;
+  /** Only artifacts of this Planka card */
+  planka_card_id?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

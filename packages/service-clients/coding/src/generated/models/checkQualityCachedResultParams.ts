@@ -23,8 +23,6 @@
  */
 
 export type CheckQualityCachedResultParams = {
-/**
- * Force refresh ignoring cache
- */
-force_refresh?: boolean;
+  /** Force refresh ignoring cache */
+  force_refresh?: boolean;
 };

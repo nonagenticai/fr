@@ -23,16 +23,10 @@
  */
 
 export type DetectSystemDependenciesParams = {
-/**
- * Absolute path to the project root directory to scan. If not provided, uses current working directory
- */
-project_root?: string | null;
-/**
- * Whether to include optional dependencies in the detection process. Optional dependencies are typically development or testing tools
- */
-include_optional?: boolean;
-/**
- * Skip installation checks for faster response. Only detects which dependencies are defined in the project, not their installation status
- */
-fast_mode?: boolean;
+  /** Absolute path to the project root directory to scan. If not provided, uses current working directory */
+  project_root?: string | null;
+  /** Whether to include optional dependencies in the detection process. Optional dependencies are typically development or testing tools */
+  include_optional?: boolean;
+  /** Skip installation checks for faster response. Only detects which dependencies are defined in the project, not their installation status */
+  fast_mode?: boolean;
 };

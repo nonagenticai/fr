@@ -31,5 +31,5 @@
  */
 
 export type GetGraphStatsParams = {
-include_temporal?: boolean;
+  include_temporal?: boolean;
 };

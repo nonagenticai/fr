@@ -23,8 +23,6 @@
  */
 
 export type DeleteGraphParams = {
-/**
- * Force deletion
- */
-force?: boolean;
+  /** Force deletion */
+  force?: boolean;
 };

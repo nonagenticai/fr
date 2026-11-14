@@ -23,8 +23,6 @@
  */
 
 export type AnalysisGraphCentralityParams = {
-/**
- * Node type to compute centrality for
- */
-entity_type: string;
+  /** Node type to compute centrality for */
+  entity_type: string;
 };

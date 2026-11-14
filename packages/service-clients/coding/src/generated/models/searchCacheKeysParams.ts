@@ -23,19 +23,17 @@
  */
 
 export type SearchCacheKeysParams = {
-/**
- * Glob-style pattern to match
- */
-pattern: string;
-/**
- * Maximum results
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Pagination offset
- * @minimum 0
- */
-offset?: number;
+  /** Glob-style pattern to match */
+  pattern: string;
+  /**
+   * Maximum results
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Pagination offset
+   * @minimum 0
+   */
+  offset?: number;
 };

@@ -23,10 +23,10 @@
  */
 
 export type GetTestingMetricsSummaryParams = {
-/**
- * Number of days to include in summary
- * @minimum 1
- * @maximum 90
- */
-days?: number;
+  /**
+   * Number of days to include in summary
+   * @minimum 1
+   * @maximum 90
+   */
+  days?: number;
 };

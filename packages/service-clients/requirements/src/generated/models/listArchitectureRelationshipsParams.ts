@@ -7,43 +7,29 @@
  */
 
 export type ListArchitectureRelationshipsParams = {
-/**
- * Filter by source entity type. Naming either end's type lifts the default ArchiMate-only restriction (e.g. `toc_nodes` lists TOC edges)
- */
-source_entity_type?: string | null;
-/**
- * Filter by source ID
- */
-source_id?: string | null;
-/**
- * Filter by target entity type (lifts the default restriction, as above)
- */
-target_entity_type?: string | null;
-/**
- * Filter by target ID
- */
-target_id?: string | null;
-/**
- * Filter by relationship type
- */
-relationship_type?: string | null;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * Filter to the relationships of this ArchiMate model: the ArchiMate edges whose SOURCE end belongs to it (stored as the relationship's `model_id`, re-derived when an end moves). A relationship joins only a model of the caller's own tenant that it may write, with the model's visibility (otherwise the write is 422 `model_not_writable` / `model_visibility_mismatch`). Non-ArchiMate links (PM / TOC / governance) belong to no model and never match. Only a model the caller may read (`GET /modeling/models/{id}`) filters to anything: another tenant's model or another subject's private model returns an empty list.
- */
-model_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by source entity type. Naming either end's type lifts the default ArchiMate-only restriction (e.g. `toc_nodes` lists TOC edges) */
+  source_entity_type?: string | null;
+  /** Filter by source ID */
+  source_id?: string | null;
+  /** Filter by target entity type (lifts the default restriction, as above) */
+  target_entity_type?: string | null;
+  /** Filter by target ID */
+  target_id?: string | null;
+  /** Filter by relationship type */
+  relationship_type?: string | null;
+  /** Filter by project */
+  project_id?: string | null;
+  /** Filter to the relationships of this ArchiMate model: the ArchiMate edges whose SOURCE end belongs to it (stored as the relationship's `model_id`, re-derived when an end moves). A relationship joins only a model of the caller's own tenant that it may write, with the model's visibility (otherwise the write is 422 `model_not_writable` / `model_visibility_mismatch`). Non-ArchiMate links (PM / TOC / governance) belong to no model and never match. Only a model the caller may read (`GET /modeling/models/{id}`) filters to anything: another tenant's model or another subject's private model returns an empty list. */
+  model_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

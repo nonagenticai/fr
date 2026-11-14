@@ -31,5 +31,5 @@
  */
 
 export type ScientificPipelineStatusHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

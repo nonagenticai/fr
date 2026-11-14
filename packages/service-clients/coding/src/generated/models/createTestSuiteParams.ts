@@ -23,7 +23,7 @@
  */
 
 export type CreateTestSuiteParams = {
-container_name: string;
-name: string;
-description: string;
+  container_name: string;
+  name: string;
+  description: string;
 };

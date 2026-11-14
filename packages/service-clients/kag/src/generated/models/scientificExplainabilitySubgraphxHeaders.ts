@@ -31,5 +31,5 @@
  */
 
 export type ScientificExplainabilitySubgraphxHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

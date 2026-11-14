@@ -8,27 +8,21 @@
 import type { ListModelsLanguage } from './listModelsLanguage';
 
 export type ListModelsParams = {
-/**
- * archimate | uml
- */
-language?: ListModelsLanguage;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * Title contains (case-insensitive)
- */
-q?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** archimate | uml */
+  language?: ListModelsLanguage;
+  /** Filter by project */
+  project_id?: string | null;
+  /** Title contains (case-insensitive) */
+  q?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

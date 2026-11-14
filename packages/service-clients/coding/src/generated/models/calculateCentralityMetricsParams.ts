@@ -23,5 +23,5 @@
  */
 
 export type CalculateCentralityMetricsParams = {
-entity_type?: string | null;
+  entity_type?: string | null;
 };

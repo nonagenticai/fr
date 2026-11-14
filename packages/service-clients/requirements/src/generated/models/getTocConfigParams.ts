@@ -7,9 +7,9 @@
  */
 
 export type GetTocConfigParams = {
-/**
- * '' for the tenant-level config
- * @maxLength 100
- */
-project_id?: string;
+  /**
+   * '' for the tenant-level config
+   * @maxLength 100
+   */
+  project_id?: string;
 };

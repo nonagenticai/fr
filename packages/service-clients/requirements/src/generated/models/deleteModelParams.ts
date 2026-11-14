@@ -7,8 +7,6 @@
  */
 
 export type DeleteModelParams = {
-/**
- * Also delete a model that has sealed revisions
- */
-force?: boolean;
+  /** Also delete a model that has sealed revisions */
+  force?: boolean;
 };

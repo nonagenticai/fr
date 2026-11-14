@@ -7,9 +7,9 @@
  */
 
 export type GetWorkerStatesParams = {
-/**
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
+  /**
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
 };

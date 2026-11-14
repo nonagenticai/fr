@@ -7,31 +7,23 @@
  */
 
 export type ListUmlElementsParams = {
-/**
- * Filter by UML model
- */
-model_id?: string | null;
-/**
- * Filter by element kind
- */
-kind?: string | null;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * Filter by owning element
- */
-owner_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by UML model */
+  model_id?: string | null;
+  /** Filter by element kind */
+  kind?: string | null;
+  /** Filter by project */
+  project_id?: string | null;
+  /** Filter by owning element */
+  owner_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

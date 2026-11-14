@@ -7,6 +7,6 @@
  */
 
 export type SearchAllEntitiesParams = {
-q?: string | null;
-k?: number;
+  q?: string | null;
+  k?: number;
 };

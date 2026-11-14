@@ -23,14 +23,12 @@
  */
 
 export type GetEntityRankingsParams = {
-/**
- * Comma-separated list of metrics to rank by
- */
-metrics: string;
-/**
- * Number of top entities per metric
- * @minimum 1
- * @maximum 50
- */
-limit?: number;
+  /** Comma-separated list of metrics to rank by */
+  metrics: string;
+  /**
+   * Number of top entities per metric
+   * @minimum 1
+   * @maximum 50
+   */
+  limit?: number;
 };

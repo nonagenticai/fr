@@ -8,8 +8,6 @@
 import type { ArtifactsRenderCrossProjectFormat } from './artifactsRenderCrossProjectFormat';
 
 export type ArtifactsRenderCrossProjectParams = {
-/**
- * html | pdf
- */
-format?: ArtifactsRenderCrossProjectFormat;
+  /** html | pdf */
+  format?: ArtifactsRenderCrossProjectFormat;
 };

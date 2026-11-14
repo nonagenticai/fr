@@ -23,14 +23,12 @@
  */
 
 export type ExecuteTestSuiteParams = {
-/**
- * Execute tests in parallel
- */
-parallel?: boolean;
-/**
- * Maximum parallel workers
- * @minimum 1
- * @maximum 16
- */
-max_workers?: number;
+  /** Execute tests in parallel */
+  parallel?: boolean;
+  /**
+   * Maximum parallel workers
+   * @minimum 1
+   * @maximum 16
+   */
+  max_workers?: number;
 };

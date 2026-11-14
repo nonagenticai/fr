@@ -23,14 +23,12 @@
  */
 
 export type GetOrchestrationMetricsSummaryParams = {
-/**
- * Filter by container name
- */
-container_name?: string | null;
-/**
- * Number of days
- * @minimum 1
- * @maximum 90
- */
-days?: number;
+  /** Filter by container name */
+  container_name?: string | null;
+  /**
+   * Number of days
+   * @minimum 1
+   * @maximum 90
+   */
+  days?: number;
 };

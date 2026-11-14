@@ -23,20 +23,20 @@
  */
 
 export type ListArchitectureProposalsParams = {
-/**
- * Container name
- * @minLength 1
- */
-container: string;
-/**
- * Max components to classify in this page. The classifier runs ONE LLM call per unit, so an unbounded container (100s of units) read-timed-out downstream; this bounds the page. Page with `offset`.
- * @minimum 1
- * @maximum 200
- */
-limit?: number;
-/**
- * Component offset for the page within `total`.
- * @minimum 0
- */
-offset?: number;
+  /**
+   * Container name
+   * @minLength 1
+   */
+  container: string;
+  /**
+   * Max components to classify in this page. The classifier runs ONE LLM call per unit, so an unbounded container (100s of units) read-timed-out downstream; this bounds the page. Page with `offset`.
+   * @minimum 1
+   * @maximum 200
+   */
+  limit?: number;
+  /**
+   * Component offset for the page within `total`.
+   * @minimum 0
+   */
+  offset?: number;
 };

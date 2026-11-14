@@ -31,9 +31,9 @@
  */
 
 export type DiscoverPapersGetSimilarParams = {
-/**
- * @minimum 1
- * @maximum 50
- */
-limit?: number;
+  /**
+   * @minimum 1
+   * @maximum 50
+   */
+  limit?: number;
 };

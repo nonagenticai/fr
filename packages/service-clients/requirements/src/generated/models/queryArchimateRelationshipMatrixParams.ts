@@ -7,12 +7,8 @@
  */
 
 export type QueryArchimateRelationshipMatrixParams = {
-/**
- * Filter: source concept type
- */
-source_type?: string | null;
-/**
- * Filter: target concept type
- */
-target_type?: string | null;
+  /** Filter: source concept type */
+  source_type?: string | null;
+  /** Filter: target concept type */
+  target_type?: string | null;
 };

@@ -8,8 +8,6 @@
 import type { RenderArtifactFormat } from './renderArtifactFormat';
 
 export type RenderArtifactParams = {
-/**
- * html | pdf
- */
-format?: RenderArtifactFormat;
+  /** html | pdf */
+  format?: RenderArtifactFormat;
 };

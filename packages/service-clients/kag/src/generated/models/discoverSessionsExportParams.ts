@@ -31,8 +31,6 @@
  */
 
 export type DiscoverSessionsExportParams = {
-/**
- * @pattern ^(json|bibtex|ris)$
- */
-format?: string;
+  /** @pattern ^(json|bibtex|ris)$ */
+  format?: string;
 };

@@ -7,8 +7,6 @@
  */
 
 export type ExportModelRevisionExchangeParams = {
-/**
- * Return JSON {xml, losses[]} instead of raw XML
- */
-report?: boolean;
+  /** Return JSON {xml, losses[]} instead of raw XML */
+  report?: boolean;
 };

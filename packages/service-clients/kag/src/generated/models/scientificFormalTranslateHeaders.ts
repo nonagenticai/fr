@@ -31,5 +31,5 @@
  */
 
 export type ScientificFormalTranslateHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

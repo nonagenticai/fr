@@ -8,8 +8,6 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type ListArchitectureViewVersionsHeaders = {
-/**
- * `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence.
- */
-'X-Tenant-Id'?: TenantIdHeaderParameter;
+  /** `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence. */
+  'X-Tenant-Id'?: TenantIdHeaderParameter;
 };

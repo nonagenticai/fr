@@ -31,5 +31,5 @@
  */
 
 export type ScientificPipelineTriggerHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

@@ -7,14 +7,12 @@
  */
 
 export type ArtifactsListByCardCrossProjectParams = {
-name_prefix?: string | null;
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  name_prefix?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

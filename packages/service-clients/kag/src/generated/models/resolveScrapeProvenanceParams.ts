@@ -31,12 +31,8 @@
  */
 
 export type ResolveScrapeProvenanceParams = {
-/**
- * The chunk's document id
- */
-doc_id?: string | null;
-/**
- * The chunk's source url (fallback join)
- */
-url?: string | null;
+  /** The chunk's document id */
+  doc_id?: string | null;
+  /** The chunk's source url (fallback join) */
+  url?: string | null;
 };

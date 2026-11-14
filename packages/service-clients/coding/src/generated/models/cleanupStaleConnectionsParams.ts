@@ -23,8 +23,6 @@
  */
 
 export type CleanupStaleConnectionsParams = {
-/**
- * Container name (optional)
- */
-container_name?: string | null;
+  /** Container name (optional) */
+  container_name?: string | null;
 };

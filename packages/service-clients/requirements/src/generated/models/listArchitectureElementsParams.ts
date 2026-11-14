@@ -7,43 +7,29 @@
  */
 
 export type ListArchitectureElementsParams = {
-/**
- * Filter by ArchiMate layer
- */
-layer?: string | null;
-/**
- * Filter by element type
- */
-element_type?: string | null;
-/**
- * Filter by status
- */
-status?: string | null;
-/**
- * Filter by architecture state
- */
-architecture_state?: string | null;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * Filter to the elements of this ArchiMate model (the element's `model_id`). Only a model the caller may read (`GET /modeling/models/{id}`) filters to anything: another tenant's model (the system tenant's included) or another subject's private model returns an empty list.
- */
-model_id?: string | null;
-/**
- * Filter by synthetic flag. Default (None) hides synthetic rows; pass true to retrieve only synthetic rows.
- */
-synthetic?: boolean | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by ArchiMate layer */
+  layer?: string | null;
+  /** Filter by element type */
+  element_type?: string | null;
+  /** Filter by status */
+  status?: string | null;
+  /** Filter by architecture state */
+  architecture_state?: string | null;
+  /** Filter by project */
+  project_id?: string | null;
+  /** Filter to the elements of this ArchiMate model (the element's `model_id`). Only a model the caller may read (`GET /modeling/models/{id}`) filters to anything: another tenant's model (the system tenant's included) or another subject's private model returns an empty list. */
+  model_id?: string | null;
+  /** Filter by synthetic flag. Default (None) hides synthetic rows; pass true to retrieve only synthetic rows. */
+  synthetic?: boolean | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

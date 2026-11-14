@@ -8,8 +8,6 @@
 import type { ExportModelDiagramsFormat } from './exportModelDiagramsFormat';
 
 export type ExportModelDiagramsParams = {
-/**
- * pdf (default): one titled vector page per view / diagram; svg: a zip with one sanitized SVG per view / diagram
- */
-format?: ExportModelDiagramsFormat;
+  /** pdf (default): one titled vector page per view / diagram; svg: a zip with one sanitized SVG per view / diagram */
+  format?: ExportModelDiagramsFormat;
 };

@@ -7,8 +7,6 @@
  */
 
 export type GetUserParams = {
-/**
- * Whether to subscribe to real-time updates for this user (only for socket connections)
- */
-subscribe?: boolean;
+  /** Whether to subscribe to real-time updates for this user (only for socket connections) */
+  subscribe?: boolean;
 };

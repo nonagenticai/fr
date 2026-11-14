@@ -23,5 +23,5 @@
  */
 
 export type QuickScanContainerSecurityParams = {
-max_files?: number;
+  max_files?: number;
 };

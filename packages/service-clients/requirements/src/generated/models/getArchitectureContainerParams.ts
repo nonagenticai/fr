@@ -7,9 +7,9 @@
  */
 
 export type GetArchitectureContainerParams = {
-/**
- * Project whose effective view the container must reach
- * @minLength 1
- */
-projectId: string;
+  /**
+   * Project whose effective view the container must reach
+   * @minLength 1
+   */
+  projectId: string;
 };

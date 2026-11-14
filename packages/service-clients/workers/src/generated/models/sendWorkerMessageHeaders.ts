@@ -7,5 +7,5 @@
  */
 
 export type SendWorkerMessageHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

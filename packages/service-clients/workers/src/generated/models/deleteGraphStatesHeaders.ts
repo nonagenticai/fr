@@ -7,5 +7,5 @@
  */
 
 export type DeleteGraphStatesHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

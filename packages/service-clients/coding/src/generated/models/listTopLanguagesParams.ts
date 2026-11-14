@@ -23,10 +23,10 @@
  */
 
 export type ListTopLanguagesParams = {
-/**
- * Maximum number of languages
- * @minimum 1
- * @maximum 20
- */
-limit?: number;
+  /**
+   * Maximum number of languages
+   * @minimum 1
+   * @maximum 20
+   */
+  limit?: number;
 };

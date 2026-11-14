@@ -7,5 +7,5 @@
  */
 
 export type ListGraphsHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

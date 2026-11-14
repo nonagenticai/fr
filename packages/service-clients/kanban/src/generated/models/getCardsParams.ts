@@ -7,25 +7,17 @@
  */
 
 export type GetCardsParams = {
-/**
- * Pagination cursor field `listChangedAt` (use together with `before[id]`)
- */
-'before[listChangedAt]'?: string;
-/**
- * Pagination cursor field `id` (use together with `before[listChangedAt]`)
- */
-'before[id]'?: string;
-/**
- * Search term to filter cards
- * @maxLength 128
- */
-search?: string;
-/**
- * Comma-separated user IDs to filter by members or task assignees
- */
-userIds?: string;
-/**
- * Comma-separated label IDs to filter by labels
- */
-labelIds?: string;
+  /** Pagination cursor field `listChangedAt` (use together with `before[id]`) */
+  'before[listChangedAt]'?: string;
+  /** Pagination cursor field `id` (use together with `before[listChangedAt]`) */
+  'before[id]'?: string;
+  /**
+   * Search term to filter cards
+   * @maxLength 128
+   */
+  search?: string;
+  /** Comma-separated user IDs to filter by members or task assignees */
+  userIds?: string;
+  /** Comma-separated label IDs to filter by labels */
+  labelIds?: string;
 };

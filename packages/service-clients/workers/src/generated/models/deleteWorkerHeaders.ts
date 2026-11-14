@@ -7,5 +7,5 @@
  */
 
 export type DeleteWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

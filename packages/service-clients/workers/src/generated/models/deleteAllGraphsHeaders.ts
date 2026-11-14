@@ -7,5 +7,5 @@
  */
 
 export type DeleteAllGraphsHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

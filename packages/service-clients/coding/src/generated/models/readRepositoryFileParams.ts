@@ -23,8 +23,6 @@
  */
 
 export type ReadRepositoryFileParams = {
-/**
- * File path to read
- */
-path: string;
+  /** File path to read */
+  path: string;
 };

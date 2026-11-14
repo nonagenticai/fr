@@ -7,8 +7,6 @@
  */
 
 export type GetBoardParams = {
-/**
- * Whether to subscribe to real-time updates for this board (only for socket connections)
- */
-subscribe?: boolean;
+  /** Whether to subscribe to real-time updates for this board (only for socket connections) */
+  subscribe?: boolean;
 };

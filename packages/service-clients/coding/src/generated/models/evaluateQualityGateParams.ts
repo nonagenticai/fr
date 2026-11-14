@@ -23,24 +23,22 @@
  */
 
 export type EvaluateQualityGateParams = {
-/**
- * Minimum overall quality score threshold
- * @minimum 0
- * @maximum 100
- */
-min_score?: number;
-/**
- * Maximum allowed critical issues
- * @minimum 0
- */
-max_critical?: number;
-/**
- * Maximum allowed high severity issues
- * @minimum 0
- */
-max_high?: number;
-/**
- * Minimum test coverage percentage
- */
-min_coverage?: number | null;
+  /**
+   * Minimum overall quality score threshold
+   * @minimum 0
+   * @maximum 100
+   */
+  min_score?: number;
+  /**
+   * Maximum allowed critical issues
+   * @minimum 0
+   */
+  max_critical?: number;
+  /**
+   * Maximum allowed high severity issues
+   * @minimum 0
+   */
+  max_high?: number;
+  /** Minimum test coverage percentage */
+  min_coverage?: number | null;
 };

@@ -23,8 +23,6 @@
  */
 
 export type ListContainerSpecsParams = {
-/**
- * Filter by language
- */
-language?: string | null;
+  /** Filter by language */
+  language?: string | null;
 };

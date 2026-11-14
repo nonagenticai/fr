@@ -31,9 +31,7 @@
  */
 
 export type ListScrapeSessionsParams = {
-status?: string | null;
-/**
- * @maximum 1000
- */
-limit?: number;
+  status?: string | null;
+  /** @maximum 1000 */
+  limit?: number;
 };

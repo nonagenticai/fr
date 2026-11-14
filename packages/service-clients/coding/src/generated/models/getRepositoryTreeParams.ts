@@ -23,10 +23,10 @@
  */
 
 export type GetRepositoryTreeParams = {
-/**
- * Maximum tree depth
- * @minimum 1
- * @maximum 10
- */
-max_depth?: number;
+  /**
+   * Maximum tree depth
+   * @minimum 1
+   * @maximum 10
+   */
+  max_depth?: number;
 };

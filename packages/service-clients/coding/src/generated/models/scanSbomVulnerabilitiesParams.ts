@@ -23,5 +23,5 @@
  */
 
 export type ScanSbomVulnerabilitiesParams = {
-tag?: string;
+  tag?: string;
 };

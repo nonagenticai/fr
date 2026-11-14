@@ -23,28 +23,22 @@
  */
 
 export type GetDashboardQualityIssuesParams = {
-/**
- * Filter by language
- */
-language?: string | null;
-/**
- * Filter by severity
- */
-severity?: string | null;
-/**
- * Filter by category
- */
-category?: string | null;
-/**
- * Maximum number of issues to return (1-1000)
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of issues to skip (0-2147483647)
- * @minimum 0
- * @maximum 2147483647
- */
-offset?: number;
+  /** Filter by language */
+  language?: string | null;
+  /** Filter by severity */
+  severity?: string | null;
+  /** Filter by category */
+  category?: string | null;
+  /**
+   * Maximum number of issues to return (1-1000)
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of issues to skip (0-2147483647)
+   * @minimum 0
+   * @maximum 2147483647
+   */
+  offset?: number;
 };

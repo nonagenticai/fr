@@ -7,5 +7,5 @@
  */
 
 export type GetGraphStatesHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

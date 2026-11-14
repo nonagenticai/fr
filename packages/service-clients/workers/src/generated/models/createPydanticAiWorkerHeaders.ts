@@ -7,5 +7,5 @@
  */
 
 export type CreatePydanticAiWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

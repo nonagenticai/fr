@@ -7,8 +7,6 @@
  */
 
 export type GetProjectRegistersParams = {
-/**
- * Only rows raised in this phase (a phase name, e.g. setup, preliminary, execution). Filters risks, decisions and requirements; criteria are never filtered.
- */
-phase?: string | null;
+  /** Only rows raised in this phase (a phase name, e.g. setup, preliminary, execution). Filters risks, decisions and requirements; criteria are never filtered. */
+  phase?: string | null;
 };

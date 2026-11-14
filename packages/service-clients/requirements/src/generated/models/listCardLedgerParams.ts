@@ -8,18 +8,14 @@
 import type { ListCardLedgerKind } from './listCardLedgerKind';
 
 export type ListCardLedgerParams = {
-/**
- * Only facts or only claims
- */
-kind?: ListCardLedgerKind;
-/**
- * Maximum entries returned
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Return entries after this entry (next page: the last id returned)
- */
-after_id?: string | null;
+  /** Only facts or only claims */
+  kind?: ListCardLedgerKind;
+  /**
+   * Maximum entries returned
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** Return entries after this entry (next page: the last id returned) */
+  after_id?: string | null;
 };

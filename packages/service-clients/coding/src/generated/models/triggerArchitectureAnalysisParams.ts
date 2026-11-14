@@ -23,8 +23,6 @@
  */
 
 export type TriggerArchitectureAnalysisParams = {
-/**
- * Force rebuild of analysis
- */
-force_rebuild?: boolean;
+  /** Force rebuild of analysis */
+  force_rebuild?: boolean;
 };

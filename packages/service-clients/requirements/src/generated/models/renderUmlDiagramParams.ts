@@ -8,12 +8,8 @@
 import type { RenderUmlDiagramFormat } from './renderUmlDiagramFormat';
 
 export type RenderUmlDiagramParams = {
-/**
- * svg (default), png or pdf (vector)
- */
-format?: RenderUmlDiagramFormat;
-/**
- * true: JSON {svg, diagnostics, renderer_version} instead of the image
- */
-report?: boolean;
+  /** svg (default), png or pdf (vector) */
+  format?: RenderUmlDiagramFormat;
+  /** true: JSON {svg, diagnostics, renderer_version} instead of the image */
+  report?: boolean;
 };

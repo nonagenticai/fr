@@ -23,16 +23,10 @@
  */
 
 export type ListTestSuitesParams = {
-/**
- * Filter by container name
- */
-container_name?: string | null;
-/**
- * Filter by status
- */
-status_filter?: string | null;
-/**
- * Filter by language
- */
-language_filter?: string | null;
+  /** Filter by container name */
+  container_name?: string | null;
+  /** Filter by status */
+  status_filter?: string | null;
+  /** Filter by language */
+  language_filter?: string | null;
 };

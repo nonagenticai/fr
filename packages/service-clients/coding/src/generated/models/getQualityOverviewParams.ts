@@ -23,8 +23,6 @@
  */
 
 export type GetQualityOverviewParams = {
-/**
- * Optional list of container names to filter. If not provided, includes all containers.
- */
-container_names?: string[] | null;
+  /** Optional list of container names to filter. If not provided, includes all containers. */
+  container_names?: string[] | null;
 };

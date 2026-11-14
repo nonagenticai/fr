@@ -23,6 +23,6 @@
  */
 
 export type GetSecurityReportParams = {
-include_low_confidence?: boolean;
-max_files?: number | null;
+  include_low_confidence?: boolean;
+  max_files?: number | null;
 };

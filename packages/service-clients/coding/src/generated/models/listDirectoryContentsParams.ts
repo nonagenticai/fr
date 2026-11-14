@@ -23,12 +23,8 @@
  */
 
 export type ListDirectoryContentsParams = {
-/**
- * Directory path to List[Any]
- */
-path?: string;
-/**
- * List recursively
- */
-recursive?: boolean;
+  /** Directory path to List[Any] */
+  path?: string;
+  /** List recursively */
+  recursive?: boolean;
 };

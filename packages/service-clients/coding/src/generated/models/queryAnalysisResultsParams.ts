@@ -24,27 +24,21 @@
 import type { AnalysisScope } from './analysisScope';
 
 export type QueryAnalysisResultsParams = {
-/**
- * Analysis scope to filter by
- */
-scope?: AnalysisScope;
-/**
- * Severity level filter (critical, high, medium, low)
- */
-severity?: string | null;
-/**
- * Directory path to filter by
- */
-directory?: string | null;
-/**
- * Maximum results to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Pagination offset
- * @minimum 0
- */
-offset?: number;
+  /** Analysis scope to filter by */
+  scope?: AnalysisScope;
+  /** Severity level filter (critical, high, medium, low) */
+  severity?: string | null;
+  /** Directory path to filter by */
+  directory?: string | null;
+  /**
+   * Maximum results to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Pagination offset
+   * @minimum 0
+   */
+  offset?: number;
 };

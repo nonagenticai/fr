@@ -7,6 +7,6 @@
  */
 
 export type ExecuteGraphHeaders = {
-'X-Correlation-Id'?: string;
-'X-Visibility'?: string;
+  'X-Correlation-Id'?: string;
+  'X-Visibility'?: string;
 };

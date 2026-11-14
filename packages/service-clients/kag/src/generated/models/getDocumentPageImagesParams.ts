@@ -33,16 +33,14 @@ import type { ImageGroupBy } from './imageGroupBy';
 import type { ImageView } from './imageView';
 
 export type GetDocumentPageImagesParams = {
-group_by?: ImageGroupBy;
-view?: ImageView;
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
-include?: string[] | null;
+  group_by?: ImageGroupBy;
+  view?: ImageView;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
+  include?: string[] | null;
 };

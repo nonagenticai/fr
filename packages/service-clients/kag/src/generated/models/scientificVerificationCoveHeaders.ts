@@ -31,5 +31,5 @@
  */
 
 export type ScientificVerificationCoveHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

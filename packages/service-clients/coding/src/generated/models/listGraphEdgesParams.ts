@@ -23,19 +23,17 @@
  */
 
 export type ListGraphEdgesParams = {
-/**
- * Filter by edge type
- */
-edge_type?: string | null;
-/**
- * Page number
- * @minimum 1
- */
-page?: number;
-/**
- * Items per page
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  /** Filter by edge type */
+  edge_type?: string | null;
+  /**
+   * Page number
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * Items per page
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

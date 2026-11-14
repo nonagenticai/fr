@@ -8,12 +8,8 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type UpdateUmlDiagramObjectHeaders = {
-/**
- * Optional expected draft head of the model this write touches (the ETag of an earlier response). A mismatch is 412 stale_head with the current head.
- */
-'If-Match'?: string;
-/**
- * `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence.
- */
-'X-Tenant-Id'?: TenantIdHeaderParameter;
+  /** Optional expected draft head of the model this write touches (the ETag of an earlier response). A mismatch is 412 stale_head with the current head. */
+  'If-Match'?: string;
+  /** `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence. */
+  'X-Tenant-Id'?: TenantIdHeaderParameter;
 };

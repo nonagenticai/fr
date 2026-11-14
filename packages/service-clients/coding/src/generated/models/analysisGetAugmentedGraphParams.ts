@@ -23,14 +23,14 @@
  */
 
 export type AnalysisGetAugmentedGraphParams = {
-/**
- * @minimum 1
- * @maximum 20000
- */
-node_limit?: number;
-/**
- * @minimum 1
- * @maximum 50000
- */
-edge_limit?: number;
+  /**
+   * @minimum 1
+   * @maximum 20000
+   */
+  node_limit?: number;
+  /**
+   * @minimum 1
+   * @maximum 50000
+   */
+  edge_limit?: number;
 };

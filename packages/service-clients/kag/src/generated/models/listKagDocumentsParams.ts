@@ -31,14 +31,12 @@
  */
 
 export type ListKagDocumentsParams = {
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
-project_id?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
+  project_id?: string | null;
 };

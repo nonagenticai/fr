@@ -7,5 +7,5 @@
  */
 
 export type GetSessionStatusHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

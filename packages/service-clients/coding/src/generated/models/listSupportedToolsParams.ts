@@ -23,12 +23,8 @@
  */
 
 export type ListSupportedToolsParams = {
-/**
- * Filter by programming language
- */
-language?: string | null;
-/**
- * Optional container name for scoping
- */
-container_name?: string | null;
+  /** Filter by programming language */
+  language?: string | null;
+  /** Optional container name for scoping */
+  container_name?: string | null;
 };

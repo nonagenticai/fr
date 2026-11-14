@@ -7,27 +7,21 @@
  */
 
 export type ListBenefitsParams = {
-/**
- * Filter by status
- */
-status?: string | null;
-/**
- * Filter by benefit type
- */
-benefit_type?: string | null;
-/**
- * Filter by programme
- */
-programme_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by status */
+  status?: string | null;
+  /** Filter by benefit type */
+  benefit_type?: string | null;
+  /** Filter by programme */
+  programme_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

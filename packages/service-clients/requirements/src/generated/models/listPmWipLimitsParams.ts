@@ -7,31 +7,23 @@
  */
 
 export type ListPmWipLimitsParams = {
-/**
- * Rows with this project type
- */
-project_type_id?: string | null;
-/**
- * Rows with this phase
- */
-phase_id?: string | null;
-/**
- * Rows with this capability
- */
-capability_id?: string | null;
-/**
- * Rows with this card type
- */
-card_type_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Rows with this project type */
+  project_type_id?: string | null;
+  /** Rows with this phase */
+  phase_id?: string | null;
+  /** Rows with this capability */
+  capability_id?: string | null;
+  /** Rows with this card type */
+  card_type_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

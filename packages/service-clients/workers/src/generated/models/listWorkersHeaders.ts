@@ -7,5 +7,5 @@
  */
 
 export type ListWorkersHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

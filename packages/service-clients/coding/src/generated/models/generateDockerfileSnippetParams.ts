@@ -23,8 +23,6 @@
  */
 
 export type GenerateDockerfileSnippetParams = {
-/**
- * If true, includes all known dependencies in the snippet. If false, only includes dependencies detected from the current project
- */
-include_all?: boolean;
+  /** If true, includes all known dependencies in the snippet. If false, only includes dependencies detected from the current project */
+  include_all?: boolean;
 };

@@ -23,8 +23,6 @@
  */
 
 export type GetAiRecommendationsParams = {
-/**
- * Container name to scope recommendations
- */
-container_name: string;
+  /** Container name to scope recommendations */
+  container_name: string;
 };

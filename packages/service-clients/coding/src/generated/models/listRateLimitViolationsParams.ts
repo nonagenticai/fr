@@ -23,14 +23,12 @@
  */
 
 export type ListRateLimitViolationsParams = {
-/**
- * Filter violations by container name (optional)
- */
-container_name?: string | null;
-/**
- * Maximum number of violations to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  /** Filter violations by container name (optional) */
+  container_name?: string | null;
+  /**
+   * Maximum number of violations to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

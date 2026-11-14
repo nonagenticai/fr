@@ -23,8 +23,6 @@
  */
 
 export type GetJobStatusParams = {
-/**
- * Include job pod logs in response
- */
-include_logs?: boolean;
+  /** Include job pod logs in response */
+  include_logs?: boolean;
 };

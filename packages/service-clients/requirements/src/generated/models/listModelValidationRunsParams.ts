@@ -8,23 +8,19 @@
 import type { ListModelValidationRunsTarget } from './listModelValidationRunsTarget';
 
 export type ListModelValidationRunsParams = {
-/**
- * Filter by target
- */
-target?: ListModelValidationRunsTarget;
-/**
- * Filter by clean verdict
- */
-clean?: boolean | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by target */
+  target?: ListModelValidationRunsTarget;
+  /** Filter by clean verdict */
+  clean?: boolean | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

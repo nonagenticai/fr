@@ -23,8 +23,6 @@
  */
 
 export type ListContainerFilesParams = {
-/**
- * File or directory path
- */
-path?: string;
+  /** File or directory path */
+  path?: string;
 };

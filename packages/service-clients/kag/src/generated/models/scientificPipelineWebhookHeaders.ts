@@ -31,5 +31,5 @@
  */
 
 export type ScientificPipelineWebhookHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

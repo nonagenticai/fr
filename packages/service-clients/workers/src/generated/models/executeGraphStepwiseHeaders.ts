@@ -7,6 +7,6 @@
  */
 
 export type ExecuteGraphStepwiseHeaders = {
-'X-Correlation-Id'?: string;
-'X-Visibility'?: string;
+  'X-Correlation-Id'?: string;
+  'X-Visibility'?: string;
 };

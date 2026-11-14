@@ -31,8 +31,8 @@
  */
 
 export type QueryGraphEdgesParams = {
-edge_type?: string | null;
-source_id?: string | null;
-target_id?: string | null;
-properties?: string | null;
+  edge_type?: string | null;
+  source_id?: string | null;
+  target_id?: string | null;
+  properties?: string | null;
 };

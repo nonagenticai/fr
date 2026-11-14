@@ -7,5 +7,5 @@
  */
 
 export type GetSessionsByCorrelationIdHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

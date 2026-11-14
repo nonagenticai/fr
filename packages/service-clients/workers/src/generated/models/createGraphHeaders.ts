@@ -7,5 +7,5 @@
  */
 
 export type CreateGraphHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

@@ -7,5 +7,5 @@
  */
 
 export type CreateRemoteCodexWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

@@ -7,5 +7,5 @@
  */
 
 export type CleanupWorkerInstanceHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

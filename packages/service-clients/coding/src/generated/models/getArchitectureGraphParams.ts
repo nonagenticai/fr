@@ -23,39 +23,27 @@
  */
 
 export type GetArchitectureGraphParams = {
-/**
- * Include architecture analysis data
- */
-include_architecture?: boolean;
-/**
- * Include dependency analysis data
- */
-include_dependencies?: boolean;
-/**
- * Include quality analysis data
- */
-include_quality?: boolean;
-/**
- * Include runtime trace data
- */
-include_runtime?: boolean;
-/**
- * Minimum quality score
- */
-quality_threshold?: number | null;
-/**
- * Minimum hotspot score
- */
-hotspot_threshold?: number | null;
-/**
- * Maximum items to return
- * @minimum 1
- * @maximum 10000
- */
-limit?: number;
-/**
- * Offset for pagination
- * @minimum 0
- */
-offset?: number;
+  /** Include architecture analysis data */
+  include_architecture?: boolean;
+  /** Include dependency analysis data */
+  include_dependencies?: boolean;
+  /** Include quality analysis data */
+  include_quality?: boolean;
+  /** Include runtime trace data */
+  include_runtime?: boolean;
+  /** Minimum quality score */
+  quality_threshold?: number | null;
+  /** Minimum hotspot score */
+  hotspot_threshold?: number | null;
+  /**
+   * Maximum items to return
+   * @minimum 1
+   * @maximum 10000
+   */
+  limit?: number;
+  /**
+   * Offset for pagination
+   * @minimum 0
+   */
+  offset?: number;
 };

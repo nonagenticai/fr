@@ -7,5 +7,5 @@
  */
 
 export type CreateWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

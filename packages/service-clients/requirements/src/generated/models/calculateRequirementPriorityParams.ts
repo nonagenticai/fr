@@ -7,7 +7,7 @@
  */
 
 export type CalculateRequirementPriorityParams = {
-business_value?: string | null;
-time_criticality?: string | null;
-risk_reduction?: string | null;
+  business_value?: string | null;
+  time_criticality?: string | null;
+  risk_reduction?: string | null;
 };

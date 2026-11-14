@@ -23,8 +23,6 @@
  */
 
 export type GetDashboardSummaryParams = {
-/**
- * Optional code graph ID
- */
-code_graph_id?: string | null;
+  /** Optional code graph ID */
+  code_graph_id?: string | null;
 };

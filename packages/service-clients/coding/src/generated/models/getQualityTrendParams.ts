@@ -23,10 +23,10 @@
  */
 
 export type GetQualityTrendParams = {
-/**
- * Number of days to include in trend
- * @minimum 1
- * @maximum 365
- */
-days?: number;
+  /**
+   * Number of days to include in trend
+   * @minimum 1
+   * @maximum 365
+   */
+  days?: number;
 };

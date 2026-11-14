@@ -31,12 +31,8 @@
  */
 
 export type ScrapeUrlSyncParams = {
-/**
- * Also submit to KAG orchestrator
- */
-send_to_kag?: boolean;
-/**
- * Include base64 image data
- */
-include_images_inline?: boolean;
+  /** Also submit to KAG orchestrator */
+  send_to_kag?: boolean;
+  /** Include base64 image data */
+  include_images_inline?: boolean;
 };

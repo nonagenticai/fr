@@ -31,6 +31,6 @@
  */
 
 export type QueryGraphNodesParams = {
-label?: string | null;
-properties?: string | null;
+  label?: string | null;
+  properties?: string | null;
 };

@@ -7,29 +7,23 @@
  */
 
 export type ListDecisionsParams = {
-project_id?: string | null;
-status?: string | null;
-/**
- * Provenance filter: tenant | project | workflow
- */
-origin_kind?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
-/**
- * Project view (G8): list what this project uses. The project's own copy of an asset is returned IN PLACE OF the original it supersedes (see `include_shadowed`); other projects' copies and promoted copies are left out. Not a filter on any column — the tenant's other assets are still listed. Unlike `project_id`, which filters.
- */
-scope_project_id?: string | null;
-/**
- * With `scope_project_id`: also list the originals the project's copies stand in for. Ignored without `scope_project_id`.
- */
-include_shadowed?: boolean;
+  project_id?: string | null;
+  status?: string | null;
+  /** Provenance filter: tenant | project | workflow */
+  origin_kind?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
+  /** Project view (G8): list what this project uses. The project's own copy of an asset is returned IN PLACE OF the original it supersedes (see `include_shadowed`); other projects' copies and promoted copies are left out. Not a filter on any column — the tenant's other assets are still listed. Unlike `project_id`, which filters. */
+  scope_project_id?: string | null;
+  /** With `scope_project_id`: also list the originals the project's copies stand in for. Ignored without `scope_project_id`. */
+  include_shadowed?: boolean;
 };

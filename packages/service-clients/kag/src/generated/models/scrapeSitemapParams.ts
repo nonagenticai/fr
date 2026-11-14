@@ -31,8 +31,6 @@
  */
 
 export type ScrapeSitemapParams = {
-/**
- * Also ingest each scraped page into KAG (graph source)
- */
-send_to_kag?: boolean;
+  /** Also ingest each scraped page into KAG (graph source) */
+  send_to_kag?: boolean;
 };

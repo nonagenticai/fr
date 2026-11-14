@@ -32,9 +32,7 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type DiscoverSessionsCreateHeaders = {
-'X-Visibility'?: string;
-/**
- * Tenant identifier (defaults to configured DEFAULT_TENANT_ID).
- */
-'X-Tenant-ID'?: TenantIdHeaderParameter;
+  'X-Visibility'?: string;
+  /** Tenant identifier (defaults to configured DEFAULT_TENANT_ID). */
+  'X-Tenant-ID'?: TenantIdHeaderParameter;
 };

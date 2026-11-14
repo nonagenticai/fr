@@ -8,18 +8,14 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type CreateUmlRelationshipHeaders = {
-/**
- * Optional. Makes the create retry-safe for 24h: the same key with the same body replays the original response; the same key with a different body is 409 idempotency_conflict. 1..255 characters, scoped per tenant, caller and route.
- * @maxLength 255
- */
-'Idempotency-Key'?: string;
-/**
- * Optional expected draft head of the model this write touches (the ETag of an earlier response). A mismatch is 412 stale_head with the current head.
- */
-'If-Match'?: string;
-'X-Visibility'?: string;
-/**
- * `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence.
- */
-'X-Tenant-Id'?: TenantIdHeaderParameter;
+  /**
+   * Optional. Makes the create retry-safe for 24h: the same key with the same body replays the original response; the same key with a different body is 409 idempotency_conflict. 1..255 characters, scoped per tenant, caller and route.
+   * @maxLength 255
+   */
+  'Idempotency-Key'?: string;
+  /** Optional expected draft head of the model this write touches (the ETag of an earlier response). A mismatch is 412 stale_head with the current head. */
+  'If-Match'?: string;
+  'X-Visibility'?: string;
+  /** `Bearer <licence token>`, or — when the licence is sent in `Authorization: Bearer` — the licence's own tenant (UUID or NAME, resolved against the licences registry). Every route except the health probes and /openapi.json requires a licence. */
+  'X-Tenant-Id'?: TenantIdHeaderParameter;
 };

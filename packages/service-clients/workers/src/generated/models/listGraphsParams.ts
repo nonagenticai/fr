@@ -7,20 +7,20 @@
  */
 
 export type ListGraphsParams = {
-/**
- * Include full graph details
- * @pattern ^(true|false|0|1)$
- */
-include_details?: string;
-/**
- * Maximum number of graphs to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of graphs to skip
- * @minimum 0
- */
-offset?: number;
+  /**
+   * Include full graph details
+   * @pattern ^(true|false|0|1)$
+   */
+  include_details?: string;
+  /**
+   * Maximum number of graphs to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of graphs to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

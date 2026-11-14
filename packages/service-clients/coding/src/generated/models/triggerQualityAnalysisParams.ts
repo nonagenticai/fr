@@ -23,5 +23,5 @@
  */
 
 export type TriggerQualityAnalysisParams = {
-container_name: string;
+  container_name: string;
 };

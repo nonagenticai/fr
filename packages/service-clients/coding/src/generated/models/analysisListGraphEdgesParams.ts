@@ -23,25 +23,17 @@
  */
 
 export type AnalysisListGraphEdgesParams = {
-/**
- * Filter by source node id
- */
-source?: string | null;
-/**
- * Filter by target node id
- */
-target?: string | null;
-/**
- * Filter by relationship
- */
-relationship?: string | null;
-/**
- * @minimum 1
- * @maximum 10000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  /** Filter by source node id */
+  source?: string | null;
+  /** Filter by target node id */
+  target?: string | null;
+  /** Filter by relationship */
+  relationship?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 10000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

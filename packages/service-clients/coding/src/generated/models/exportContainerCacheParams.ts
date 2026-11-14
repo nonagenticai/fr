@@ -24,14 +24,12 @@
 import type { ExportFormat } from './exportFormat';
 
 export type ExportContainerCacheParams = {
-/**
- * Export format: json or csv
- */
-format?: ExportFormat;
-/**
- * Maximum entries to export
- * @minimum 1
- * @maximum 10000
- */
-max_keys?: number;
+  /** Export format: json or csv */
+  format?: ExportFormat;
+  /**
+   * Maximum entries to export
+   * @minimum 1
+   * @maximum 10000
+   */
+  max_keys?: number;
 };

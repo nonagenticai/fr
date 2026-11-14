@@ -7,9 +7,9 @@
  */
 
 export type GetArchitectureViewQualityHistoryParams = {
-/**
- * @minimum 1
- * @maximum 500
- */
-limit?: number;
+  /**
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
 };
