@@ -24,13 +24,11 @@
 import type { GenerateCiConfigPlatform } from './generateCiConfigPlatform';
 
 export type GenerateCiConfigParams = {
-/**
- * CI platform to generate configuration for
- * @pattern ^(github|gitlab)$
- */
-platform: GenerateCiConfigPlatform;
-/**
- * Absolute path to the project root directory to analyze. If not provided, uses current working directory
- */
-project_root?: string | null;
+  /**
+   * CI platform to generate configuration for
+   * @pattern ^(github|gitlab)$
+   */
+  platform: GenerateCiConfigPlatform;
+  /** Absolute path to the project root directory to analyze. If not provided, uses current working directory */
+  project_root?: string | null;
 };

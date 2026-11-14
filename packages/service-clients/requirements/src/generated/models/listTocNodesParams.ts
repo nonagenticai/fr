@@ -7,17 +7,13 @@
  */
 
 export type ListTocNodesParams = {
-/**
- * Filter by node kind
- */
-node_kind?: string | null;
-/**
- * @minimum 1
- * @maximum 5000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  /** Filter by node kind */
+  node_kind?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 5000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

@@ -23,18 +23,14 @@
  */
 
 export type CompareEntityTypesParams = {
-/**
- * Comma-separated list of entity types
- */
-entity_types?: string | null;
-/**
- * Metric for ranking
- */
-metric?: string;
-/**
- * Max entities per type
- * @minimum 1
- * @maximum 20
- */
-limit?: number;
+  /** Comma-separated list of entity types */
+  entity_types?: string | null;
+  /** Metric for ranking */
+  metric?: string;
+  /**
+   * Max entities per type
+   * @minimum 1
+   * @maximum 20
+   */
+  limit?: number;
 };

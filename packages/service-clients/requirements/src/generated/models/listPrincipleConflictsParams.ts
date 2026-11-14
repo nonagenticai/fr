@@ -7,31 +7,23 @@
  */
 
 export type ListPrincipleConflictsParams = {
-/**
- * Filter by the principle side
- */
-principle_id?: string | null;
-/**
- * 'principle' | 'procedure'
- */
-counterparty_kind?: string | null;
-/**
- * Filter by counterparty (e.g. a procedure asset_uuid)
- */
-counterparty_id?: string | null;
-/**
- * 'open' | 'resolved' | 'dismissed' (default: all)
- */
-status?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 500
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by the principle side */
+  principle_id?: string | null;
+  /** 'principle' | 'procedure' */
+  counterparty_kind?: string | null;
+  /** Filter by counterparty (e.g. a procedure asset_uuid) */
+  counterparty_id?: string | null;
+  /** 'open' | 'resolved' | 'dismissed' (default: all) */
+  status?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

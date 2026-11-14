@@ -7,12 +7,8 @@
  */
 
 export type ImportExchangeAsNewModelParams = {
-/**
- * Source file name (recorded)
- */
-filename?: string | null;
-/**
- * Project scope of the model
- */
-project_id?: string | null;
+  /** Source file name (recorded) */
+  filename?: string | null;
+  /** Project scope of the model */
+  project_id?: string | null;
 };

@@ -9,15 +9,13 @@ import type { CursorParameter } from './cursorParameter';
 import type { LimitParameter } from './limitParameter';
 
 export type GetWorkflowsParams = {
-active?: boolean;
-projectId?: string;
-/**
- * The maximum number of items to return.
- * @maximum 250
- */
-limit?: LimitParameter;
-/**
- * Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request's response.
- */
-cursor?: CursorParameter;
+  active?: boolean;
+  projectId?: string;
+  /**
+   * The maximum number of items to return.
+   * @maximum 250
+   */
+  limit?: LimitParameter;
+  /** Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request's response. */
+  cursor?: CursorParameter;
 };

@@ -7,8 +7,6 @@
  */
 
 export type GetTermsParams = {
-/**
- * Language code for terms localization
- */
-language?: string;
+  /** Language code for terms localization */
+  language?: string;
 };

@@ -8,8 +8,6 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type ListMySecretsHeaders = {
-/**
- * Tenant identifier (defaults to configured DEFAULT_TENANT_ID).
- */
-'X-Tenant-Id'?: TenantIdHeaderParameter;
+  /** Tenant identifier (defaults to configured DEFAULT_TENANT_ID). */
+  'X-Tenant-Id'?: TenantIdHeaderParameter;
 };

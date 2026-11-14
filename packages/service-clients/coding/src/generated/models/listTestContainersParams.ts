@@ -23,9 +23,9 @@
  */
 
 export type ListTestContainersParams = {
-/**
- * Container type filter
- * @pattern ^(all|test|provisioned)$
- */
-filter_type?: string;
+  /**
+   * Container type filter
+   * @pattern ^(all|test|provisioned)$
+   */
+  filter_type?: string;
 };

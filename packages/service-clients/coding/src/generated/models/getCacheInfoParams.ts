@@ -23,8 +23,6 @@
  */
 
 export type GetCacheInfoParams = {
-/**
- * Path to the file to check
- */
-file_path: string;
+  /** Path to the file to check */
+  file_path: string;
 };

@@ -7,39 +7,27 @@
  */
 
 export type ListExecutionSessionsParams = {
-/**
- * Filter to sessions for a specific graph (workflow) UUID.
- */
-graph_id?: string | null;
-/**
- * Filter by session status (e.g. 'completed', 'failed').
- */
-status?: string | null;
-/**
- * Filter to sessions whose final-response validation passed (or failed).
- */
-validation_passed?: boolean | null;
-/**
- * Filter to sessions tagged with this correlation/trace ID.
- */
-correlation_id?: string | null;
-/**
- * Lower bound on created_at (inclusive, ISO-8601).
- */
-since?: string | null;
-/**
- * Upper bound on created_at (exclusive, ISO-8601).
- */
-until?: string | null;
-/**
- * Maximum number of sessions to return (1-500, default 100).
- * @minimum 1
- * @maximum 500
- */
-limit?: number;
-/**
- * Number of rows to skip; combine with ``limit`` to page through matching sessions ordered by ``created_at`` DESC.
- * @minimum 0
- */
-offset?: number;
+  /** Filter to sessions for a specific graph (workflow) UUID. */
+  graph_id?: string | null;
+  /** Filter by session status (e.g. 'completed', 'failed'). */
+  status?: string | null;
+  /** Filter to sessions whose final-response validation passed (or failed). */
+  validation_passed?: boolean | null;
+  /** Filter to sessions tagged with this correlation/trace ID. */
+  correlation_id?: string | null;
+  /** Lower bound on created_at (inclusive, ISO-8601). */
+  since?: string | null;
+  /** Upper bound on created_at (exclusive, ISO-8601). */
+  until?: string | null;
+  /**
+   * Maximum number of sessions to return (1-500, default 100).
+   * @minimum 1
+   * @maximum 500
+   */
+  limit?: number;
+  /**
+   * Number of rows to skip; combine with ``limit`` to page through matching sessions ordered by ``created_at`` DESC.
+   * @minimum 0
+   */
+  offset?: number;
 };

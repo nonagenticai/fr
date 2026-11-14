@@ -23,8 +23,6 @@
  */
 
 export type GetTestExecutionPatternsParams = {
-/**
- * Container name to scope pattern analysis
- */
-container_name: string;
+  /** Container name to scope pattern analysis */
+  container_name: string;
 };

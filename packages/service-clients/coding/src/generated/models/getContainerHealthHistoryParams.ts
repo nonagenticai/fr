@@ -23,14 +23,14 @@
  */
 
 export type GetContainerHealthHistoryParams = {
-/**
- * Max records
- * @minimum 1
- */
-limit?: number;
-/**
- * Offset
- * @minimum 0
- */
-offset?: number;
+  /**
+   * Max records
+   * @minimum 1
+   */
+  limit?: number;
+  /**
+   * Offset
+   * @minimum 0
+   */
+  offset?: number;
 };

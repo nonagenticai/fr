@@ -23,27 +23,21 @@
  */
 
 export type GetTestHistoryParams = {
-/**
- * Filter by test name (exact match)
- */
-test_name?: string | null;
-/**
- * Filter by programming language
- */
-language?: string | null;
-/**
- * Filter by success status (true/false)
- */
-success?: boolean | null;
-/**
- * Maximum number of results to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of results to skip (for pagination)
- * @minimum 0
- */
-offset?: number;
+  /** Filter by test name (exact match) */
+  test_name?: string | null;
+  /** Filter by programming language */
+  language?: string | null;
+  /** Filter by success status (true/false) */
+  success?: boolean | null;
+  /**
+   * Maximum number of results to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of results to skip (for pagination)
+   * @minimum 0
+   */
+  offset?: number;
 };

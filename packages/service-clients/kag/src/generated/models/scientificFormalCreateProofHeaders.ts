@@ -31,5 +31,5 @@
  */
 
 export type ScientificFormalCreateProofHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

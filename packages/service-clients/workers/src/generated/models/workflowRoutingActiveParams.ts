@@ -7,14 +7,14 @@
  */
 
 export type WorkflowRoutingActiveParams = {
-/**
- * @minLength 1
- * @maxLength 200
- */
-card_type: string;
-/**
- * @minLength 1
- * @maxLength 200
- */
-list: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  card_type: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  list: string;
 };

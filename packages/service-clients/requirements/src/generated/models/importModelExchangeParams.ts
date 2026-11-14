@@ -7,8 +7,6 @@
  */
 
 export type ImportModelExchangeParams = {
-/**
- * Source file name (recorded)
- */
-filename?: string | null;
+  /** Source file name (recorded) */
+  filename?: string | null;
 };

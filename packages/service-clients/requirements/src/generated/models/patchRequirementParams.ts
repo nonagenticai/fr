@@ -7,8 +7,6 @@
  */
 
 export type PatchRequirementParams = {
-/**
- * The project this edit is made for (G8). Used ONLY to check ownership — it is never written: when set, the row must be owned by this project (origin_kind='project' and origin_project_id equal to it, or project_id equal to it), else 409 `inherited_asset_requires_copy`; POST `.../project-copy` instead. Omit it for a tenant-level edit.
- */
-scope_project_id?: string | null;
+  /** The project this edit is made for (G8). Used ONLY to check ownership — it is never written: when set, the row must be owned by this project (origin_kind='project' and origin_project_id equal to it, or project_id equal to it), else 409 `inherited_asset_requires_copy`; POST `.../project-copy` instead. Omit it for a tenant-level edit. */
+  scope_project_id?: string | null;
 };

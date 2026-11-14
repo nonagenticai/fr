@@ -7,5 +7,5 @@
  */
 
 export type ListExecutionSessionsHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

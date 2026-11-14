@@ -5094,7 +5094,9 @@ export const getCheckGrammarUpdatesUrl = (params?: CheckGrammarUpdatesParams,) =
       return;
     }
 
-
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
   });
 
   const stringifiedParams = normalizedParams.toString();
@@ -11510,7 +11512,9 @@ export const getGetQualityOverviewUrl = (params?: GetQualityOverviewParams,) => 
       return;
     }
 
-
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
   });
 
   const stringifiedParams = normalizedParams.toString();

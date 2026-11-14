@@ -7,20 +7,12 @@
  */
 
 export type ResolvePmWipLimitParams = {
-/**
- * The card's project type
- */
-project_type_id?: string | null;
-/**
- * The card's phase
- */
-phase_id?: string | null;
-/**
- * The card's capability
- */
-capability_id?: string | null;
-/**
- * The card's card type
- */
-card_type_id?: string | null;
+  /** The card's project type */
+  project_type_id?: string | null;
+  /** The card's phase */
+  phase_id?: string | null;
+  /** The card's capability */
+  capability_id?: string | null;
+  /** The card's card type */
+  card_type_id?: string | null;
 };

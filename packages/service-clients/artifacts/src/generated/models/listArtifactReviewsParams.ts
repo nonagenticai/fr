@@ -7,13 +7,11 @@
  */
 
 export type ListArtifactReviewsParams = {
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

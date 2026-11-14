@@ -7,5 +7,5 @@
  */
 
 export type ValidateGraphHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

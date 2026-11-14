@@ -7,5 +7,5 @@
  */
 
 export type CreateRemoteClaudeWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

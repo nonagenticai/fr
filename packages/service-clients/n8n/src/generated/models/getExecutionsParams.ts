@@ -11,26 +11,18 @@ import type { IncludeDataParameter } from './includeDataParameter';
 import type { LimitParameter } from './limitParameter';
 
 export type GetExecutionsParams = {
-/**
- * Whether or not to include the execution's detailed data.
- */
-includeData?: IncludeDataParameter;
-/**
- * Status to filter the executions by.
- */
-status?: GetExecutionsStatus;
-/**
- * Workflow to filter the executions by.
- */
-workflowId?: string;
-projectId?: string;
-/**
- * The maximum number of items to return.
- * @maximum 250
- */
-limit?: LimitParameter;
-/**
- * Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request's response.
- */
-cursor?: CursorParameter;
+  /** Whether or not to include the execution's detailed data. */
+  includeData?: IncludeDataParameter;
+  /** Status to filter the executions by. */
+  status?: GetExecutionsStatus;
+  /** Workflow to filter the executions by. */
+  workflowId?: string;
+  projectId?: string;
+  /**
+   * The maximum number of items to return.
+   * @maximum 250
+   */
+  limit?: LimitParameter;
+  /** Paginate by setting the cursor parameter to the nextCursor attribute returned by the previous request's response. */
+  cursor?: CursorParameter;
 };

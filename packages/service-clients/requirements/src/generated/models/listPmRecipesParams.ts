@@ -8,27 +8,21 @@
 import type { ListPmRecipesSize } from './listPmRecipesSize';
 
 export type ListPmRecipesParams = {
-/**
- * Filter by project type
- */
-project_type_id?: string | null;
-/**
- * Filter by phase
- */
-phase_id?: string | null;
-/**
- * Filter by size
- */
-size?: ListPmRecipesSize;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by project type */
+  project_type_id?: string | null;
+  /** Filter by phase */
+  phase_id?: string | null;
+  /** Filter by size */
+  size?: ListPmRecipesSize;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

@@ -8,12 +8,8 @@
 import type { RenderArchitectureViewFormat } from './renderArchitectureViewFormat';
 
 export type RenderArchitectureViewParams = {
-/**
- * svg (default), png or pdf (vector)
- */
-format?: RenderArchitectureViewFormat;
-/**
- * true: JSON {svg, diagnostics, renderer_version} instead of the image
- */
-report?: boolean;
+  /** svg (default), png or pdf (vector) */
+  format?: RenderArchitectureViewFormat;
+  /** true: JSON {svg, diagnostics, renderer_version} instead of the image */
+  report?: boolean;
 };

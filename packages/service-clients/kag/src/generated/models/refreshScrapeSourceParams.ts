@@ -31,8 +31,6 @@
  */
 
 export type RefreshScrapeSourceParams = {
-/**
- * Re-ingest to KAG when content changed
- */
-send_to_kag?: boolean;
+  /** Re-ingest to KAG when content changed */
+  send_to_kag?: boolean;
 };

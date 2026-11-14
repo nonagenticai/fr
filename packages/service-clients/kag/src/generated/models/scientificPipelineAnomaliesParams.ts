@@ -31,5 +31,5 @@
  */
 
 export type ScientificPipelineAnomaliesParams = {
-threshold?: number;
+  threshold?: number;
 };

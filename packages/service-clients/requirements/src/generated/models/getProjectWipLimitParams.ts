@@ -7,16 +7,10 @@
  */
 
 export type GetProjectWipLimitParams = {
-/**
- * The card's phase (for ``scoped``)
- */
-phase_id?: string | null;
-/**
- * The card's capability (for ``scoped``)
- */
-capability_id?: string | null;
-/**
- * The card's card type (for ``scoped``)
- */
-card_type_id?: string | null;
+  /** The card's phase (for ``scoped``) */
+  phase_id?: string | null;
+  /** The card's capability (for ``scoped``) */
+  capability_id?: string | null;
+  /** The card's card type (for ``scoped``) */
+  card_type_id?: string | null;
 };

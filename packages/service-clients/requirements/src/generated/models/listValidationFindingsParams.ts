@@ -8,24 +8,20 @@
 import type { ListValidationFindingsSeverity } from './listValidationFindingsSeverity';
 
 export type ListValidationFindingsParams = {
-severity?: ListValidationFindingsSeverity;
-/**
- * Only this rule
- */
-rule_id?: string | null;
-/**
- * Only findings naming this id
- */
-target_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  severity?: ListValidationFindingsSeverity;
+  /** Only this rule */
+  rule_id?: string | null;
+  /** Only findings naming this id */
+  target_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

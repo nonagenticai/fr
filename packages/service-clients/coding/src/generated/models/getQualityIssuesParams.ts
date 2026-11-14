@@ -23,15 +23,13 @@
  */
 
 export type GetQualityIssuesParams = {
-severity?: string | null;
-/**
- * Filter by file path
- */
-file_path?: string | null;
-/**
- * Maximum number of issues to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  severity?: string | null;
+  /** Filter by file path */
+  file_path?: string | null;
+  /**
+   * Maximum number of issues to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

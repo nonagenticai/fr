@@ -23,8 +23,6 @@
  */
 
 export type ListSupportedLanguagesParams = {
-/**
- * Optional container name for scoping
- */
-container_name?: string | null;
+  /** Optional container name for scoping */
+  container_name?: string | null;
 };

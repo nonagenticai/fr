@@ -23,23 +23,19 @@
  */
 
 export type ListGraphNodesParams = {
-/**
- * Filter by node type
- */
-node_type?: string | null;
-/**
- * Filter by name pattern
- */
-name_pattern?: string | null;
-/**
- * Page number
- * @minimum 1
- */
-page?: number;
-/**
- * Items per page
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  /** Filter by node type */
+  node_type?: string | null;
+  /** Filter by name pattern */
+  name_pattern?: string | null;
+  /**
+   * Page number
+   * @minimum 1
+   */
+  page?: number;
+  /**
+   * Items per page
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

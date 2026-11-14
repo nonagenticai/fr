@@ -7,8 +7,6 @@
  */
 
 export type GetCommentsParams = {
-/**
- * ID to get comments before (for pagination)
- */
-beforeId?: string;
+  /** ID to get comments before (for pagination) */
+  beforeId?: string;
 };

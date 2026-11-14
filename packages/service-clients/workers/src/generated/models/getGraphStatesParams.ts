@@ -7,10 +7,10 @@
  */
 
 export type GetGraphStatesParams = {
-/**
- * Number of states to return
- * @minimum 1
- * @maximum 100
- */
-limit?: number;
+  /**
+   * Number of states to return
+   * @minimum 1
+   * @maximum 100
+   */
+  limit?: number;
 };

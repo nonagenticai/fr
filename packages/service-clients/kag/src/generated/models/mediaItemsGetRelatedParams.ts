@@ -31,5 +31,5 @@
  */
 
 export type MediaItemsGetRelatedParams = {
-limit?: number;
+  limit?: number;
 };

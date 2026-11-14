@@ -23,8 +23,6 @@
  */
 
 export type CheckGrammarUpdatesParams = {
-/**
- * Specific languages to check (default: all)
- */
-languages?: string[] | null;
+  /** Specific languages to check (default: all) */
+  languages?: string[] | null;
 };

@@ -7,5 +7,5 @@
  */
 
 export type GetLatestWorkerStateHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

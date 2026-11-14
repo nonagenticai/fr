@@ -7,9 +7,9 @@
  */
 
 export type ListArchitectureContainersParams = {
-/**
- * requirements_management project whose effective view (project-scope ∪ tenant-scope) to enumerate
- * @minLength 1
- */
-projectId: string;
+  /**
+   * requirements_management project whose effective view (project-scope ∪ tenant-scope) to enumerate
+   * @minLength 1
+   */
+  projectId: string;
 };

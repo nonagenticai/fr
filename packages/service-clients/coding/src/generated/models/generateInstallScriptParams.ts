@@ -23,12 +23,8 @@
  */
 
 export type GenerateInstallScriptParams = {
-/**
- * Absolute path to the project root directory to analyze. If not provided, uses current working directory
- */
-project_root?: string | null;
-/**
- * Whether to include optional dependencies in the generated installation script
- */
-include_optional?: boolean;
+  /** Absolute path to the project root directory to analyze. If not provided, uses current working directory */
+  project_root?: string | null;
+  /** Whether to include optional dependencies in the generated installation script */
+  include_optional?: boolean;
 };

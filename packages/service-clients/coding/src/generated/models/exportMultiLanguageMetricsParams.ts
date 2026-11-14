@@ -23,8 +23,6 @@
  */
 
 export type ExportMultiLanguageMetricsParams = {
-/**
- * Include raw operation data
- */
-include_raw_data?: boolean;
+  /** Include raw operation data */
+  include_raw_data?: boolean;
 };

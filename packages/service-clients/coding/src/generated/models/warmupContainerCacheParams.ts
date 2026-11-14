@@ -23,8 +23,6 @@
  */
 
 export type WarmupContainerCacheParams = {
-/**
- * Comma-separated operations to warm
- */
-operations?: string | null;
+  /** Comma-separated operations to warm */
+  operations?: string | null;
 };

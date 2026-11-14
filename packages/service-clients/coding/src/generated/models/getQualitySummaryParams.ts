@@ -23,10 +23,10 @@
  */
 
 export type GetQualitySummaryParams = {
-/**
- * Maximum number of top problematic files to return
- * @minimum 1
- * @maximum 100
- */
-top_files_limit?: number;
+  /**
+   * Maximum number of top problematic files to return
+   * @minimum 1
+   * @maximum 100
+   */
+  top_files_limit?: number;
 };

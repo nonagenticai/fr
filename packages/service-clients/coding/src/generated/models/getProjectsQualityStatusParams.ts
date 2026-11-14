@@ -23,8 +23,6 @@
  */
 
 export type GetProjectsQualityStatusParams = {
-/**
- * Filter by status: passed, warning, failed
- */
-status_filter?: string | null;
+  /** Filter by status: passed, warning, failed */
+  status_filter?: string | null;
 };

@@ -32,8 +32,6 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type ScientificHealthReadinessHeaders = {
-/**
- * Tenant identifier (defaults to configured DEFAULT_TENANT_ID).
- */
-'X-Tenant-ID'?: TenantIdHeaderParameter;
+  /** Tenant identifier (defaults to configured DEFAULT_TENANT_ID). */
+  'X-Tenant-ID'?: TenantIdHeaderParameter;
 };

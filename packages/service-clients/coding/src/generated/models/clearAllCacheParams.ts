@@ -23,8 +23,6 @@
  */
 
 export type ClearAllCacheParams = {
-/**
- * Optional language filter
- */
-language?: string | null;
+  /** Optional language filter */
+  language?: string | null;
 };

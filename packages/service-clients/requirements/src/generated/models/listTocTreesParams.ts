@@ -8,21 +8,15 @@
 import type { ListTocTreesTreeType } from './listTocTreesTreeType';
 
 export type ListTocTreesParams = {
-/**
- * Filter by tree type (case-insensitive; empty means no filter)
- */
-tree_type?: ListTocTreesTreeType;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  /** Filter by tree type (case-insensitive; empty means no filter) */
+  tree_type?: ListTocTreesTreeType;
+  /** Filter by project */
+  project_id?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

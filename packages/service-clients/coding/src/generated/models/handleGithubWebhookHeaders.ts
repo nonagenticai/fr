@@ -24,11 +24,9 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type HandleGithubWebhookHeaders = {
-'X-GitHub-Event'?: string;
-'X-Hub-Signature-256'?: string;
-'X-GitHub-Delivery'?: string;
-/**
- * Tenant identifier (defaults to configured DEFAULT_TENANT_ID).
- */
-'X-Tenant-ID'?: TenantIdHeaderParameter;
+  'X-GitHub-Event'?: string;
+  'X-Hub-Signature-256'?: string;
+  'X-GitHub-Delivery'?: string;
+  /** Tenant identifier (defaults to configured DEFAULT_TENANT_ID). */
+  'X-Tenant-ID'?: TenantIdHeaderParameter;
 };

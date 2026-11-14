@@ -23,8 +23,6 @@
  */
 
 export type CompareContainerCachesParams = {
-/**
- * Comma-separated container names
- */
-container_names: string;
+  /** Comma-separated container names */
+  container_names: string;
 };

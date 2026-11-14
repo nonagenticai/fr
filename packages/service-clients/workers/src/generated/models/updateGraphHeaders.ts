@@ -7,5 +7,5 @@
  */
 
 export type UpdateGraphHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

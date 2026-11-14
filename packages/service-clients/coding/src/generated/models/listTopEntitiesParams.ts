@@ -23,14 +23,12 @@
  */
 
 export type ListTopEntitiesParams = {
-/**
- * Metric to rank by
- */
-metric: string;
-/**
- * Number of top entities
- * @minimum 1
- * @maximum 50
- */
-limit?: number;
+  /** Metric to rank by */
+  metric: string;
+  /**
+   * Number of top entities
+   * @minimum 1
+   * @maximum 50
+   */
+  limit?: number;
 };

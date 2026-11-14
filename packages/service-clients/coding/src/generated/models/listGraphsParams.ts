@@ -23,14 +23,12 @@
  */
 
 export type ListGraphsParams = {
-/**
- * Include node/edge counts
- */
-include_stats?: boolean;
-/**
- * Maximum graphs to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  /** Include node/edge counts */
+  include_stats?: boolean;
+  /**
+   * Maximum graphs to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

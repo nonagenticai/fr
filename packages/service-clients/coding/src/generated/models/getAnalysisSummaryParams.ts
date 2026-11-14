@@ -24,12 +24,8 @@
 import type { AnalysisScope } from './analysisScope';
 
 export type GetAnalysisSummaryParams = {
-/**
- * Analysis scope to filter by
- */
-scope?: AnalysisScope;
-/**
- * Optional directory to filter by
- */
-directory?: string | null;
+  /** Analysis scope to filter by */
+  scope?: AnalysisScope;
+  /** Optional directory to filter by */
+  directory?: string | null;
 };

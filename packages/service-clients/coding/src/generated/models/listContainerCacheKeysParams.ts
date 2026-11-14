@@ -23,15 +23,15 @@
  */
 
 export type ListContainerCacheKeysParams = {
-/**
- * Maximum number of keys to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of keys to skip
- * @minimum 0
- */
-offset?: number;
+  /**
+   * Maximum number of keys to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of keys to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

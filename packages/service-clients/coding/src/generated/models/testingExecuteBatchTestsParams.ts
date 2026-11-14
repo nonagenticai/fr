@@ -23,10 +23,10 @@
  */
 
 export type TestingExecuteBatchTestsParams = {
-/**
- * Maximum parallel executions
- * @minimum 1
- * @maximum 10
- */
-max_parallel?: number;
+  /**
+   * Maximum parallel executions
+   * @minimum 1
+   * @maximum 10
+   */
+  max_parallel?: number;
 };

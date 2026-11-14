@@ -7,14 +7,12 @@
  */
 
 export type GetManifestParams = {
-scope_ref?: string | null;
-/**
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  scope_ref?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

@@ -7,7 +7,7 @@
  */
 
 export type SearchKnowledgeBaseParams = {
-query?: string | null;
-k?: number;
-min_similarity?: number;
+  query?: string | null;
+  k?: number;
+  min_similarity?: number;
 };

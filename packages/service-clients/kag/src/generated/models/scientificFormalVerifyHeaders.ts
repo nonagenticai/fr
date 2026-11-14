@@ -31,5 +31,5 @@
  */
 
 export type ScientificFormalVerifyHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

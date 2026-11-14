@@ -7,27 +7,21 @@
  */
 
 export type ListRisksParams = {
-/**
- * Filter by status
- */
-status?: string | null;
-/**
- * Filter by category
- */
-category?: string | null;
-/**
- * Filter by project
- */
-project_id?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by status */
+  status?: string | null;
+  /** Filter by category */
+  category?: string | null;
+  /** Filter by project */
+  project_id?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

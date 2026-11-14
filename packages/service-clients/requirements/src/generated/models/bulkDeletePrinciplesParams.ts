@@ -7,8 +7,6 @@
  */
 
 export type BulkDeletePrinciplesParams = {
-/**
- * Required. Must equal the caller's resolved tenant id, or nothing is deleted
- */
-confirm?: string | null;
+  /** Required. Must equal the caller's resolved tenant id, or nothing is deleted */
+  confirm?: string | null;
 };

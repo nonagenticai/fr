@@ -23,15 +23,15 @@
  */
 
 export type TestingValidateCodeSecurityParams = {
-/**
- * Code to validate
- * @minLength 1
- * @maxLength 50000
- */
-code: string;
-/**
- * Programming language
- * @pattern ^(python|javascript|typescript)$
- */
-language?: string;
+  /**
+   * Code to validate
+   * @minLength 1
+   * @maxLength 50000
+   */
+  code: string;
+  /**
+   * Programming language
+   * @pattern ^(python|javascript|typescript)$
+   */
+  language?: string;
 };

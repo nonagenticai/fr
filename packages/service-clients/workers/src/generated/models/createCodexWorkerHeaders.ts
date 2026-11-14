@@ -7,5 +7,5 @@
  */
 
 export type CreateCodexWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

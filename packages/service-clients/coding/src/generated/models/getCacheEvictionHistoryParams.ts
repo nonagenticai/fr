@@ -23,27 +23,21 @@
  */
 
 export type GetCacheEvictionHistoryParams = {
-/**
- * Maximum eviction records to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Pagination offset
- * @minimum 0
- */
-offset?: number;
-/**
- * Filter from date (ISO 8601)
- */
-date_from?: string | null;
-/**
- * Filter to date (ISO 8601)
- */
-date_to?: string | null;
-/**
- * Filter by eviction reason
- */
-reason?: string | null;
+  /**
+   * Maximum eviction records to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Pagination offset
+   * @minimum 0
+   */
+  offset?: number;
+  /** Filter from date (ISO 8601) */
+  date_from?: string | null;
+  /** Filter to date (ISO 8601) */
+  date_to?: string | null;
+  /** Filter by eviction reason */
+  reason?: string | null;
 };

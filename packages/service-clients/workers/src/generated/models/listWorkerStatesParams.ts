@@ -7,15 +7,15 @@
  */
 
 export type ListWorkerStatesParams = {
-/**
- * Maximum number of worker states to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of worker states to skip
- * @minimum 0
- */
-offset?: number;
+  /**
+   * Maximum number of worker states to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of worker states to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

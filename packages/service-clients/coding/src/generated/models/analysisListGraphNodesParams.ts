@@ -23,21 +23,15 @@
  */
 
 export type AnalysisListGraphNodesParams = {
-/**
- * Filter by node type
- */
-node_type?: string | null;
-/**
- * Substring match against properties.name (case-insensitive). Uses SQLite LIKE with escaped %/_ so the literal is matched verbatim, no wildcard injection.
- */
-name_pattern?: string | null;
-/**
- * @minimum 1
- * @maximum 5000
- */
-limit?: number;
-/**
- * @minimum 0
- */
-offset?: number;
+  /** Filter by node type */
+  node_type?: string | null;
+  /** Substring match against properties.name (case-insensitive). Uses SQLite LIKE with escaped %/_ so the literal is matched verbatim, no wildcard injection. */
+  name_pattern?: string | null;
+  /**
+   * @minimum 1
+   * @maximum 5000
+   */
+  limit?: number;
+  /** @minimum 0 */
+  offset?: number;
 };

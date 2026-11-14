@@ -8,8 +8,6 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type DeleteArtifactHeaders = {
-/**
- * Tenant UUID. A non-uuid value is rejected with 400 INVALID_TENANT_ID; omitting the header is rejected with 401 TENANT_REQUIRED (AUTH_TENANT_FALLBACK_MODE=enforce, the default).
- */
-'X-Tenant-Id'?: TenantIdHeaderParameter;
+  /** Tenant UUID. A non-uuid value is rejected with 400 INVALID_TENANT_ID; omitting the header is rejected with 401 TENANT_REQUIRED (AUTH_TENANT_FALLBACK_MODE=enforce, the default). */
+  'X-Tenant-Id'?: TenantIdHeaderParameter;
 };

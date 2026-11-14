@@ -23,10 +23,10 @@
  */
 
 export type GetContainerQualityTrendsParams = {
-/**
- * Number of days to include in trends (1-365)
- * @minimum 1
- * @maximum 365
- */
-days?: number;
+  /**
+   * Number of days to include in trends (1-365)
+   * @minimum 1
+   * @maximum 365
+   */
+  days?: number;
 };

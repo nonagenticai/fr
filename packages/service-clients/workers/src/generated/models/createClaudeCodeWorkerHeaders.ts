@@ -7,5 +7,5 @@
  */
 
 export type CreateClaudeCodeWorkerHeaders = {
-'X-Visibility'?: string;
+  'X-Visibility'?: string;
 };

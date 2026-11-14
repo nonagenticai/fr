@@ -24,9 +24,7 @@
 import type { TenantIdHeaderParameter } from './tenantIdHeaderParameter';
 
 export type MintInternalCloneTokenHeaders = {
-'X-Internal-Token'?: string;
-/**
- * Tenant identifier (defaults to configured DEFAULT_TENANT_ID).
- */
-'X-Tenant-ID'?: TenantIdHeaderParameter;
+  'X-Internal-Token'?: string;
+  /** Tenant identifier (defaults to configured DEFAULT_TENANT_ID). */
+  'X-Tenant-ID'?: TenantIdHeaderParameter;
 };

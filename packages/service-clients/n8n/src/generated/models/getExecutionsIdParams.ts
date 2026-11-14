@@ -8,8 +8,6 @@
 import type { IncludeDataParameter } from './includeDataParameter';
 
 export type GetExecutionsIdParams = {
-/**
- * Whether or not to include the execution's detailed data.
- */
-includeData?: IncludeDataParameter;
+  /** Whether or not to include the execution's detailed data. */
+  includeData?: IncludeDataParameter;
 };

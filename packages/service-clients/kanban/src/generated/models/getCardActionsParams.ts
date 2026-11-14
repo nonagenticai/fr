@@ -7,8 +7,6 @@
  */
 
 export type GetCardActionsParams = {
-/**
- * ID to get actions before (for pagination)
- */
-beforeId?: string;
+  /** ID to get actions before (for pagination) */
+  beforeId?: string;
 };

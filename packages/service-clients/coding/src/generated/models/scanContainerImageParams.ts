@@ -23,5 +23,5 @@
  */
 
 export type ScanContainerImageParams = {
-tag?: string;
+  tag?: string;
 };

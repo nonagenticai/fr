@@ -7,19 +7,17 @@
  */
 
 export type ListProgrammesParams = {
-/**
- * Filter by status
- */
-status?: string | null;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by status */
+  status?: string | null;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

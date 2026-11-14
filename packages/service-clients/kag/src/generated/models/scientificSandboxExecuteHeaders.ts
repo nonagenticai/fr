@@ -31,5 +31,5 @@
  */
 
 export type ScientificSandboxExecuteHeaders = {
-'X-Tenant-Id'?: string;
+  'X-Tenant-Id'?: string;
 };

@@ -23,8 +23,6 @@
  */
 
 export type InstallAllGrammarsParams = {
-/**
- * Force reinstallation of existing grammars
- */
-force?: boolean;
+  /** Force reinstallation of existing grammars */
+  force?: boolean;
 };

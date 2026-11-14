@@ -8,12 +8,8 @@
 import type { RenderModelRevisionDiagramFormat } from './renderModelRevisionDiagramFormat';
 
 export type RenderModelRevisionDiagramParams = {
-/**
- * svg (default), png or pdf (vector)
- */
-format?: RenderModelRevisionDiagramFormat;
-/**
- * true: JSON {svg, diagnostics, renderer_version} instead of the image
- */
-report?: boolean;
+  /** svg (default), png or pdf (vector) */
+  format?: RenderModelRevisionDiagramFormat;
+  /** true: JSON {svg, diagnostics, renderer_version} instead of the image */
+  report?: boolean;
 };

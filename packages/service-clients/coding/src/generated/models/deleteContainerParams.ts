@@ -23,8 +23,6 @@
  */
 
 export type DeleteContainerParams = {
-/**
- * Force removal even if container is running
- */
-force?: boolean;
+  /** Force removal even if container is running */
+  force?: boolean;
 };

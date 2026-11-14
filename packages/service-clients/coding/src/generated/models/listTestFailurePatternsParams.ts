@@ -23,10 +23,10 @@
  */
 
 export type ListTestFailurePatternsParams = {
-/**
- * Maximum number of patterns to return
- * @minimum 1
- * @maximum 200
- */
-limit?: number;
+  /**
+   * Maximum number of patterns to return
+   * @minimum 1
+   * @maximum 200
+   */
+  limit?: number;
 };

@@ -23,14 +23,12 @@
  */
 
 export type ListContainersParams = {
-/**
- * Filter by container status
- */
-status_filter?: string | null;
-/**
- * Maximum containers to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
+  /** Filter by container status */
+  status_filter?: string | null;
+  /**
+   * Maximum containers to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
 };

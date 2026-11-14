@@ -23,8 +23,6 @@
  */
 
 export type GetSemanticPatternsParams = {
-/**
- * Filter by pattern type: cross_language, architectural, type_system
- */
-pattern_type?: string | null;
+  /** Filter by pattern type: cross_language, architectural, type_system */
+  pattern_type?: string | null;
 };

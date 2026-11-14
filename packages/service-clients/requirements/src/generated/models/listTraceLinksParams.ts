@@ -8,27 +8,21 @@
 import type { ListTraceLinksLinkType } from './listTraceLinksLinkType';
 
 export type ListTraceLinksParams = {
-/**
- * Filter by source id
- */
-source_id?: string | null;
-/**
- * Filter by target id
- */
-target_id?: string | null;
-/**
- * Filter by link type
- */
-link_type?: ListTraceLinksLinkType;
-/**
- * Max items to return
- * @minimum 1
- * @maximum 1000
- */
-limit?: number;
-/**
- * Number of items to skip
- * @minimum 0
- */
-offset?: number;
+  /** Filter by source id */
+  source_id?: string | null;
+  /** Filter by target id */
+  target_id?: string | null;
+  /** Filter by link type */
+  link_type?: ListTraceLinksLinkType;
+  /**
+   * Max items to return
+   * @minimum 1
+   * @maximum 1000
+   */
+  limit?: number;
+  /**
+   * Number of items to skip
+   * @minimum 0
+   */
+  offset?: number;
 };

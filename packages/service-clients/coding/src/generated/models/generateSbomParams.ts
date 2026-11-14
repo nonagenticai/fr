@@ -23,6 +23,6 @@
  */
 
 export type GenerateSbomParams = {
-sbom_format?: string;
-tag?: string;
+  sbom_format?: string;
+  tag?: string;
 };
