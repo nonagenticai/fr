@@ -1,4 +1,10 @@
 version: 2
+
+# Re-validated 2026-11-14: /backend is Bun (bun.lock, `package-ecosystem: bun`) and /frontend is
+# npm (package-lock.json). The newest update run on main (20:32Z) predates that split — it
+# targeted /backend with npm_and_yarn and died on "This project has a bun.lock file but no
+# package-lock.json". A dependabot.yml change is what makes GitHub re-evaluate, so the recorded
+# result matches the config instead of a stale job.
 updates:
   - package-ecosystem: bun
     directory: /backend
