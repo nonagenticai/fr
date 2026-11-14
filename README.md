@@ -107,6 +107,14 @@ Issues and pull requests are welcome. See
 organisation-wide rules; setup, test and lint commands are in this README. Commits carry DCO
 sign-off.
 
+## Licensing
+
+The code in this repository is Apache-2.0 and needs no licence key to build, test or run.
+fr enforces no licence of its own. Some proxied kag paths (`/ml/*`, `/query/ask`,
+`/query/chunks`) reach a modality gateway that introspects a licence for its own hosts; fr's
+part is to carry the caller's tenant vouch for those requests. That gate belongs to the kag
+gateway, not to this repository.
+
 ## License
 
 Apache-2.0 — see [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
