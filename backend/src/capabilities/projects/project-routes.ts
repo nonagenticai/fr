@@ -171,7 +171,10 @@ export const PROJECT_ROUTE_CAPABILITIES: ReadonlyArray<Capability<unknown, unkno
           provision: z.object({ status: z.literal('not_applicable'), reason: z.literal('no_repository') }).optional(),
           graph_init_warning: z.string().nullable().optional(),
           analysis_warning: z.string().nullable().optional(),
-        }),
+          // zod 4 keeps `description` in the schema registry, not the definition:
+          // `.extend()` clones and drops it, so the row's description is restored
+          // here (zod 3 carried it through `extend`, and the served spec has it).
+        }).describe('The `projects` row as stored.'),
         responses: [
           ...standardResponses(
             PROJECT_404 +

@@ -65,24 +65,27 @@ const DEFAULT_CONFIDENCE_THRESHOLD = 0.7;
  * schema isn't a `ZodObject` we can introspect.
  */
 function describeZodInputShape(schema: unknown): string {
-  // ZodObject's runtime carries `_def.shape` (a function returning the
-  // record of `{ key: ZodTypeAny }`) on zod 3.x. Anything else just
-  // surfaces as `<unknown shape>`.
-  const def = (schema as { _def?: { typeName?: string; shape?: () => Record<string, unknown> } })
-    ?._def;
-  if (!def || def.typeName !== 'ZodObject' || typeof def.shape !== 'function') {
-    return '<unknown shape>';
-  }
-  const shape = def.shape();
+  // zod 4 carries the runtime tag on `_zod.def.type` ('object', 'optional', 'string', …) and the
+  // field record on `_zod.def.shape`. zod 3's `_def.typeName` no longer exists, so reading it
+  // silently produced `<unknown shape>` for every action once the backend moved to zod 4.
+  const defOf = (v: unknown): Record<string, unknown> | undefined =>
+    (v as { _zod?: { def?: Record<string, unknown> } })?._zod?.def;
+
+  const def = defOf(schema);
+  if (!def || def.type !== 'object') return '<unknown shape>';
+  const shape = def.shape as Record<string, unknown> | undefined;
+  if (!shape || typeof shape !== 'object') return '<unknown shape>';
+
   const fields: string[] = [];
   for (const [key, fieldSchema] of Object.entries(shape)) {
-    const fieldDef = (fieldSchema as { _def?: { typeName?: string } })?._def;
-    const typeName = fieldDef?.typeName ?? 'unknown';
-    // Strip the Zod prefix for readability: ZodString -> string, etc.
-    const friendly = typeName.replace(/^Zod/, '').toLowerCase();
-    // Detect optional via the ZodOptional wrapper.
-    const optional = typeName === 'ZodOptional' ? '?' : '';
-    fields.push(`${key}${optional}: ${friendly}`);
+    const fieldType = (defOf(fieldSchema)?.type as string | undefined) ?? 'unknown';
+    // `optional` and `default` are wrappers in zod 4 too; unwrap them so the prompt says
+    // `name?: string` and `limit: number`, never `limit: default`.
+    const wrapper = fieldType === 'optional' || fieldType === 'default';
+    const optional = fieldType === 'optional';
+    const inner = wrapper ? ((defOf(fieldSchema)?.innerType as unknown) ?? fieldSchema) : fieldSchema;
+    const friendly = ((defOf(inner)?.type as string | undefined) ?? 'unknown').replace(/^Zod/, '').toLowerCase();
+    fields.push(`${key}${optional ? '?' : ''}: ${friendly}`);
   }
   return `{ ${fields.join(', ')} }`;
 }

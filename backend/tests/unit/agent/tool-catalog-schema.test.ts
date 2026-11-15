@@ -160,7 +160,12 @@ describe('tool catalog input schemas (fr#1383)', () => {
       const missing = parsed.success
         ? []
         : parsed.error.issues
-            .filter((i) => i.path.length === 1 && i.code === 'invalid_type' && (i as { received?: string }).received === 'undefined')
+            // zod 4 splits what zod 3 called one `invalid_type` (with
+            // `received: 'undefined'`) by the key's schema: `invalid_value` for an
+            // enum / literal, `invalid_union` for a union, … The parse input is
+            // `{}`, so every issue at a TOP-LEVEL key means that key was absent —
+            // no value was supplied for it — whatever its code.
+            .filter((i) => i.path.length === 1)
             .map((i) => String(i.path[0]));
       expect({ action: a.name, required: [...(schema!.required ?? [])].sort() }).toEqual({
         action: a.name,

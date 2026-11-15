@@ -78,28 +78,41 @@ export function deriveOperation(
  * true` rather than claiming the listed keys are the whole contract.
  */
 export function inputIsPassthrough(schema: ZodTypeAny): boolean {
-  let s: ZodTypeAny = schema;
-  for (let i = 0; i < 8; i += 1) {
-    const def = (s as unknown as { _def: { typeName?: string; schema?: ZodTypeAny; innerType?: ZodTypeAny; unknownKeys?: string } })._def;
-    if (def.typeName === 'ZodObject') return def.unknownKeys === 'passthrough';
-    const inner = def.schema ?? def.innerType;
-    if (inner === undefined) return false;
-    s = inner;
-  }
-  return false;
+  return inputObjectCatchall(schema) === 'unknown';
 }
 
 /** Same walk as `inputIsPassthrough`: does the input object refuse unknown keys (`.strict()`)? */
 export function inputIsStrict(schema: ZodTypeAny): boolean {
-  let s: ZodTypeAny = schema;
-  for (let i = 0; i < 8; i += 1) {
-    const def = (s as unknown as { _def: { typeName?: string; schema?: ZodTypeAny; innerType?: ZodTypeAny; unknownKeys?: string } })._def;
-    if (def.typeName === 'ZodObject') return def.unknownKeys === 'strict';
-    const inner = def.schema ?? def.innerType;
-    if (inner === undefined) return false;
-    s = inner;
+  return inputObjectCatchall(schema) === 'never';
+}
+
+/**
+ * The object's catchall type at the end of a wrapper chain (zod 4's
+ * `_zod.def.catchall`): `never` for `.strict()`, `unknown` for
+ * `.passthrough()`, `undefined` for a strip object, or the type of an explicit
+ * `.catchall(x)`.
+ */
+function inputObjectCatchall(schema: ZodTypeAny, depth = 0): string | undefined {
+  if (depth > 8) return undefined;
+  const def = (schema as unknown as {
+    _zod: {
+      def: {
+        type?: string;
+        catchall?: { _zod?: { def?: { type?: string } } };
+        innerType?: ZodTypeAny;
+        in?: ZodTypeAny;
+        out?: ZodTypeAny;
+      };
+    };
+  })._zod.def;
+  if (def.type === 'object') return def.catchall?._zod?.def?.type;
+  // `.refine()`/`.transform()` are `pipe` in zod 4: an object refined or
+  // transformed still owns its body, so keep looking on both sides.
+  if (def.type === 'pipe') {
+    return inputObjectCatchall(def.in as ZodTypeAny, depth + 1) ?? inputObjectCatchall(def.out as ZodTypeAny, depth + 1);
   }
-  return false;
+  const inner = def.innerType;
+  return inner === undefined ? undefined : inputObjectCatchall(inner, depth + 1);
 }
 
 /**

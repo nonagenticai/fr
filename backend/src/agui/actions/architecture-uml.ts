@@ -23,6 +23,7 @@ import { z } from 'zod';
 
 import { registerAction } from '../registry';
 import type { ActionContext, AgentCallableAction } from '../types';
+import { nativeEnum } from '../../capabilities/json-schema';
 import { AppError } from '../../utils/errors';
 import { callRouteAsHuman, lazyRoute } from './project-core';
 import {
@@ -90,8 +91,8 @@ const routes = () => import('../../routes/assets/architecture-uml');
 const UML = '/api/assets/architecture/modeling/uml';
 
 /** RM types a trace link's ends and link types as enums: the agent's choices are those, from the generated client. */
-const TRACE_KINDS = z.nativeEnum(TraceRefKind);
-const TRACE_LINK_TYPES = z.nativeEnum(TraceLinkInLinkType);
+const TRACE_KINDS = nativeEnum(TraceRefKind);
+const TRACE_LINK_TYPES = nativeEnum(TraceLinkInLinkType);
 
 const id = (what: string) => z.string().min(1).max(100).describe(what);
 const modelIdReq = z.string().min(1).max(100).describe("The UML model of THIS project to add to (from architecture.list_models, language 'uml').");

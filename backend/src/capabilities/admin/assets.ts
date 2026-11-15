@@ -35,6 +35,7 @@ import {
 } from '../../integrations/_lib/asset-query-schemas';
 import { PatchProjectSchema } from '../../routes/admin/assets/projects-schemas';
 import type { Capability } from '../define';
+import { nativeEnum } from '../json-schema';
 import {
   isAuthenticatedProductionWorkflowReader,
   isAuthenticatedUserInFrameTenant,
@@ -90,7 +91,7 @@ const rmWritable = {
   version: z.string().optional(),
   version_notes: ns.optional(),
   // The upstream's own enum (requirements_management *InVersionStatus: Principle / Requirement / Decision carry the same three).
-  version_status: z.nativeEnum(RequirementInVersionStatus).optional(),
+  version_status: nativeEnum(RequirementInVersionStatus).optional(),
 };
 const lens = z.record(z.string(), z.unknown()).optional();
 

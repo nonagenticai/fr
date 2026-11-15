@@ -23,12 +23,16 @@ export function kagReadsJsonBody(method: HttpMethod, path: string, input: z.ZodT
   const params = [...path.matchAll(/:([A-Za-z0-9_]+)/g)].map((m) => m[1]!);
   let s: z.ZodTypeAny = input;
   for (let i = 0; i < 8; i += 1) {
-    const def = (s as unknown as { _def: { typeName?: string; schema?: z.ZodTypeAny; innerType?: z.ZodTypeAny; unknownKeys?: string } })._def;
-    if (def.typeName === 'ZodObject') {
-      const keys = Object.keys((s as z.ZodObject<z.ZodRawShape>).shape).filter((k) => !params.includes(k));
-      return keys.length > 0 || def.unknownKeys === 'passthrough';
+    // zod 4: the runtime definition is `_zod.def` (an object's shape is a
+    // record, and `.passthrough()` is a `catchall` of `unknown`).
+    const def = (s as unknown as {
+      _zod: { def: { type?: string; shape?: z.ZodRawShape; catchall?: { _zod?: { def?: { type?: string } } }; innerType?: z.ZodTypeAny } };
+    })._zod.def;
+    if (def.type === 'object') {
+      const keys = Object.keys(def.shape ?? {}).filter((k) => !params.includes(k));
+      return keys.length > 0 || def.catchall?._zod?.def?.type === 'unknown';
     }
-    const inner = def.schema ?? def.innerType;
+    const inner = def.innerType;
     if (inner === undefined) return false;
     s = inner;
   }
