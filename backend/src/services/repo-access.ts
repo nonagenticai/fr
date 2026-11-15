@@ -178,12 +178,19 @@ function escapeRegExp(s: string): string {
 
 /**
  * Is `host` a GitHub-family host? `github.com`, any `*.github.com`
- * (api., gist., www., codeload., …) and any `*githubusercontent.com`
- * (raw., objects., avatars., …). A trailing root dot is ignored.
+ * (api., gist., www., codeload., …) and `githubusercontent.com` or any
+ * `*.githubusercontent.com` (raw., objects., avatars., …). The dot before the
+ * suffix is load-bearing: `evilgithubusercontent.com` is NOT a GitHub host.
+ * A trailing root dot is ignored.
  */
 export function isGithubFamilyHost(host: string): boolean {
   const h = host.toLowerCase().replace(/\.+$/, '');
-  return h === 'github.com' || h.endsWith('.github.com') || h.endsWith('githubusercontent.com');
+  return (
+    h === 'github.com' ||
+    h.endsWith('.github.com') ||
+    h === 'githubusercontent.com' ||
+    h.endsWith('.githubusercontent.com')
+  );
 }
 
 /** Percent-decode repeatedly (double-encoding), stopping on a malformed escape. */
