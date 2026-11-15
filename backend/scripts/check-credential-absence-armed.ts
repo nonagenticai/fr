@@ -207,8 +207,13 @@ export function testWrappers(code: string): Set<string> {
   return out;
 }
 
+/** Escape every regex metacharacter so a wrapper name matches literally in an alternation. */
+function escapeRegExpLiteral(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function headerStart(wrappers: Set<string>): RegExp {
-  const names = [...HEADER_KEYWORDS, ...[...wrappers].map((w) => w.replace(/\$/g, '\\$'))];
+  const names = [...HEADER_KEYWORDS, ...[...wrappers].map(escapeRegExpLiteral)];
   return new RegExp(`^[ \\t]*(${names.join('|')})(?![\\w$])${HEADER_MODS}`, 'gm');
 }
 

@@ -7,16 +7,37 @@ export interface Route {
   handler: (req: Request, ...params: string[]) => Promise<Response>;
 }
 
+/** Escape every regex metacharacter so `text` matches exactly itself. */
+function escapeRegExpLiteral(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * The WHOLE pattern grammar (route-overlap-pairs.ts pins order against it):
+ * literal text, whole-segment `:name` placeholders, and the one `(.*)` suffix
+ * row (the Evidence Review passthrough — any method, any sub-path). Only these
+ * two tokens are substituted; every other character is literal and escaped, so
+ * no registered path can inject regex syntax.
+ */
+const PATTERN_TOKEN = /(:\w+|\(\.\*\))/;
+const PARAM_TOKEN = /^:\w+$/;
+const REGEX_SUFFIX_TOKEN = '(.*)';
+
 /**
  * Compile a route pattern like "/api/projects/:id" to its anchored regex. The ONE
  * compiler: `Router.add` and `lib/licence-route-allowlist.ts` both use it, so an
  * allowlist entry matches exactly the paths the registered route would.
  */
 export function compileRoutePattern(pattern: string): RegExp {
-  const regexPattern = pattern
-    .replace(/\//g, '\\/')
-    .replace(/:(\w+)/g, '([^/]+)');
-  return new RegExp(`^${regexPattern}$`);
+  const source = pattern
+    .split(PATTERN_TOKEN)
+    .map((part) => {
+      if (part === REGEX_SUFFIX_TOKEN) return REGEX_SUFFIX_TOKEN;
+      if (PARAM_TOKEN.test(part)) return '([^/]+)';
+      return escapeRegExpLiteral(part);
+    })
+    .join('');
+  return new RegExp(`^${source}$`);
 }
 
 export class Router {

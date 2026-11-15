@@ -518,14 +518,34 @@ export class ClientErrorReporter {
 // Default (browser) wiring
 // -----------------------------------------------------------------------------
 
+/** Monotonic suffix so two ids minted in the same millisecond still differ. */
+let fallbackSeq = 0;
+
+/**
+ * Correlation id for one reporter. Web Crypto is the only random source: the
+ * platform CSPRNG (`randomUUID`, then `getRandomValues`). The last resort for a
+ * runtime with no Web Crypto at all is time + a module counter — this id is
+ * telemetry correlation, never a secret and never an access token.
+ */
 function randomId(): string {
 	try {
-		const c = (globalThis as { crypto?: { randomUUID?: () => string } }).crypto;
-		if (c?.randomUUID) return c.randomUUID();
+		const c = (
+			globalThis as {
+				crypto?: {
+					randomUUID?: () => string;
+					getRandomValues?: (array: Uint8Array) => Uint8Array;
+				};
+			}
+		).crypto;
+		if (typeof c?.randomUUID === 'function') return c.randomUUID();
+		if (typeof c?.getRandomValues === 'function') {
+			const bytes = c.getRandomValues(new Uint8Array(16));
+			return `fe-${Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')}`;
+		}
 	} catch {
-		// Fall through to the arithmetic id.
+		// Fall through to the counter id.
 	}
-	return `fe-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+	return `fe-${Date.now().toString(36)}-${(fallbackSeq++).toString(36)}`;
 }
 
 /**
