@@ -171,7 +171,7 @@ export interface IntegrationErrorInit {
    * which of ITS parameters are missing.
    *
    * MEASURED 2026-09-01: `bridge.list_outputs` declares
-   * `filters: z.record(z.string()).optional()` with the prose hint "filter shape
+   * `filters: z.record(z.string(), z.string()).optional()` with the prose hint "filter shape
    * varies per producer", while each producer requires a different set —
    * artifacts `project_id`, coding `job_id`+`user_id`, kag `session_id`. An
    * agent read "optional", called without them, and was told only "the action

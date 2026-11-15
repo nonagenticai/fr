@@ -27,7 +27,7 @@ const llmOutputSchema = z.discriminatedUnion('intent', [
   z.object({
     intent: z.literal('action'),
     action_name: z.string().min(1),
-    action_input: z.record(z.unknown()),
+    action_input: z.record(z.string(), z.unknown()),
     confidence: z.number().min(0).max(1),
   }),
   z.object({

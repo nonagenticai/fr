@@ -209,7 +209,9 @@ describe('BugReportDetailsSchema', () => {
     commit_sha: 'c',
     bugs: BASE.bugs,
   };
-  const paths = (r: { success: boolean; error?: { issues: Array<{ path: Array<string | number> }> } }) =>
+  // zod 4 types an issue path as PropertyKey[] — a symbol is legal there, so the helper
+  // must accept it rather than narrowing to string | number.
+  const paths = (r: { success: boolean; error?: { issues: Array<{ path: Array<PropertyKey> }> } }) =>
     (r.error?.issues ?? []).map((i) => i.path.join('.'));
 
   test('accepts a well-formed v1 body', () => {

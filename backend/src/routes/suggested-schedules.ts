@@ -87,7 +87,7 @@ const SourceConnectorEnum = z.enum([
 const CardTemplateSchema = z.object({
   card_type: z.string().min(1),
   labels: z.array(z.string()).optional(),
-  custom_fields: z.record(z.unknown()).optional(),
+  custom_fields: z.record(z.string(), z.unknown()).optional(),
 });
 
 // Schema applied to `payload` at accept-time (NOT at internal-create
@@ -100,8 +100,8 @@ const AcceptPayloadSchema = z
     suggested_cron: z.string().min(1),
     suggested_timezone: z.string().min(1).default('UTC'),
     suggested_source_connector: SourceConnectorEnum,
-    suggested_connector_config: z.record(z.unknown()),
-    suggested_payload_mapper: z.record(z.string()),
+    suggested_connector_config: z.record(z.string(), z.unknown()),
+    suggested_payload_mapper: z.record(z.string(), z.string()),
     suggested_target_list: z.string().min(1).default('INBOX'),
     suggested_card_template: CardTemplateSchema,
     suggested_enabled: z.boolean().default(true),
@@ -112,7 +112,7 @@ const InternalCreateBodySchema = z
   .object({
     project_id: z.string().uuid(),
     ad_hoc_summary: z.string().min(1).max(2000),
-    payload: z.record(z.unknown()).default({}),
+    payload: z.record(z.string(), z.unknown()).default({}),
     user_id: z.string().uuid().optional(),
   })
   .strict();

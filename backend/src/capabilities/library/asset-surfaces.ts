@@ -200,7 +200,7 @@ export const ASSET_SURFACE_CAPABILITIES: ReadonlyArray<Capability<unknown, unkno
           approval_id: z.string(),
           status: z.string(),
           deduplicated: z.boolean(),
-          metadata: z.record(z.unknown()),
+          metadata: z.record(z.string(), z.unknown()),
         }),
       }),
       responses: standardResponses(

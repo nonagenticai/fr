@@ -297,7 +297,8 @@ function umlWrites(resource: UmlResource, create: z.ZodRawShape, describe: strin
   const field = RES_FIELD[resource];
   const Name = HANDLER_NAME[resource];
   const createInput = z.object({ project_id: projectId, model_id: modelIdReq, ...create, idempotency_key: idempotencyKey }).strict();
-  const updShape: z.ZodRawShape = {};
+  // zod 4's ZodRawShape is readonly; build a plain object and hand it over.
+  const updShape: Record<string, z.ZodTypeAny> = {};
   for (const [k, v] of Object.entries(create)) updShape[k] = (v as z.ZodTypeAny).optional();
   const updateInput = z
     .object({
@@ -394,7 +395,7 @@ const OCC: Record<'objects' | 'connections', { one: string; Name: string; ref: s
       lifeline_id: z.string().nullable().optional().describe('The lifeline shown (sequence diagrams).'),
       bounds: bounds.nullable().optional(),
       position: z.number().int().min(0).nullable().optional().describe('Drawing order (0 = bottom).'),
-      style: z.record(z.unknown()).nullable().optional().describe('Fill / line / font settings, as stored.'),
+      style: z.record(z.string(), z.unknown()).nullable().optional().describe('Fill / line / font settings, as stored.'),
     },
   },
   connections: {
@@ -408,7 +409,7 @@ const OCC: Record<'objects' | 'connections', { one: string; Name: string; ref: s
       source_object_id: z.string().optional(),
       target_object_id: z.string().optional(),
       bendpoints: z.array(z.object({ x: z.number().int(), y: z.number().int() })).nullable().optional(),
-      style: z.record(z.unknown()).nullable().optional(),
+      style: z.record(z.string(), z.unknown()).nullable().optional(),
     },
   },
 };

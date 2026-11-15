@@ -63,7 +63,7 @@ const draftRow = z.object({
   approval_id: z.string().nullable().describe('Set on submit.'),
   committed_card_id: z.string().nullable().describe('The Planka card, set on commit.'),
   dedup_of_card_id: z.string().nullable().describe('The existing card this draft duplicates.'),
-  metadata: z.record(z.unknown()).describe('Bookkeeping (idempotency key, output-id set, coding job id).'),
+  metadata: z.record(z.string(), z.unknown()).describe('Bookkeeping (idempotency key, output-id set, coding job id).'),
   created_at: iso,
   updated_at: iso,
 });
@@ -192,7 +192,7 @@ export const BRIDGE_CAPABILITIES: ReadonlyArray<Capability<unknown, unknown>> = 
     output: z.object({
       data: z.array(toolOutput),
       meta: z.object({
-        dedup: z.record(z.object({ card_id: z.string(), match: z.enum(['stable_id', 'digest']) })),
+        dedup: z.record(z.string(), z.object({ card_id: z.string(), match: z.enum(['stable_id', 'digest']) })),
         count: z.number().int(),
         dedup_known_count: z.number().int(),
       }),

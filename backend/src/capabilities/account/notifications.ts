@@ -27,7 +27,7 @@ const notification = z.object({
   execution_id: z.string().nullable(),
   source: z.string(),
   correlation_id: z.string().nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
   read_at: isoTime.nullable(),
   created_at: isoTime,
 });

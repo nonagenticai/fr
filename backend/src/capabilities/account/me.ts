@@ -135,7 +135,7 @@ const licence = z
     updated_at: z.string(),
     revoked_at: z.string().nullable(),
     metadata: z
-      .record(z.unknown())
+      .record(z.string(), z.unknown())
       .nullable()
       .describe('Free-form, set by whoever created the licence. Opaque: not guaranteed to be free of sensitive values.'),
     app: appInfo.describe('Always set: fr keeps only the licences whose app is an fr app.'),
@@ -188,7 +188,7 @@ export const MY_LICENCE_CAPABILITIES = settingsCapabilities(
         licenses: z.array(licence),
         usage: myUsage,
         costs: myCosts,
-        upstream_errors: z.record(z.literal('unavailable')).optional().describe('Which card is degraded (licenses / usage / costs / markup).'),
+        upstream_errors: z.record(z.string(), z.literal('unavailable')).optional().describe('Which card is degraded (licenses / usage / costs / markup).'),
       }),
       responses: caughtAuthResponses(
         { status: '401' },
@@ -373,7 +373,7 @@ export const MY_DEPT_ROLE_CAPABILITIES = settingsCapabilities(
       summary: "The caller's department roles, keyed by department id (every workspace)",
       description: "`{}` when the caller belongs to no department. Not scoped to the request tenant: filter by the department's workspace client-side.",
       input: z.object({}),
-      output: z.object({ data: z.record(z.enum(['dept-admin', 'dept-manager', 'dept-member', 'dept-viewer'])) }),
+      output: z.object({ data: z.record(z.string(), z.enum(['dept-admin', 'dept-manager', 'dept-member', 'dept-viewer'])) }),
       responses: standardResponses(),
     },
   ],

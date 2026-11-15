@@ -6,7 +6,7 @@ export const SecretCreateSchema = z.object({
   description: z.string().optional(),
   secret_type: z.enum(['api_key', 'oauth', 'basic_auth', 'custom']),
   secret_value: z.string().min(1),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 });
 
 export const SecretUpdateSchema = z.object({

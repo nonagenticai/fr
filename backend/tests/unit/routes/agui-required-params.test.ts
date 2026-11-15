@@ -10,7 +10,7 @@
 // It was NOT a retry storm. `classifyError` already returns `retriable: false`
 // for caller-side refusals (#903, 2026-08-31). The cause is that the CONTRACT is
 // per-producer while the SCHEMA is producer-agnostic: `bridge.list_outputs`
-// declares `filters: z.record(z.string()).optional()` with the prose hint
+// declares `filters: z.record(z.string(), z.string()).optional()` with the prose hint
 // "filter shape varies per producer", and each producer requires a different
 // set — artifacts `project_id`, coding `job_id`+`user_id`, kag `session_id`.
 // Prose is not something an agent can act on.

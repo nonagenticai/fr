@@ -301,7 +301,7 @@ export async function handlePutFxRate(req: Request): Promise<Response> {
   await requireSuperAdmin(req);
   const parsed = FxRatePutBody.safeParse(await readBody(req));
   if (!parsed.success) {
-    return jsonResponse({ error: 'invalid request body', details: parsed.error.errors }, 422);
+    return jsonResponse({ error: 'invalid request body', details: parsed.error.issues }, 422);
   }
   const ownerToken = await ownerPortalToken(req);
   if (!ownerToken) {

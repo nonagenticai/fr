@@ -159,7 +159,7 @@ export const LicenceOpenBody = z
     target_flow: shortText(256).optional(),
     target_flow_id: shortText(64).optional(),
     base_version_id: shortText(128).optional(),
-    evidence: z.record(z.unknown()),
+    evidence: z.record(z.string(), z.unknown()),
     /**
      * A hand-open the coach forwarded (the super-admin's sub from the `kata.open` payload). Accepted
      * and IGNORED: a licence cannot vouch for a super-admin, so the kata records `opened_by='coach'`.
@@ -194,8 +194,8 @@ export const KataPatchBody = z
     published_version_id: nullableText(128),
     replay_passed: count,
     replay_total: count,
-    ops: z.array(z.record(z.unknown())).optional(),
-    replays: z.array(z.record(z.unknown())).optional(),
+    ops: z.array(z.record(z.string(), z.unknown())).optional(),
+    replays: z.array(z.record(z.string(), z.unknown())).optional(),
     linked_card_rerun: z.array(shortText(128)).max(200).optional(),
   })
   .strict();

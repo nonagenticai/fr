@@ -25,7 +25,7 @@ export function kagReadsJsonBody(method: HttpMethod, path: string, input: z.ZodT
   for (let i = 0; i < 8; i += 1) {
     const def = (s as unknown as { _def: { typeName?: string; schema?: z.ZodTypeAny; innerType?: z.ZodTypeAny; unknownKeys?: string } })._def;
     if (def.typeName === 'ZodObject') {
-      const keys = Object.keys((s as z.AnyZodObject).shape).filter((k) => !params.includes(k));
+      const keys = Object.keys((s as z.ZodObject<z.ZodRawShape>).shape).filter((k) => !params.includes(k));
       return keys.length > 0 || def.unknownKeys === 'passthrough';
     }
     const inner = def.schema ?? def.innerType;

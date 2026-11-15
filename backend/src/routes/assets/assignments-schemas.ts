@@ -16,8 +16,7 @@ export const ASSET_TYPES = assetType.enumValues;
 export const QuerySchema = z
   .object({
     type: z.enum(ASSET_TYPES, {
-      required_error: `type query param is required (one of: ${ASSET_TYPES.join(', ')})`,
-      invalid_type_error: `type query param must be one of: ${ASSET_TYPES.join(', ')}`,
+      error: `type query param must be one of: ${ASSET_TYPES.join(', ')}`,
     }),
     scope_kind: z.enum(['workspace', 'department', 'project']).optional(),
     scope_id: z.string().uuid().optional(),

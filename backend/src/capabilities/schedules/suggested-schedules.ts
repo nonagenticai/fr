@@ -24,7 +24,7 @@ export const suggestion = z.object({
   user_id: z.string().nullable(),
   source: z.enum(['manual', 'heuristic']),
   ad_hoc_summary: z.string(),
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
   status: z.enum(['new', 'accepted', 'dismissed']),
   promoted_trigger_id: z.string().nullable(),
   created_at: isoTime,

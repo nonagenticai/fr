@@ -176,7 +176,7 @@ describe('tool catalog input schemas (fr#1383)', () => {
         b: z.number().int().min(0).max(9),
         c: z.enum(['x', 'y']),
         d: z.array(z.string()).min(1),
-        e: z.record(z.number()),
+        e: z.record(z.string(), z.number()),
         f: z.string().nullable(),
         g: z.literal('k'),
       })

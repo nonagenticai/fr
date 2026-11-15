@@ -433,7 +433,7 @@ export async function handleConstraintCheck(req: Request): Promise<Response> {
   }
   const parsed = constraintCheckSchema.safeParse(raw);
   if (!parsed.success) {
-    return jsonResponse({ error: 'Validation error', details: parsed.error.errors }, 422);
+    return jsonResponse({ error: 'Validation error', details: parsed.error.issues }, 422);
   }
   const body = parsed.data;
 

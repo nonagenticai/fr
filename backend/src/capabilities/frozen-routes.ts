@@ -44,7 +44,7 @@ function zodOfSchema(s: Json | undefined): ZodTypeAny {
   } else if (t === 'array') {
     out = z.array(zodOfSchema(s.items as Json | undefined));
   } else if (t === 'object') {
-    out = z.record(z.unknown());
+    out = z.record(z.string(), z.unknown());
   } else {
     out = z.unknown();
   }

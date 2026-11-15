@@ -49,10 +49,10 @@ export const PROJECT_REGISTER_CAPABILITIES: ReadonlyArray<Capability<unknown, un
               reason: z.string().optional(),
               rm_project_id: z.string().optional(),
               phase: z.string().nullable().optional(),
-              risks: z.array(z.record(z.unknown())).optional(),
-              decisions: z.array(z.record(z.unknown())).optional(),
-              requirements: z.array(z.record(z.unknown())).optional(),
-              criteria: z.array(z.record(z.unknown())).optional(),
+              risks: z.array(z.record(z.string(), z.unknown())).optional(),
+              decisions: z.array(z.record(z.string(), z.unknown())).optional(),
+              requirements: z.array(z.record(z.string(), z.unknown())).optional(),
+              criteria: z.array(z.record(z.string(), z.unknown())).optional(),
               counts: z
                 .object({
                   risks_open: z.number().int(),

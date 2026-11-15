@@ -26,7 +26,7 @@ const RESPONSES = standardResponses(
 );
 
 /** An inference-router object, verbatim. */
-const verbatimObject = (what: string) => z.record(z.unknown()).describe(`The ${what} payload, verbatim (fr only checks it is a JSON object).`);
+const verbatimObject = (what: string) => z.record(z.string(), z.unknown()).describe(`The ${what} payload, verbatim (fr only checks it is a JSON object).`);
 
 const ROUTES: SettingsRoute[] = [
   {
@@ -53,7 +53,7 @@ const ROUTES: SettingsRoute[] = [
             concept: z.string().nullable(),
             active_at: z.string().nullable(),
             summary: z.string().nullable(),
-            labels: z.record(z.string()),
+            labels: z.record(z.string(), z.string()),
           }),
         ),
       }),

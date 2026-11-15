@@ -48,7 +48,7 @@ const MODULE = { module: 'src/routes/assets/workers.ts', load: () => import('../
 const name = z.object({ name: pathId('Worker name (unique per tenant)') });
 
 const workTier = z.enum(['small', 'medium', 'high']);
-const jsonObject = z.record(z.unknown());
+const jsonObject = z.record(z.string(), z.unknown());
 
 /** worker_management `WorkerCreateRequest` (create and PUT update; WM ignores unknown keys). */
 const workerRequest = z
@@ -179,7 +179,7 @@ const messageRequest = z
     temperature: z.number().min(0).max(1).nullable().optional(),
     enforce_schema_bounds: z.boolean().nullable().optional(),
     correlation_id: z.string().uuid().nullable().optional(),
-    prompt_versions: z.record(z.number().int()).nullable().optional(),
+    prompt_versions: z.record(z.string(), z.number().int()).nullable().optional(),
   })
   .strict()
   .describe(

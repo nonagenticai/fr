@@ -31,7 +31,7 @@ const N8nReportSchema = z.object({
   report_type: z.enum(['status', 'sprint', 'dependency', 'quality', 'custom']),
   title: z.string().min(1),
   summary: z.string().min(1),
-  details: z.record(z.any()).optional(),
+  details: z.record(z.string(), z.any()).optional(),
   card_id: z.string().optional(),
   board_id: z.string().optional(),
   project_id: z.string().uuid().optional(),

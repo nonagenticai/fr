@@ -25,8 +25,8 @@ const grantSync = z
   .enum(['disabled', 'added', 'already', 'skipped_no_tenant', 'skipped_tenant_mismatch', 'skipped_super_admin', 'skipped_user_absent', 'failed'])
   .describe('The Keycloak realm tenant_admin write-through outcome (workspace-admin grants only).');
 
-const tokensByApp = z.record(z.string()).describe('🔐 app key → the licence token minted NOW, shown ONCE. Empty on a replay.');
-const licenseIds = z.record(z.string()).describe('app key → licence id (the audit / revoke handle).');
+const tokensByApp = z.record(z.string(), z.string()).describe('🔐 app key → the licence token minted NOW, shown ONCE. Empty on a replay.');
+const licenseIds = z.record(z.string(), z.string()).describe('app key → licence id (the audit / revoke handle).');
 const tempPassword = z.string().nullable().describe('🔐 The temporary password, shown ONCE; null when none was minted (an existing account is never rotated; a replay mints nothing).');
 
 const seat = z.object({
@@ -49,7 +49,7 @@ const inferenceOutcome = z.object({
   policy_version: z.number().nullable(),
   idempotency_key: z.string(),
   replayed: z.boolean(),
-  steps: z.array(z.object({ name: z.string(), status: z.enum(['ok', 'skipped', 'failed']), detail: z.record(z.unknown()) })),
+  steps: z.array(z.object({ name: z.string(), status: z.enum(['ok', 'skipped', 'failed']), detail: z.record(z.string(), z.unknown()) })),
   smoke: z.array(
     z.object({
       tier: z.string(),
@@ -83,7 +83,7 @@ const provisioned = z.object({
   warnings: z.array(z.string()).describe('COSMETIC degradations.'),
   partial_failures: z.array(z.string()).describe('MATERIAL degradations (e.g. the billing quota did not register).'),
   seats: z.array(seat).describe('One per `additional_seats` entry, in request order (always an array).'),
-  app_plans: z.record(z.string()).nullable().describe('The plan choice this run sent; null when none was supplied.'),
+  app_plans: z.record(z.string(), z.string()).nullable().describe('The plan choice this run sent; null when none was supplied.'),
 });
 
 /** routes/admin/super-admin-member.ts `ProvisionMemberResult` — the `tenant_id` (existing-tenant) mode. */

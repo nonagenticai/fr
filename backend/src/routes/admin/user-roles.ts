@@ -174,7 +174,7 @@ export async function handleGrantUserRole(
     body = GrantBody.parse(await req.json());
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return jsonResponse({ error: 'invalid request body', details: e.errors }, 422);
+      return jsonResponse({ error: 'invalid request body', details: e.issues }, 422);
     }
     if (e instanceof SyntaxError) {
       return jsonResponse({ error: 'invalid JSON body' }, 400);
@@ -272,7 +272,7 @@ export async function handleRevokeUserRole(
   });
   if (!parsed.success) {
     return jsonResponse(
-      { error: 'invalid query parameters', details: parsed.error.errors },
+      { error: 'invalid query parameters', details: parsed.error.issues },
       422,
     );
   }

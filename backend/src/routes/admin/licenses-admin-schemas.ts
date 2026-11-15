@@ -129,7 +129,7 @@ export const CreateLicenseBody = z
     region_id: z.string().uuid().nullable().optional(),
     starts_at: z.string().nullable().optional(),
     expires_at: z.string().nullable().optional(),
-    metadata: z.record(z.unknown()).nullable().optional(),
+    metadata: z.record(z.string(), z.unknown()).nullable().optional(),
   })
   .strict();
 

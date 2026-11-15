@@ -161,7 +161,7 @@ function kindRoutes(k: Kind): SettingsRoute[] {
         'A whole-body PUT forwarded upstream. An omitted provenance (`origin_kind` / `origin_project_id` / ' +
         '`origin_workflow_run_id`) is the STORED one, carried forward.' +
         ' The gate runs BEFORE the body is read.',
-      input: z.object(keyIn).merge(k.update as z.AnyZodObject),
+      input: z.object(keyIn).merge(k.update as z.ZodObject<z.ZodRawShape>),
       output: dataOf(k.out),
       responses: responses(
         NON_JSON + WRITE_GATE_403 + ORIGIN_403,

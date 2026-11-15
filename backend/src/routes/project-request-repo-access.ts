@@ -63,7 +63,7 @@ export async function handleVerifyRepoAccess(req: Request): Promise<Response> {
     body = VerifyRepoAccessBody.parse(await req.json());
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return jsonResponse({ error: 'invalid request body', details: e.errors }, 422);
+      return jsonResponse({ error: 'invalid request body', details: e.issues }, 422);
     }
     if (e instanceof SyntaxError) {
       return jsonResponse({ error: 'invalid JSON body' }, 400);

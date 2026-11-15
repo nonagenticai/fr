@@ -63,7 +63,7 @@ const EXEC_READS: ExecRead[] = [
     },
     output: bound.extend({
       scope: z.literal('all_members'),
-      runs: z.array(z.record(z.unknown())),
+      runs: z.array(z.record(z.string(), z.unknown())),
       meta: z.object({ cursor: z.string().nullable(), hasMore: z.boolean() }),
     }),
     tier: 'core',
@@ -79,7 +79,7 @@ const EXEC_READS: ExecRead[] = [
       "for its type — `source` / `label` say which). `board_count` is the number of cards in DOING on the Planka board — a board count, " +
       "NOT n8n's enforced count. `headroom` = limit − board count. Read-only: n8n enforces WIP.",
     query: {},
-    output: bound.extend({ limit: z.record(z.unknown()), board_count: z.record(z.unknown()), headroom: z.number().nullable(), enforced_by: z.literal('n8n') }),
+    output: bound.extend({ limit: z.record(z.string(), z.unknown()), board_count: z.record(z.string(), z.unknown()), headroom: z.number().nullable(), enforced_by: z.literal('n8n') }),
     tier: 'core',
   },
   {
@@ -92,7 +92,7 @@ const EXEC_READS: ExecRead[] = [
       "The cards in the board's BLOCKED lane. Each: id, name, since when, `block_reason` (what the conveyor wrote; null when the card " +
       'carries none — never invented) and `escalation` (the pending approval holding the card, if any, with its link). Use it to answer "why is card X blocked".',
     query: {},
-    output: bound.extend({ available: z.boolean(), cards: z.array(z.record(z.unknown())) }).passthrough(),
+    output: bound.extend({ available: z.boolean(), cards: z.array(z.record(z.string(), z.unknown())) }).passthrough(),
     tier: 'core',
   },
   {
@@ -105,7 +105,7 @@ const EXEC_READS: ExecRead[] = [
       "capability_audit rows of this project, any member's: actor (a display name), capability, outcome ('proposed' / 'executed' / " +
       "'unmatched' with the HTTP status), time. Never the inputs, a thread or a proposal id.",
     query: { limit: z.number().int().min(1).max(100).optional().describe('Rows, newest first (default 50, max 100).') },
-    output: bound.extend({ actions: z.array(z.record(z.unknown())) }),
+    output: bound.extend({ actions: z.array(z.record(z.string(), z.unknown())) }),
     tier: 'searchable',
   },
   {
@@ -118,7 +118,7 @@ const EXEC_READS: ExecRead[] = [
       "The board's cards whose card_type is `card_type`. The type must be one requirements_management places in this project's type; " +
       "an unknown one (e.g. `coach`, until the conveyor defines it) answers `[]` with reason 'card_type_unknown' — never an invented list.",
     query: { card_type: z.string().regex(/^[a-z0-9][a-z0-9_]{0,99}$/).describe('A card type name, e.g. coach.') },
-    output: bound.extend({ card_type: z.string(), known: z.boolean(), cards: z.array(z.record(z.unknown())) }).passthrough(),
+    output: bound.extend({ card_type: z.string(), known: z.boolean(), cards: z.array(z.record(z.string(), z.unknown())) }).passthrough(),
     tier: 'searchable',
   },
   {
@@ -170,8 +170,8 @@ const EXEC_READS: ExecRead[] = [
           phases: z.array(z.object({ name: z.string(), title: z.string(), default_comment: z.string().nullable() })),
         })
         .passthrough(),
-      notices: z.array(z.record(z.unknown())),
-      attempts: z.array(z.record(z.unknown())),
+      notices: z.array(z.record(z.string(), z.unknown())),
+      attempts: z.array(z.record(z.string(), z.unknown())),
     }),
     tier: 'core',
   },
@@ -194,7 +194,7 @@ const EXEC_READS: ExecRead[] = [
       limit: z.number().int().min(1).max(200).optional().describe('Rows, newest first (default 50, max 200).'),
     },
     output: bound
-      .extend({ available: z.boolean(), rm_unavailable: z.boolean().optional(), runs: z.array(z.record(z.unknown())) })
+      .extend({ available: z.boolean(), rm_unavailable: z.boolean().optional(), runs: z.array(z.record(z.string(), z.unknown())) })
       .passthrough(),
     tier: 'searchable',
   },

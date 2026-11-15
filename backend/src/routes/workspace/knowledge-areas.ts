@@ -51,7 +51,7 @@ export async function handleSetMemberKnowledgeAreas(
   } catch (e) {
     if (e instanceof z.ZodError) {
       return jsonResponse(
-        { error: 'invalid request body', details: e.errors },
+        { error: 'invalid request body', details: e.issues },
         422,
       );
     }

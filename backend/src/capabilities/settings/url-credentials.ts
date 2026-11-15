@@ -32,7 +32,7 @@ const listItem = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   expires_at: z.string().nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
 });
 
 /** secrets-service's store / update answer, relayed with fr's `message` added. */
@@ -48,7 +48,7 @@ const stored = z
   .passthrough();
 
 const retrieved = listItem.extend({
-  credentials: z.record(z.unknown()).describe('🔐 SECRET: the DECRYPTED credential (secrets.output). Fetch it with the human session only.'),
+  credentials: z.record(z.string(), z.unknown()).describe('🔐 SECRET: the DECRYPTED credential (secrets.output). Fetch it with the human session only.'),
 });
 
 const RESPONSES: ResponseSpec[] = [

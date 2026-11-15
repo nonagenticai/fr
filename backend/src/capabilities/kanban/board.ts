@@ -442,7 +442,7 @@ const FROZEN: ReadonlyArray<Capability<unknown, unknown>> = [
     summary: BREAK_GLASS_FROZEN.summary,
     http: { ...BREAK_GLASS_ROUTE, operationId: 'breakGlassDoneKanbanCard' },
     input: z.object({ cardId, listId, reason: z.string().min(1).max(2000), position: z.number().optional() }).passthrough(),
-    output: z.object({ card: plankaItem('card'), done_kind: z.literal('human_override'), override: z.record(z.unknown()) }),
+    output: z.object({ card: plankaItem('card'), done_kind: z.literal('human_override'), override: z.record(z.string(), z.unknown()) }),
     errors: [],
     auth: { principal: 'user', rbac: superAdmin(BREAK_GLASS_ROUTE) },
     tenancy: 'platform',
