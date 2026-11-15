@@ -94,6 +94,15 @@ function readPackageName(packageDir: string): string | null {
 }
 
 /**
+ * `V<digits><ext>` (e.g. `V1.node.ts`): a versioned file, not a top-level entry.
+ * Pure string comparison — no regex is built from `ext`, so nothing in the
+ * input needs sanitising.
+ */
+function hasVersionedStem(name: string, ext: string): boolean {
+  return name.endsWith(ext) && /V\d+$/.test(name.slice(0, name.length - ext.length));
+}
+
+/**
  * Walk `rootDir` recursively for `*<ext>` files (typically `.node.ts` or
  * `.node.js`). Versioned subdirs (e.g. `Set/v1/`, `Set/v2/`) are skipped:
  * the top-level entry point carries the canonical name/icon decl, and
@@ -103,7 +112,6 @@ function findNodeFiles(rootDir: string, ext: string): string[] {
   if (!existsSync(rootDir)) return [];
   const out: string[] = [];
   const versionedDir = /^v\d+$/;
-  const versionedFile = new RegExp(`V\\d+${ext.replace(/\./g, '\\.')}$`);
   function recurse(dir: string): void {
     for (const entry of readdirSync(dir, { withFileTypes: true })) {
       const full = join(dir, entry.name);
@@ -111,7 +119,7 @@ function findNodeFiles(rootDir: string, ext: string): string[] {
         if (versionedDir.test(entry.name)) continue;
         if (entry.name === '__tests__' || entry.name === 'methods') continue;
         recurse(full);
-      } else if (entry.isFile() && entry.name.endsWith(ext) && !versionedFile.test(entry.name)) {
+      } else if (entry.isFile() && entry.name.endsWith(ext) && !hasVersionedStem(entry.name, ext)) {
         out.push(full);
       }
     }
