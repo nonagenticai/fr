@@ -19,28 +19,49 @@
 // keyed `startable` on the phase list alone).
 
 import {
-  EXECUTION_TENANT_ID,
-  INTERNAL_SYSTEM_TENANT_ID,
-  KATA_TENANT_ID,
+  executionTenantId,
+  internalSystemTenantId,
+  kataTenantId,
 } from '../middleware/internal-tenant-only';
 
 export const SYSTEM_OPS_PROJECT_TYPE = 'system_ops';
 
-export const PROJECT_TYPE_TENANT: Readonly<Record<string, string>> = {
-  system_ops: INTERNAL_SYSTEM_TENANT_ID,
-  program: EXECUTION_TENANT_ID,
-  it: EXECUTION_TENANT_ID,
-  feature: EXECUTION_TENANT_ID,
+/**
+ * Project type → the ROLE whose tenant it is pinned to.
+ *
+ * ⛔ A ROLE MAP, not a uuid map: the uuids are environment-supplied now, so the
+ * map is resolved per call by :func:`projectTypeTenant`. A map of resolved uuids
+ * would have to be rebuilt whenever the env changed, and would silently hold a
+ * snapshot taken at import.
+ */
+const PROJECT_TYPE_TENANT_ROLE: Readonly<Record<string, () => string | undefined>> = {
+  system_ops: internalSystemTenantId,
+  program: executionTenantId,
+  it: executionTenantId,
+  feature: executionTenantId,
   // The kata tenant (migration 228) holds every kata project, and only kata projects
   // (services/katas/open.ts creates them; POST /api/katas is the only door).
-  kata: KATA_TENANT_ID,
+  kata: kataTenantId,
 };
+
+/** Every project type with its CURRENT tenant (uuid `undefined` for an unconfigured role). */
+export function projectTypeTenantMap(): Readonly<Record<string, string | undefined>> {
+  return Object.fromEntries(
+    Object.entries(PROJECT_TYPE_TENANT_ROLE).map(([type, role]) => [type, role()]),
+  );
+}
 
 /** The tenant a project type is pinned to, or undefined for an unmapped / absent type. */
 export function projectTypeTenant(projectType: string | undefined): string | undefined {
-  return projectType && Object.prototype.hasOwnProperty.call(PROJECT_TYPE_TENANT, projectType)
-    ? PROJECT_TYPE_TENANT[projectType]
+  if (!projectType) return undefined;
+  // ⛔ OWN PROPERTIES ONLY. A bare index would answer for `toString`,
+  // `constructor` and every other inherited key — `projectTypeTenant('toString')`
+  // returned the string "[object Undefined]" before this guard, because the
+  // inherited `Object.prototype.toString` was CALLED as a role accessor.
+  const role = Object.hasOwn(PROJECT_TYPE_TENANT_ROLE, projectType)
+    ? PROJECT_TYPE_TENANT_ROLE[projectType]
     : undefined;
+  return role ? role() : undefined;
 }
 
 /**
@@ -50,10 +71,13 @@ export function projectTypeTenant(projectType: string | undefined): string | und
  * SYSTEM accepts only system_ops (non-orchestrated attribution projects; movies-73 2026-10-08,
  * George-approved system projects).
  */
-const NON_EXECUTION_CANONICAL_TENANTS: ReadonlySet<string> = new Set([
-  INTERNAL_SYSTEM_TENANT_ID,
-  KATA_TENANT_ID,
-]);
+function nonExecutionCanonicalTenants(): ReadonlySet<string> {
+  return new Set(
+    [internalSystemTenantId(), kataTenantId()].filter(
+      (id): id is string => typeof id === 'string',
+    ),
+  );
+}
 
 /**
  * True when a project of `projectType` may be created on `tenantId`.
@@ -69,6 +93,6 @@ export function projectTypeCreatableOn(
 ): boolean {
   const expected = projectTypeTenant(projectType);
   if (expected !== undefined && tenantId === expected) return true;
-  if (NON_EXECUTION_CANONICAL_TENANTS.has(tenantId)) return false;
-  return !(expected !== undefined && NON_EXECUTION_CANONICAL_TENANTS.has(expected));
+  if (nonExecutionCanonicalTenants().has(tenantId)) return false;
+  return !(expected !== undefined && nonExecutionCanonicalTenants().has(expected));
 }

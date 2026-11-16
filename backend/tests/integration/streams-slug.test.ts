@@ -26,7 +26,7 @@ import {
 } from '../../src/services/streams/repository';
 // A tenant of its own: the slug index is per (tenant_id, slug). (Was the deleted
 // workflow-improvement tenant; workflow-kind streams are refused since migration 230.)
-const STREAM_TENANT = '0195f48b-1188-7000-8000-0000000051a9';
+const STREAM_TENANT = 'aaaaaaaa-0000-4000-8000-0000000051a9';
 
 import { createDbSuite } from './helpers/db-suite';
 

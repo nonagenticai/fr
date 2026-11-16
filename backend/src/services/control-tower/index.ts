@@ -32,11 +32,11 @@ import {
 } from '../../db/schema';
 import { and, eq, inArray, sql } from 'drizzle-orm';
 import {
-  INTERNAL_SYSTEM_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  PLATFORM_TENANT_IDS,
+  internalSystemTenantId,
+  executionTenantId,
+  platformTenantIds,
 } from '../../middleware/internal-tenant-only';
-import { CANONICAL_TENANTS } from '../../routes/tenants';
+import { canonicalTenants } from '../../routes/tenants';
 import { plankaClient } from '../../services/planka';
 import type { BoardDetail } from '../../services/planka/types';
 import { listExecutions, N8N_MAX_PAGE_SIZE } from '../../integrations/n8n';
@@ -279,8 +279,8 @@ function toIso(v: Date | string | null | undefined): string | null {
 }
 
 function tenantKind(id: string): TenantKind {
-  if (id === INTERNAL_SYSTEM_TENANT_ID) return 'system';
-  if (id === EXECUTION_TENANT_ID) return 'execution';
+  if (id === internalSystemTenantId()) return 'system';
+  if (id === executionTenantId()) return 'execution';
   return 'other';
 }
 
@@ -440,7 +440,7 @@ function countBoard(board: BoardDetail): { wip: number; blocked: number } {
 // ---------------------------------------------------------------------------
 
 async function loadTenantHealth(): Promise<TenantHealthRow[]> {
-  const ids = CANONICAL_TENANTS.map((t) => t.id);
+  const ids = canonicalTenants().map((t) => t.id);
   const [wsRows, streamRows] = await Promise.all([
     db
       .select({ id: workspaces.id, name: workspaces.name, archived_at: workspaces.archived_at })
@@ -462,7 +462,7 @@ async function loadTenantHealth(): Promise<TenantHealthRow[]> {
   // Fetch each canonical tenant's board in parallel; a board failure degrades
   // that ONE row (board_available:false), never the whole block.
   const boardStats = await Promise.all(
-    CANONICAL_TENANTS.map(async (t) => {
+    canonicalTenants().map(async (t) => {
       const boardId = boardByTenant.get(t.id);
       if (!boardId) return { tenant: t.id, wip: 0, blocked: 0, available: false };
       try {
@@ -475,7 +475,7 @@ async function loadTenantHealth(): Promise<TenantHealthRow[]> {
   );
   const statsByTenant = new Map(boardStats.map((b) => [b.tenant, b]));
 
-  return CANONICAL_TENANTS.map((t) => {
+  return canonicalTenants().map((t) => {
     const ws = wsById.get(t.id);
     const stats = statsByTenant.get(t.id);
     return {
@@ -681,7 +681,7 @@ async function loadActiveExecutions(): Promise<ActiveExecutions> {
  * stranded lanes use. Customer approvals are read only from inside that
  * customer's own workspace.
  */
-const PLATFORM_APPROVAL_TENANTS = [...PLATFORM_TENANT_IDS];
+const PLATFORM_APPROVAL_TENANTS = [...platformTenantIds()];
 
 async function loadApprovalsRollup(): Promise<ApprovalsRollup> {
   const rows = await db
@@ -708,7 +708,7 @@ async function loadApprovalsRollup(): Promise<ApprovalsRollup> {
     byTenant.set(r.tenant_id, t);
     byKind.set(r.kind, (byKind.get(r.kind) ?? 0) + 1);
   }
-  const nameById = new Map(CANONICAL_TENANTS.map((t) => [t.id, t.name]));
+  const nameById = new Map(canonicalTenants().map((t) => [t.id, t.name]));
   return {
     open,
     overdue,
@@ -868,7 +868,7 @@ export async function buildControlTower(): Promise<ControlTower> {
   // Derived folds over the resolved blocks (pure; never throw).
   const observabilityMeters = observabilityBlock.data ?? [];
   const fleet = deriveFleetKpis({
-    tenantCount: CANONICAL_TENANTS.length,
+    tenantCount: canonicalTenants().length,
     running: activeBlock.data
       ? { count: activeBlock.data.rows.length, capped: activeBlock.data.capped }
       : null,

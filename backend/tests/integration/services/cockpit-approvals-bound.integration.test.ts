@@ -16,9 +16,9 @@ import { createDbSuite } from '../helpers/db-suite';
 
 const { itDb } = createDbSuite('cockpit-approvals-bound');
 
-const TENANT = '0195f48b-d000-7000-8000-0000000c0b01';
-const PROJECT = '0195f48b-d000-7000-8000-0000000c0b02';
-const OWNER = '0195f48b-d000-7000-8000-0000000c0b03';
+const TENANT = 'aaaaaaaa-0000-4000-8000-0000000c0b01';
+const PROJECT = 'aaaaaaaa-0000-4000-8000-0000000c0b02';
+const OWNER = 'aaaaaaaa-0000-4000-8000-0000000c0b03';
 const DECIDED_SEEDED = COCKPIT_DECIDED_APPROVALS_LIMIT + 7;
 
 async function cleanup(): Promise<void> {

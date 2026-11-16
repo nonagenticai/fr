@@ -13,7 +13,7 @@ import {
 
 const SA_SUB = '6d5a9a20-30d5-48c8-9602-a641bbe9afe1';
 const USER_SUB = '7c9b6c8f-1111-2222-3333-444444444444';
-const TENANT = '0195f48b-d000-7000-8000-000000000003';
+const TENANT = 'aaaaaaaa-0000-4000-8000-000000000003';
 
 describe('isServiceAccountClaims', () => {
   test('preferred_username service-account-* → true', () => {

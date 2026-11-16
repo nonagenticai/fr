@@ -300,7 +300,7 @@ describe('describeAppDeletion', () => {
 // --- person-first pickers: the UUID must never leak to the operator --------
 
 const person = (over: Partial<PersonRecord> = {}): PersonRecord => ({
-  id: '019efaa0-512b-733e-9e98-b1ac82a6f7ee',
+  id: 'aaaaaaaa-0000-4000-8000-0000000000a8',
   email: 'jane@acme.test',
   name: 'Jane Doe',
   username: 'jane',
@@ -311,11 +311,11 @@ const person = (over: Partial<PersonRecord> = {}): PersonRecord => ({
 describe('personOption', () => {
   it('labels by name and never surfaces the sub UUID', () => {
     const o = personOption(person());
-    expect(o.value).toBe('019efaa0-512b-733e-9e98-b1ac82a6f7ee'); // carried invisibly
+    expect(o.value).toBe('aaaaaaaa-0000-4000-8000-0000000000a8'); // carried invisibly
     expect(o.label).toBe('Jane Doe');
     expect(o.sublabel).toContain('jane@acme.test');
     // the label an operator reads is never the UUID
-    expect(o.label).not.toContain('019efaa0');
+    expect(o.label).not.toContain('aaaaaaaa');
   });
 
   it('does not repeat the name as its own sublabel', () => {

@@ -27,7 +27,7 @@
 // `boardCreate` is never delivered for these boards (the board exists before it
 // is subscribed); no flow consumes it.
 import { config } from '../../config';
-import { isPlatformTenant, KATA_TENANT_ID } from '../../middleware/internal-tenant-only';
+import { isPlatformTenant, kataTenantId } from '../../middleware/internal-tenant-only';
 import { PlankaError } from './errors';
 import type { PlankaWebhook } from './webhooks';
 
@@ -44,7 +44,7 @@ export type WebhookSubscriptionResult =
 
 /** The webhook name serving boards of this tenant, or null when none does. */
 export function webhookNameFor(tenantId: string | null | undefined): string | null {
-  if (tenantId === KATA_TENANT_ID) return config.services.planka.kataWebhookName;
+  if (tenantId === kataTenantId()) return config.services.planka.kataWebhookName;
   if (isPlatformTenant(tenantId)) return config.services.planka.conveyorWebhookName;
   return null;
 }

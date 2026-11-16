@@ -4,7 +4,7 @@
 -- REPOINT `tenant_improvement_projects` AT THE PLANKA PROJECT ITS STREAM USES.
 --
 -- ── WHY ────────────────────────────────────────────────────────────────────
--- The prompt-improvement TIP row (tenant 0195f48b-…0004, kind 'prompt') points
+-- The prompt-improvement TIP row (tenant aaaaaaaa-…0004, kind 'prompt') points
 -- at Planka project 1764108882289886208 — the id migration 041 seeded in April
 -- for an "empty umbrella" that 062 later re-keyed onto the new tenant. That
 -- project is now an EMPTY duplicate "Continuous Prompt Improvement" board. The
@@ -27,7 +27,7 @@
 -- onto the TIP row. Zero streams → nothing to derive from; two or more → the
 -- choice is ambiguous and is left for a human. Measured live 2026-09-28
 -- (read-only): 14 TIP rows, exactly 1 matches (the prompt row above); the
--- three 0195f48b-…0002 asset kinds with 2 streams each already agree with TIP
+-- three aaaaaaaa-…0002 asset kinds with 2 streams each already agree with TIP
 -- and are untouched either way.
 --
 -- ⚠️ NOT PROBED, DELIBERATELY. `COLUMN_PROBES` in src/db/migration-runner.ts

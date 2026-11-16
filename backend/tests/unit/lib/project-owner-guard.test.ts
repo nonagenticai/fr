@@ -30,8 +30,8 @@ import {
   PROJECT_ID_EMIT_LANES,
 } from '../../../src/lib/project-id-emit-metrics';
 
-const HOME = '0195f48b-d000-7000-8000-000000000003';
-const OTHER = '0195f48b-d000-7000-8000-000000000099';
+const HOME = 'aaaaaaaa-0000-4000-8000-000000000003';
+const OTHER = 'aaaaaaaa-0000-4000-8000-000000000099';
 
 function project(tag: string | null | undefined, id = 'proj-1') {
   return { id, project_data: tag === undefined ? null : { keycloak_tenant_id: tag } };

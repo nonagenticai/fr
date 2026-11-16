@@ -19,7 +19,7 @@
 //      (lib/super-admin-switch-target.ts), so a workspace offered here is one
 //      the one-click switch will be admitted to.
 //   2. The count query itself additionally requires `approvals.tenant_id` to be
-//      in `PLATFORM_TENANT_IDS`.
+//      in `platformTenantIds()`.
 // A non-super-admin gets `{ items: [] }` (200, not 403): the page asks on every
 // empty queue and an ordinary user has no switch to offer.
 //
@@ -35,7 +35,7 @@ import { ctxTenantId } from '../../middleware/request-context';
 import { listAccessibleTenants } from '../../lib/accessible-tenants';
 import { isSuperAdmin } from '../../lib/super-admin-gate';
 import { PROJECT_KC_TENANT } from '../../lib/project-access';
-import { isPlatformTenant, PLATFORM_TENANT_IDS } from '../../middleware/internal-tenant-only';
+import { isPlatformTenant, platformTenantIds } from '../../middleware/internal-tenant-only';
 import { jsonResponse } from '../../utils/response';
 
 export interface ApprovalWorkspaceHintEntry {
@@ -71,7 +71,7 @@ export async function handleListMyApprovalWorkspaces(req: Request): Promise<Resp
   if (!isSuperAdmin(user)) return jsonResponse({ items: [] });
 
   const activeTenantId = ctxTenantId(user.tenantId);
-  const platformIds = [...PLATFORM_TENANT_IDS];
+  const platformIds = [...platformTenantIds()];
   const tenants = await listAccessibleTenants(user);
   const candidates = approvalHintCandidates(tenants, activeTenantId);
 

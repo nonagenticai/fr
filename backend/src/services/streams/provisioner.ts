@@ -242,9 +242,9 @@ const ASSET_STREAM_NAMES: Record<AssetStreamKind, string> = {
  * ⚠️ WHY THIS IS NEEDED AT ALL: a slug miss is NOT proof of absence, because
  * the slug embeds the tenant uuid (`asset-authoring-{kind}-{tenantId}`) and a
  * tenant uuid can be re-keyed under it. Migration 062 moved `streams.tenant_id`
- * from 00000000-…0001 to 0195f48b-…0002 and left every slug alone, so the
+ * from 00000000-…0001 to aaaaaaaa-…0002 and left every slug alone, so the
  * by-slug lookup missed rows THIS FUNCTION had created and minted a second
- * stream beside each. Measured live 2026-09-11: tenant 0195f48b-…0002 owns two
+ * stream beside each. Measured live 2026-09-11: tenant aaaaaaaa-…0002 owns two
  * active streams for EACH of decision / principle / requirement — same kind,
  * same tenant, distinct slugs.
  *

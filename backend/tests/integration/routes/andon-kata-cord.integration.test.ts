@@ -22,13 +22,14 @@ import { eq, inArray } from 'drizzle-orm';
 
 import { db, queryClient as sql } from '../../../src/db/client';
 import { andonState, katas, projects } from '../../../src/db/schema';
-import { KATA_TENANT_ID } from '../../../src/middleware/internal-tenant-only';
+import { kataTenantId } from '../../../src/middleware/internal-tenant-only';
 import { engageGlobalCord, joinKataCordWith, leaveKataCordWith, releaseGlobalCord } from '../../../src/routes/andon';
 import { insertRunningKata } from '../../../src/services/katas/core';
 import { createDbSuite } from '../helpers/db-suite';
 
 const { itDb } = createDbSuite('andon-kata-cord');
 
+const KATA = kataTenantId()!;
 const OPERATOR = 'ops@andon.test';
 const OWNER = '00000000-0000-4000-8000-0000000000a1';
 const CUSTOMER = '00000000-0000-0000-0000-0000000000c1';
@@ -86,9 +87,9 @@ beforeAll(async () => {
   if (!process.env.DATABASE_URL) return;
   await resetCord();
   source = await project('cord-source', CUSTOMER);
-  kata = await project('cord-kata', KATA_TENANT_ID);
-  kata2 = await project('cord-kata-2', KATA_TENANT_ID);
-  orphan = await project('cord-orphan', KATA_TENANT_ID);
+  kata = await project('cord-kata', KATA);
+  kata2 = await project('cord-kata-2', KATA);
+  orphan = await project('cord-orphan', KATA);
 });
 
 beforeEach(async () => {

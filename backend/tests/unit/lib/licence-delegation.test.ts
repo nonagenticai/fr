@@ -14,7 +14,7 @@ import {
  * the part most likely to rot, so it is tested as hard as the positive case.
  */
 
-const HOME = '5f868d42-03f8-51f0-a93c-3e83070dc196';
+const HOME = 'aaaaaaaa-0000-4000-8000-0000000000a6';
 const CONVEYOR = '01a12af1-c4b7-7453-bc8f-4012dfe39afb';
 const OTHER = '01a19140-088b-70c2-9f7a-3ebc610d0f10';
 

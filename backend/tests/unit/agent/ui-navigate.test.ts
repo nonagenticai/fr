@@ -17,8 +17,8 @@ import { join, relative } from 'node:path';
 import { checkNavigation, DOORWAY_ROUTES, NavigationRefusedError, PROJECT_SHELL_ROUTES } from '../../../src/agui/actions/ui-navigate';
 import { ProjectMismatchError } from '../../../src/agent/project-binding';
 
-const A = '0195f48b-d000-7000-8000-0000000000aa';
-const B = '0195f48b-d000-7000-8000-0000000000bb';
+const A = 'aaaaaaaa-0000-4000-8000-0000000000aa';
+const B = 'aaaaaaaa-0000-4000-8000-0000000000bb';
 const readable = async (id: string) => id === A;
 
 function shellManifest(): string[] {

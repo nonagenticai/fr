@@ -52,7 +52,7 @@ import {
   shouldOrchestrateProjectStart,
   ProjectCreateError,
 } from './projects';
-import { EXECUTION_TENANT_ID } from '../middleware/internal-tenant-only';
+import { executionTenantId } from '../middleware/internal-tenant-only';
 import { PHASE_PLAN_GATE_UNKNOWN, planGateUnknownSlugs, storedPhasePlan } from '../lib/phase-plan';
 import { RequesterRequestBitsSchema, mergeRequestBits, requestBitVector } from '../lib/request-bits';
 import {
@@ -486,7 +486,7 @@ export async function handleCreateProjectRequestFromText(
         ? validatedPayload.cve_sweep
         : undefined,
     tenantId,
-    execTenantId: EXECUTION_TENANT_ID,
+    execTenantId: executionTenantId(),
   });
 
   return createdResponse({
@@ -1237,12 +1237,12 @@ export async function promoteProjectRequest(opts: {
       !resumed &&
       !startTemplate &&
       projectStartTemplateRequired() &&
-      row.tenant_id === EXECUTION_TENANT_ID &&
+      row.tenant_id === executionTenantId() &&
       shouldOrchestrateProjectStart({
         projectType: validated.project_type,
         cveSweep: validated.cve_sweep,
         tenantId: row.tenant_id,
-        execTenantId: EXECUTION_TENANT_ID,
+        execTenantId: executionTenantId(),
       })
     ) {
       throw new ProjectCreateError(

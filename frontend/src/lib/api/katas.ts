@@ -26,9 +26,6 @@ import { authFetch } from './auth-fetch';
 export const KATA_STATES = ['running', 'qa', 'published', 'closed', 'failed', 'rolled_back'] as const;
 export type KataState = (typeof KATA_STATES)[number];
 
-/** fr's internal `kata` tenant (backend middleware/internal-tenant-only.ts `KATA_TENANT_ID`). */
-export const KATA_TENANT_ID = '0195f48b-d000-7000-8000-000000000006';
-
 export interface KataLinkedCard {
   card_id: string;
   board_id: string | null;

@@ -58,7 +58,7 @@ const RM_TEST_FRAME = {
   correlationId: 'rm-test-frame',
   initiator: 'human' as const,
   channel: 'web' as const,
-  tenantId: '0195f48b-d000-7000-8000-000000000f01',
+  tenantId: 'aaaaaaaa-0000-4000-8000-000000000f01',
 };
 const test = (name: string, fn: () => unknown): void => {
   bunTest(name, () => withRequestContext(RM_TEST_FRAME, async () => {

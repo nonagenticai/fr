@@ -5,7 +5,7 @@
 //
 // ── PROVENANCE ───────────────────────────────────────────────────────────────
 // Every id below was MEASURED on 2026-09-10 against https://fr.nonagentic.ai in
-// tenant 0195f48b-d000-7000-8000-000000000003 (`aa-agents`): the list form was
+// the execution tenant (`aa-agents`): the list form was
 // fetched live and each sampleId re-verified with a live GET of the detail form.
 // Source record: scratchpad/sweep/id-sources.json.
 //

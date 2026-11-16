@@ -120,8 +120,8 @@ describe('canActOnApproval — super-admin', () => {
 // `backend/tests/unit/lib/tenant-member-arm-parity.test.ts`.
 // ─────────────────────────────────────────────────────────────────────────────
 describe('canActOnApproval — P1-TEAM-b tenant-member arm', () => {
-  const T = '0195f48b-d000-7000-8000-0000000000a1';
-  const OTHER = '0195f48b-d000-7000-8000-0000000000b2';
+  const T = 'aaaaaaaa-0000-4000-8000-0000000000a1';
+  const OTHER = 'aaaaaaaa-0000-4000-8000-0000000000b2';
   const row = (over: Record<string, unknown> = {}) =>
     ({
       ...base,

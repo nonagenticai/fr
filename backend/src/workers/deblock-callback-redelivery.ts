@@ -207,7 +207,7 @@ import { encodePath, plankaClient } from '../services/planka';
 import { PlankaError, PlankaValidationError } from '../services/planka/errors';
 import { isBlockedList } from '../services/toc-hooks';
 // ⭐ MERGE-QUEUE fr row 12 — the signoff refusals. Every input is IMPORTED, never
-// retyped: the platform list is fr's ONE `PLATFORM_TENANT_IDS`, the card→tenant
+// retyped: the platform list is fr's ONE `platformTenantIds()`, the card→tenant
 // chain is the one GET /api/cards/:id gates on, the journey reducer is the one that
 // route serves as `phase_journey`, and the receiver path is the one the signoff
 // mint route validates against.
@@ -724,7 +724,7 @@ export type CallbackResolution =
   /**
    * ⭐ MERGE-QUEUE fr row 12 (migration 159). APPROVED signoff rows only. The
    * card's owning tenant (board → project/stream — the chain GET /api/cards/:id
-   * gates on) is not in fr's `PLATFORM_TENANT_IDS`. Strict tenant separation: the
+   * gates on) is not in fr's `platformTenantIds()`. Strict tenant separation: the
    * system operator never acts on a customer card. Never sent.
    */
   | 'card_tenant_not_platform';
@@ -2987,7 +2987,7 @@ export async function runDeblockRedeliveryTick(): Promise<DeblockTickResult> {
    * re-sending the old approval would free a card QA just blocked. The same refusal
    * the ncn receiver is gaining, applied on fr's own re-send path.
    *
-   *   • tenant not in PLATFORM_TENANT_IDS      → retire `card_tenant_not_platform`
+   *   • tenant not in platformTenantIds()      → retire `card_tenant_not_platform`
    *   • journey shows a move OUT of BLOCKED at
    *     or after the approval's created_at      → retire `card_left_blocked_since_approval`
    *   • journey or tenant cannot be established → DEFER: not sent, not retired, logged

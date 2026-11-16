@@ -25,7 +25,7 @@
  * Protected: `/ingest`, `/query`, `/process`, `/kag`, `/graph`, `/ml`, `/discover`, `/scientific`, `/media`.
  * Public: `/health`, `/docs`, `/redoc`, `/openapi.json`.
  *
- * **Multi-tenancy:** `X-Tenant-ID` header (defaults to uuid7 `0195f48b-d000-7000-8000-000000000001`, the n8n-dev tenant).
+ * **Multi-tenancy:** `X-Tenant-ID` header (defaults to uuid7 `aaaaaaaa-0000-4000-8000-000000000001`, the n8n-dev tenant).
  *
  * OpenAPI spec version: 1.0.0
  */

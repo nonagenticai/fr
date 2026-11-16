@@ -58,7 +58,8 @@ export interface ProjectStartTemplate {
 export function templateRequiredForCreate(p: {
   orchestrated: boolean;
   ownerTenantId: string;
-  execTenantId: string;
+  /** Undefined when FR_EXECUTION_TENANT_ID is unset: no project is the EXEC tenant. */
+  execTenantId: string | undefined;
   hasTemplate: boolean;
 }): boolean {
   if (!projectStartTemplateRequired()) return false;

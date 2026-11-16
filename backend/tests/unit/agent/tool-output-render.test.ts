@@ -24,7 +24,7 @@ import { renderToolOutput } from '../../../src/agent/loop';
 /** A principles.list-shaped row, verbose like the real one. */
 function row(i: number) {
   return {
-    id: `0195f48b-d000-7000-8000-0000000${String(i).padStart(5, '0')}`,
+    id: `aaaaaaaa-0000-4000-8000-0000000${String(i).padStart(5, '0')}`,
     created_at: '2026-07-27T10:40:17.342322Z',
     updated_at: '2026-07-27T10:40:17.650958Z',
     origin_kind: 'tenant',
@@ -121,7 +121,7 @@ describe('renderToolOutput — how much actually survives', () => {
       superseded_by: null, version_notes: null, approved_by: null, approved_at: null,
       published_at: null, rationale: null, implications: null, tags: [],
       quality_issues: [], quality_suggestions: [], last_evaluated_at: null,
-      last_evaluated_by_agent: null, tenant_id: '0195f48b-d000-7000-8000-000000000099',
+      last_evaluated_by_agent: null, tenant_id: 'aaaaaaaa-0000-4000-8000-000000000099',
     }));
     const parsed = JSON.parse(renderToolOutput({ items })) as {
       items: unknown[]; _truncated: { shown: number; total: number };

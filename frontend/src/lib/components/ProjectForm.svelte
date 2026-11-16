@@ -657,7 +657,6 @@
 	import ConstraintsEditor from '$lib/components/project-request/ConstraintsEditor.svelte';
 	import { auth } from '$lib/stores/auth.svelte';
 	import { workspaces } from '$lib/stores/workspaces.svelte';
-	import { EXECUTION_TENANT_ID } from '$lib/components/ProjectTypeAnalysisWarning.svelte';
 	import { loadProjectTypeOptions, pickerOptions, type ProjectTypeOptions } from '$lib/projects/projectTypeOptions';
 	import CatalogueNotInitialised from '$lib/components/catalogue/CatalogueNotInitialised.svelte';
 	import {
@@ -696,6 +695,15 @@
 		 */
 		idempotencyKey?: string;
 		/**
+		 * The EXECUTION workspace's id, when the caller already knows it.
+		 *
+		 * ⛔ Absent ⇒ resolved from the loaded workspace list
+		 * (`workspaces.canonicalOf('execution')`). It is a PROP as well so a test
+		 * can supply it directly: this repo bans test doubles, and spying on the
+		 * store to fake one workspace was exactly that.
+		 */
+		executionTenantId?: string;
+		/**
 		 * The tenant the project will be created in, when it is NOT the caller's
 		 * active workspace — /projects/requests/[id] passes the request's own
 		 * `tenant_id` (the backend's `repoGateTenantId`). Absent ⇒ the active
@@ -712,6 +720,7 @@
 		cancelHref = '/',
 		onSubmit,
 		idempotencyKey: idempotencyKeyProp,
+		executionTenantId: executionTenantIdProp,
 		ownerTenantId
 	}: Props = $props();
 
@@ -813,7 +822,15 @@
 	const createTenantId = $derived(
 		ownerTenantId || (auth.isSuperAdmin ? workspaces.scopeKey : undefined) || auth.user?.tenant_id || ''
 	);
-	const bugHuntAllowed = $derived(createTenantId === EXECUTION_TENANT_ID);
+	// Resolved at runtime from the workspace list — never a hardcoded UUID, because
+	// fr is a public repo. Undefined until the list loads, and then the gate stays
+	// false (fail safe).
+	const executionTenantId = $derived(
+		executionTenantIdProp ?? workspaces.canonicalOf('execution')?.id
+	);
+	const bugHuntAllowed = $derived(
+		!!executionTenantId && createTenantId === executionTenantId
+	);
 	$effect(() => {
 		if (!bugHuntAllowed && form.bug_hunt) form.bug_hunt = false;
 	});

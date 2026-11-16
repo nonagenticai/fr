@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import { buildImprovePrompt } from './improvePrompt';
 
 describe('buildImprovePrompt', () => {
-  const id = '0195f48b-d000-7000-8000-0000000000bb';
+  const id = 'aaaaaaaa-0000-4000-8000-0000000000bb';
   const prompt = buildImprovePrompt({
     singular: 'element',
     collection: 'library/architecture/elements',

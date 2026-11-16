@@ -46,9 +46,9 @@
 // coding-github gates repos under a PLATFORM owner (`nonagenticai`) to the
 // tenants in `CODING_GITHUB_PLATFORM_TENANTS`
 // (`src/services/tenant_binding.py check_platform_repo_tenant`). Its default
-// allowlist is the five canonical `0195f48b-d000-7000-8000-00000000000{1..5}`
+// allowlist is the five canonical `aaaaaaaa-0000-4000-8000-00000000000{1..5}`
 // workspaces — which is EXACTLY the set `internalCaller` below admits (the
-// four `INTERNAL_TENANT_IDS` plus `EXECUTION_TENANT_ID`). A request that
+// four `internalTenantIds()` plus `executionTenantId()`). A request that
 // carries no `tenant_id` is STRICTLY non-platform there, so once
 // `CODING_GITHUB_PLATFORM_TENANT_ENFORCE` is on, the tenantless internal-owner
 // request fr used to send would be refused.
@@ -69,7 +69,7 @@ import {
   requestCloneToken,
   type CloneTokenResult,
 } from '../integrations/coding-github/client';
-import { EXECUTION_TENANT_ID, KATA_TENANT_ID, isInternalTenant } from '../middleware/internal-tenant-only';
+import { executionTenantId, kataTenantId, isInternalTenant } from '../middleware/internal-tenant-only';
 
 export type RepoAccessState =
   | 'unknown'
@@ -155,21 +155,21 @@ export function internalRepoOwners(): Set<string> {
  * definition, used by `assessRepoAccess` (may we probe?) and by
  * `platformRepoRefusals` (may this tenant put the repo into fr at all?).
  *
- * EXACTLY the five canonical `0195f48b-d000-7000-8000-00000000000{1..5}`
- * workspaces: the four `INTERNAL_TENANT_IDS` plus `EXECUTION_TENANT_ID` (ours
+ * EXACTLY the five canonical `aaaaaaaa-0000-4000-8000-00000000000{1..5}`
+ * workspaces: the four `internalTenantIds()` plus `executionTenantId()` (ours
  * too — it runs the conveyor on our own repos — but `isInternalTenant`
  * deliberately excludes it, so it is admitted explicitly). This matches
  * coding-github's `CODING_GITHUB_PLATFORM_TENANTS` default.
  *
- * ⚠️ NOT `PLATFORM_TENANT_IDS` (services/system-union.ts): that set also holds
+ * ⚠️ NOT `platformTenantIds()` (services/system-union.ts): that set also holds
  * the AA conveyor tenant, which coding-github REFUSES for platform repos.
  * null/undefined = unknown = NOT platform (fail closed).
  */
 export function isRepoPlatformTenant(tenantId: string | null | undefined): boolean {
   if (!tenantId) return false;
   // The kata tenant is internal but NOT repo-platform: coding-github's set does not hold it.
-  if (tenantId === KATA_TENANT_ID) return false;
-  return isInternalTenant(tenantId) || tenantId === EXECUTION_TENANT_ID;
+  if (tenantId === kataTenantId()) return false;
+  return isInternalTenant(tenantId) || tenantId === executionTenantId();
 }
 
 function escapeRegExp(s: string): string {

@@ -15,7 +15,7 @@ function frame(callerIsSuperAdmin: boolean): RequestContext {
     correlationId: 'stored-json-r4',
     initiator: 'human',
     channel: 'web',
-    tenantId: '0195f48b-d000-7000-8000-0000000000cc',
+    tenantId: 'aaaaaaaa-0000-4000-8000-0000000000cc',
     callerIsSuperAdmin,
   };
 }

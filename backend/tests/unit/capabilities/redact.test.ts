@@ -63,8 +63,8 @@ describe('the scanner (step 3)', () => {
     expect(scrubString('api_key: "anything at all"')).toBe(`api_key: ${REDACTED}`);
     // CONTROL: prose about passwords is not mangled; plain ids are not secrets.
     expect(scrubString('password: minimum length is twelve')).toBe('password: minimum length is twelve');
-    expect(scrubString('project 0195f48b-d000-7000-8000-00000000c1b1 card 1764170980260840476')).toBe(
-      'project 0195f48b-d000-7000-8000-00000000c1b1 card 1764170980260840476',
+    expect(scrubString('project aaaaaaaa-0000-4000-8000-00000000c1b1 card 1764170980260840476')).toBe(
+      'project aaaaaaaa-0000-4000-8000-00000000c1b1 card 1764170980260840476',
     );
   });
 

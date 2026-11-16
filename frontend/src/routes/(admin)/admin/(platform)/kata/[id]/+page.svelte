@@ -13,7 +13,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { KATA_TENANT_ID, getKata, releaseKata, rollbackKata, stopKata, type KataView } from '$lib/api/katas';
+  import { getKata, releaseKata, rollbackKata, stopKata, type KataView } from '$lib/api/katas';
   import {
     KATA_STATE_LABEL,
     KATA_STATE_TONE,
@@ -124,8 +124,13 @@
     await goto(href);
     return null;
   }
+  // Resolved from the workspace list at runtime — never a hardcoded UUID, because
+  // fr is a public repo. Undefined until the list loads, so the board link stays
+  // hidden and `openKataBoard` is a no-op (fail safe).
+  const kataTenantId = $derived(workspaces.canonicalOf('kata')?.id);
   async function openKataBoard(boardId: string): Promise<void> {
-    boardError = await openInTenant(KATA_TENANT_ID, boardHref(boardId), 'kata');
+    if (!kataTenantId) return;
+    boardError = await openInTenant(kataTenantId, boardHref(boardId), 'kata');
   }
   async function openSource(href: string): Promise<void> {
     sourceError = kata?.source_tenant_id ? await openInTenant(kata.source_tenant_id, href, 'source') : 'The kata recorded no source workspace.';
@@ -336,7 +341,7 @@
 
     <section data-testid="kata-board">
       <h2 class="text-lg font-semibold mb-2">Kata board</h2>
-      {#if kata.kata_board_id}
+      {#if kata.kata_board_id && kataTenantId}
         <button type="button" class="text-sm underline" onclick={() => openKataBoard(kata!.kata_board_id!)} data-testid="kata-board-link">
           Open the kata board (switches into the kata workspace)
         </button>

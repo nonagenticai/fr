@@ -6,14 +6,14 @@ import {
   GIT_SHA_LIKE_REF_RE,
   projectCreateRepoUrl,
 } from '../../../src/routes/projects';
-import { EXECUTION_TENANT_ID } from '../../../src/routes/tenants';
+import { executionTenantId } from '../../../src/routes/tenants';
 
-const NON_EXEC = '0195f48b-d000-7000-8000-000000000099';
+const NON_EXEC = 'aaaaaaaa-0000-4000-8000-000000000099';
 const BUG_CMD = ['python', '-m', 'pytest', 'tests/test_foo.py::test_bar', '-q'];
 
 const call = (
   v: Record<string, unknown>,
-  tenant: string = EXECUTION_TENANT_ID,
+  tenant: string = executionTenantId()!,
 ): void => assertItExecIntakeInputs(v as never, tenant);
 
 describe('assertItExecIntakeInputs — EXEC-tenant `it` intake guard', () => {

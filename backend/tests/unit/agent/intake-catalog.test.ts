@@ -25,7 +25,7 @@ const ctx: ActionContext = {
   initiator: 'agent',
   channel: 'web',
   tenantRoles: ['user'],
-  tenantId: '0195f48b-d000-7000-8000-00000000a0c1',
+  tenantId: 'aaaaaaaa-0000-4000-8000-00000000a0c1',
 };
 
 beforeAll(async () => {

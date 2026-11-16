@@ -18,7 +18,7 @@ import {
   holdsOrchestratorRole,
 } from '../../../src/lib/project-access';
 
-const HOME = '0195f48b-d000-7000-8000-000000000003'; // operator home (EXEC)
+const HOME = 'aaaaaaaa-0000-4000-8000-000000000003'; // operator home (EXEC)
 const CUSTOMER = '019f0ed6-b44e-74bf-9de8-68e28a1cdfc2';
 
 function frame<T>(

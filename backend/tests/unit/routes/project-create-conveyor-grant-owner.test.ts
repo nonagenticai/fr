@@ -14,8 +14,8 @@ import { conveyorGrantTenantId } from '../../../src/routes/projects';
 import { isPlatformTenant } from '../../../src/routes/assets/_lib/system-union';
 
 // Literal on purpose: not derived from the constants under test.
-const EXEC = '0195f48b-d000-7000-8000-000000000003';
-const CUSTOMER = '0195f48b-d000-7000-8000-000000000100';
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000003';
+const CUSTOMER = 'aaaaaaaa-0000-4000-8000-000000000100';
 
 const grants = (input: { repoGateTenantId?: string | null }, active: string) =>
   isPlatformTenant(conveyorGrantTenantId(input, active));

@@ -27,7 +27,7 @@ export const APPROVALS_WS_REFUSAL_SURFACES = [
 export type ApprovalsWsRefusalSurface = (typeof APPROVALS_WS_REFUSAL_SURFACES)[number];
 
 export const APPROVALS_WS_REFUSAL_REASONS = [
-  /** The socket's tenant resolved, but is not in PLATFORM_TENANT_IDS. *
+  /** The socket's tenant resolved, but is not in platformTenantIds(). *
    * RETIRED by fr row 14d-2 (per-tenant channels admit every tenant to its
    * OWN channel); kept pre-seeded so the series does not vanish. */
   'tenant_not_platform',

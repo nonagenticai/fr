@@ -15,9 +15,9 @@
 --      stream rows below). If anything ever comes to depend on one of them, this fails
 --      loudly instead of silently dropping the dependant.
 --   2. DELETE every row of the three improvement tenants
---        workflow-improvement  0195f48b-d000-7000-8000-000000000002
---        prompt-improvement    0195f48b-d000-7000-8000-000000000004
---        procedure-improvement 0195f48b-d000-7000-8000-000000000005
+--        workflow-improvement  aaaaaaaa-0000-4000-8000-000000000002
+--        prompt-improvement    aaaaaaaa-0000-4000-8000-000000000004
+--        procedure-improvement aaaaaaaa-0000-4000-8000-000000000005
 --      from every fr table keyed by tenant_id / workspace_id (enumerated from the live
 --      schema, 2026-11-03), then their `workspaces` rows LAST (asset_assignments, channels
 --      and departments also cascade from workspaces; deleting them explicitly first keeps
@@ -72,9 +72,9 @@ DROP TABLE IF EXISTS canary_rollback_events;
 DO $fr_230$
 DECLARE
   ids constant text[] := ARRAY[
-    '0195f48b-d000-7000-8000-000000000002',
-    '0195f48b-d000-7000-8000-000000000004',
-    '0195f48b-d000-7000-8000-000000000005'
+    'aaaaaaaa-0000-4000-8000-000000000002',
+    'aaaaaaaa-0000-4000-8000-000000000004',
+    'aaaaaaaa-0000-4000-8000-000000000005'
   ];
   -- (table, column). Every public table with a tenant_id / workspace_id column on
   -- 2026-11-03, minus the four append-only ledgers above and the three dropped tables.

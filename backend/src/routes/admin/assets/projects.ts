@@ -40,7 +40,7 @@ import { db } from '../../../db/client';
 import { projects } from '../../../db/schema';
 import { validateAuth } from '../../../middleware/auth';
 import { getRequestContext } from '../../../integrations/_lib/context';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../middleware/internal-tenant-only';
 import { isSuperAdmin } from '../../../lib/super-admin-gate';
 import {
   archiveProjectWithPurge,
@@ -48,7 +48,7 @@ import {
 } from '../../../services/project-archive';
 import { PROJECT_KC_TENANT, projectTaggedForTenant } from '../../../lib/project-access';
 import { jsonResponse } from '../../../utils/response';
-import { PLATFORM_TENANT_IDS } from '../../assets/_lib/system-union';
+import { platformTenantIds } from '../../assets/_lib/system-union';
 import { gateReadAsset, gateWriteAsset } from './_lib/gate';
 import { PatchProjectSchema } from './projects-schemas';
 import { RM_OWNED_PATCH_KEYS, RM_OWNED_PROJECT_FIELD } from '../../projects';
@@ -66,7 +66,7 @@ function isFleetView(
   user: { roles?: readonly string[] },
   tenantId: string,
 ): boolean {
-  return tenantId === INTERNAL_SYSTEM_TENANT_ID && isSuperAdmin(user);
+  return tenantId === internalSystemTenantId() && isSuperAdmin(user);
 }
 
 /**
@@ -85,7 +85,7 @@ function isFleetView(
  * trimming JS twin for an access decision.
  */
 function fleetPlatformTagged() {
-  return inArray(PROJECT_KC_TENANT, [...PLATFORM_TENANT_IDS]);
+  return inArray(PROJECT_KC_TENANT, [...platformTenantIds()]);
 }
 
 /**

@@ -47,7 +47,7 @@ describe('P2-c1 writes: capability-invoke confirm cards run as the human', () =>
   });
 
   test('strict inputs: no key names a project besides the injected project_id; an extra key is refused', () => {
-    const pid = '0195f48b-d000-7000-8000-0000000c2c01';
+    const pid = 'aaaaaaaa-0000-4000-8000-0000000c2c01';
     for (const a of WRITES) {
       const keys = Object.keys((extractJsonSchema(a.input) as { properties?: Record<string, unknown> }).properties ?? {});
       expect(keys.filter((k) => /project/.test(k))).toEqual(['project_id']);

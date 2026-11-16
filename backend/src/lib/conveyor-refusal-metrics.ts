@@ -51,7 +51,7 @@ export const CONVEYOR_REFUSAL_REASONS = [
   'project_not_found',
   /**
    * The id sent as a PROJECT id is a canonical TENANT (workspace) id — e.g.
-   * `0195f48b-d000-7000-8000-000000000004` (`prompt-improvement`). fr is right
+   * `aaaaaaaa-0000-4000-8000-000000000004` (`prompt-improvement`). fr is right
    * to refuse; the producer is naming the wrong entity kind. Split out from
    * `project_not_found` because the fix belongs to a different component.
    */

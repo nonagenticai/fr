@@ -18,7 +18,7 @@ const fe = (await import(FRONTEND)) as {
   wmByoErrorMessage: (body: unknown) => string | null;
 };
 
-const TENANT = '0195f48b-d000-7000-8000-0000000003a1';
+const TENANT = 'aaaaaaaa-0000-4000-8000-0000000003a1';
 
 const DETAIL_VARIANTS: Array<Record<string, unknown>> = [
   {},

@@ -17,7 +17,7 @@ export { storeChain, urlOf } from './p4c1-fixtures';
 
 export const HOME = 'a100000c-0000-4000-8000-00000000000c';
 export const OTHER = 'b200000d-0000-4000-8000-00000000000d';
-export const UUID = '0195f48b-d000-7000-8000-0000000000c2';
+export const UUID = 'aaaaaaaa-0000-4000-8000-0000000000c2';
 export const T0 = '2026-10-01T00:00:00.000Z';
 
 type Cap = Capability<unknown, unknown>;

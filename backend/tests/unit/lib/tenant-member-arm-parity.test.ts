@@ -28,8 +28,8 @@ const fe = (await import(ARM)) as {
 };
 const fePush = (await import(PUSH)) as { PUSH_CHANNELS: ReadonlySet<string> };
 
-const T = '0195f48b-d000-7000-8000-0000000000a1';
-const OTHER = '0195f48b-d000-7000-8000-0000000000b2';
+const T = 'aaaaaaaa-0000-4000-8000-0000000000a1';
+const OTHER = 'aaaaaaaa-0000-4000-8000-0000000000b2';
 const ME = 'me';
 
 const ROSTERS: Array<Row['required_approvers']> = [
@@ -40,7 +40,7 @@ const ROSTERS: Array<Row['required_approvers']> = [
   [{ user_id: 'ghost' }, { user_id: 'ghost-2' }],
 ];
 const ROW_TENANTS = [T, OTHER, null, ''];
-const ACTION_IDS: Array<string | null | undefined> = [undefined, null, '', '0195f48b-d000-7000-8000-00000000ac71'];
+const ACTION_IDS: Array<string | null | undefined> = [undefined, null, '', 'aaaaaaaa-0000-4000-8000-00000000ac71'];
 const USERS: U[] = [
   { id: ME, tenant_id: T },
   { id: ME, tenant_id: OTHER },

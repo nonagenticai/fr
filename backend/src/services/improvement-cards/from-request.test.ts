@@ -26,8 +26,8 @@ describe('valuesFromRequest', () => {
   });
 
   it('stamps Metadata.keycloak_tenant_id from context (so the n8n router does not fall back to card.projectId)', () => {
-    const v = valuesFromRequest(baseReq, { keycloak_tenant_id: '0195f48b-d000-7000-8000-000000000003' });
-    expect(v.Metadata.keycloak_tenant_id).toBe('0195f48b-d000-7000-8000-000000000003');
+    const v = valuesFromRequest(baseReq, { keycloak_tenant_id: 'aaaaaaaa-0000-4000-8000-000000000003' });
+    expect(v.Metadata.keycloak_tenant_id).toBe('aaaaaaaa-0000-4000-8000-000000000003');
   });
 
   it('leaves Metadata.keycloak_tenant_id empty when context omits it (writeAllGroupValues skips empty → field unset)', () => {

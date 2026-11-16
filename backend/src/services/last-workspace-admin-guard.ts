@@ -20,19 +20,23 @@ import { keycloak } from './keycloak';
 import { isKeycloakNotFoundError } from '../lib/keycloak-not-found';
 import { isSuperAdmin } from '../lib/super-admin-gate';
 import {
-  EXECUTION_TENANT_ID,
-  INTERNAL_TENANT_IDS,
+  executionTenantId,
+  internalTenantIds,
 } from '../middleware/internal-tenant-only';
 
 /**
  * Tenants a super_admin can scope a request to via `X-Active-Tenant`
  * (middleware/request-context.ts): the internal tenants and the execution
  * tenant. Their own JWT tenant is covered by the tenant_id match.
+ * Read at CALL time (the ids are env-backed): an unset role is simply absent.
  */
-const SUPER_ADMIN_SWITCHABLE: ReadonlySet<string> = new Set([
-  ...INTERNAL_TENANT_IDS,
-  EXECUTION_TENANT_ID,
-]);
+function superAdminSwitchableTenants(): ReadonlySet<string> {
+  return new Set<string>(
+    [...internalTenantIds(), executionTenantId()].filter(
+      (id): id is string => typeof id === 'string',
+    ),
+  );
+}
 
 /**
  * Can this DB-row holder actually administer `tenantId`? true iff the Keycloak
@@ -56,7 +60,7 @@ export async function isLiveAdminOf(userId: string, tenantId: string): Promise<b
   }
   if (r.enabled !== true) return false;
   if (r.tenantId === tenantId) return true;
-  return isSuperAdmin({ roles: r.effectiveRoles }) && SUPER_ADMIN_SWITCHABLE.has(tenantId);
+  return isSuperAdmin({ roles: r.effectiveRoles }) && superAdminSwitchableTenants().has(tenantId);
 }
 
 /**

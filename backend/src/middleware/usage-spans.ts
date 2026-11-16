@@ -23,7 +23,7 @@ import { statusForError } from '../utils/errors';
 import { tryGetRequestContext } from '../integrations/_lib/context';
 import { recordSpan } from '../services/metering-emit';
 import { switchedSuperAdminFrame } from '../lib/super-admin-tenant-audit';
-import { INTERNAL_SYSTEM_TENANT_ID } from './internal-tenant-only';
+import { internalSystemTenantId } from './internal-tenant-only';
 import { recordMeteringSpanAttribution } from '../lib/metering-span-metrics';
 
 type RouteHandler = (req: Request, ...params: string[]) => Promise<Response>;
@@ -228,7 +228,7 @@ export function withUsageSpans(handler: RouteHandler): RouteHandler {
       const operator = ctx ? switchedSuperAdminFrame(ctx) : null;
       // Fire-and-forget. `recordSpan` already swallows its own errors.
       void recordSpan({
-        tenantId: operator ? INTERNAL_SYSTEM_TENANT_ID : ctx?.tenantId,
+        tenantId: operator ? internalSystemTenantId() : ctx?.tenantId,
         ...(operator ? { operatorTargetTenantId: operator.tenantId } : {}),
         userId: ctx?.userId,
         // Guard-validated only — see lib/project-owner-guard.ts. `ctx.projectId`

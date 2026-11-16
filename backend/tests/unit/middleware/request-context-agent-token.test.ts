@@ -29,7 +29,9 @@ import { SignJWT } from 'jose';
 
 import { buildRequestContext } from '../../../src/middleware/request-context';
 import { AGENT_TOKEN_AUDIENCE, agentTokenSecret } from '../../../src/lib/agent-token';
-import { EXECUTION_TENANT_ID } from '../../../src/middleware/internal-tenant-only';
+import { executionTenantId } from '../../../src/middleware/internal-tenant-only';
+
+const EXECUTION = executionTenantId()!;
 
 const USER = '11111111-1111-4111-8111-111111111111';
 const TENANT = '22222222-2222-4222-8222-222222222222';
@@ -136,12 +138,12 @@ describe('⛔ an agent token must NOT unlock the Keycloak-gated tenant overrides
     // mutant, and was therefore a vacuous security assertion.
     const ctx = await buildRequestContext(
       reqWith(await agentToken({ roles: ['super_admin'] }), {
-        'X-Active-Tenant': EXECUTION_TENANT_ID,
+        'X-Active-Tenant': EXECUTION,
       }),
     );
     // The token's OWN tenant, never the header's.
     expect(ctx.tenantId).toBe(TENANT);
-    expect(ctx.tenantId).not.toBe(EXECUTION_TENANT_ID);
+    expect(ctx.tenantId).not.toBe(EXECUTION);
   });
 
   test('X-Tenant-Id is refused even when the token claims aa-orchestrator', async () => {

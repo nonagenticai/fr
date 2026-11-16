@@ -30,7 +30,7 @@ export const KANBAN_WS_REFUSAL_SURFACES = [
 export type KanbanWsRefusalSurface = (typeof KANBAN_WS_REFUSAL_SURFACES)[number];
 
 export const KANBAN_WS_REFUSAL_REASONS = [
-  /** The connection's active tenant resolved, but is not in PLATFORM_TENANT_IDS. *
+  /** The connection's active tenant resolved, but is not in platformTenantIds(). *
    * RETIRED by fr row 14d-2 (per-tenant channels admit every tenant to its
    * OWN channel); kept pre-seeded so the series does not vanish. */
   'tenant_not_platform',

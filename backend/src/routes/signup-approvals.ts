@@ -35,7 +35,7 @@ import { notifyNewSignup } from '../services/signup/telegram';
 import { defaultTenantName } from '../services/signup/naming';
 import { removalOf, resolveRemoval, retryRemoval, startRemoval, type RemovalRun } from '../services/signup/removal';
 import { attributeRequestTo } from '../integrations/_lib/context';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../middleware/internal-tenant-only';
 import {
   approveSignup,
   emailState,
@@ -171,7 +171,8 @@ export async function handleSignupIntake(req: Request): Promise<Response> {
     // Metering: this door's token is the intake handler's service account (no tenant), so its span
     // billed the nil tenant. A request for access is platform onboarding traffic: the internal system
     // tenant, exactly where the super_admin onboarding routes' spans land.
-    attributeRequestTo({ userId: caller.subject, tenantId: INTERNAL_SYSTEM_TENANT_ID });
+    // Unset system tenant ⇒ the span is unlabelled (null), never another tenant's.
+    attributeRequestTo({ userId: caller.subject, tenantId: internalSystemTenantId() ?? null });
     const body = intakeSchema.parse(await readJson(req));
     const pending = await pendingSignupCount();
     if (pending >= signupQueueMax()) {
@@ -497,7 +498,8 @@ export async function handleSignupTelegramDecision(req: Request, id?: string): P
     // system tenant (never the requester's new workspace), user = the service account.
     // Published as soon as the caller is VERIFIED — before the body is parsed — so a refused body
     // (422 / 400) is metered to the same tenant instead of the nil tenant, exactly as the intake does.
-    attributeRequestTo({ userId: caller.subject, tenantId: INTERNAL_SYSTEM_TENANT_ID });
+    // Unset system tenant ⇒ the span is unlabelled (null), never another tenant's.
+    attributeRequestTo({ userId: caller.subject, tenantId: internalSystemTenantId() ?? null });
     body = decisionSchema.parse(await readJson(req));
   } catch (err) {
     return errorResponse(err);

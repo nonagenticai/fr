@@ -33,7 +33,7 @@ import { operatorAndonColumns, readProjectAndon } from '../services/project-ando
 import { joinSystemKataAndon, leaveSystemKataAndon, pruneOrphanKataHolders } from '../services/kata-andon';
 import { PROJECT_KC_TENANT, loadProjectForRead } from '../lib/project-access';
 import { projectIsNotPreApproval } from '../lib/project-live-status';
-import { PLATFORM_TENANT_IDS } from './assets/_lib/system-union';
+import { platformTenantIds } from './assets/_lib/system-union';
 import { countRunningExecutions as n8nCountRunningExecutions } from '../integrations/n8n';
 import { readN8nWorkerScale, scaleN8nWorker, type WorkerScaleReading } from '../lib/k8s-scale';
 
@@ -137,7 +137,7 @@ async function setProjectAndon(
     // tag; `IN (...)` never matches NULL) project updates zero rows and so
     // answers the same 404 an absent id does — the system never acts on
     // customer data, and the 404 does not reveal that the row exists.
-    .where(and(eq(projects.id, projectId), inArray(PROJECT_KC_TENANT, [...PLATFORM_TENANT_IDS])))
+    .where(and(eq(projects.id, projectId), inArray(PROJECT_KC_TENANT, [...platformTenantIds()])))
     .returning({ andon_engaged: projects.andon_engaged });
   if (!row) return null;
   return { andon_engaged: row.andon_engaged };
@@ -233,7 +233,7 @@ export async function handleListAndonState(req: Request): Promise<Response> {
     .from(projects)
     // A project request's pre-approval row (pending / cancelled) has no board
     // and no work to halt; archived stays listed exactly as before.
-    .where(and(inArray(PROJECT_KC_TENANT, [...PLATFORM_TENANT_IDS]), projectIsNotPreApproval()));
+    .where(and(inArray(PROJECT_KC_TENANT, [...platformTenantIds()]), projectIsNotPreApproval()));
 
   const streamRows = await db
     .select({
@@ -246,7 +246,7 @@ export async function handleListAndonState(req: Request): Promise<Response> {
       andon_engaged_by: streams.andon_engaged_by,
     })
     .from(streams)
-    .where(inArray(streams.tenant_id, [...PLATFORM_TENANT_IDS]));
+    .where(inArray(streams.tenant_id, [...platformTenantIds()]));
 
   return jsonResponse({
     projects: projectRows,
@@ -1535,7 +1535,7 @@ export async function handleGetAndonHistory(req: Request): Promise<Response> {
 //
 // The ROUTES are /api/katas (routes/katas.ts, services/katas): a kata holds the cord exactly
 // while its record is running or qa — and, once failed, until a super-admin releases it (George 2026-11-04) — through joinKataCordWith / leaveKataCordWith below. A kata
-// is a project of THE kata tenant (KATA_TENANT_ID, migration 228).
+// is a project of THE kata tenant (kataTenantId, migration 228).
 
 /**
  * Drive the worker to what the COMMITTED cord says, in its own instance-cord transaction, AFTER

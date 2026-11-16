@@ -16,5 +16,5 @@
 
 INSERT INTO workspaces (id, name, created_at)
 VALUES
-  ('0195f48b-d000-7000-8000-000000000006', 'kata', NOW())
+  ('aaaaaaaa-0000-4000-8000-000000000006', 'kata', NOW())
 ON CONFLICT (id) DO NOTHING;

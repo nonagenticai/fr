@@ -1510,7 +1510,7 @@ const COLUMN_PROBES: Probe[] = [
     reapplyIfProbeFails: true,
     check: async (sql) =>
       (
-        await sql`SELECT 1 FROM workspaces WHERE id = '5f868d42-03f8-51f0-a93c-3e83070dc196'::uuid`
+        await sql`SELECT 1 FROM workspaces WHERE id = 'aaaaaaaa-0000-4000-8000-0000000000a6'::uuid`
       ).length > 0,
   },
 
@@ -1849,13 +1849,13 @@ const COLUMN_PROBES: Probe[] = [
       return def !== null && def !== undefined && def.includes("'move_request'") && !def.includes("'kata'");
     },
   },
-  // 228 — the kata tenant's `workspaces` row (KATA_TENANT_ID). An INSERT `push` cannot build, so
+  // 228 — the kata tenant's `workspaces` row (kataTenantId()). An INSERT `push` cannot build, so
   // the row itself is the witness (as 193).
   {
     migration: '228_kata_tenant.sql',
     reapplyIfProbeFails: true,
     check: async (sql) =>
-      (await sql`SELECT 1 FROM workspaces WHERE id = '0195f48b-d000-7000-8000-000000000006'::uuid`).length > 0,
+      (await sql`SELECT 1 FROM workspaces WHERE id = 'aaaaaaaa-0000-4000-8000-000000000006'::uuid`).length > 0,
   },
   // 229 — the `katas` table. push builds the table and the partial index (both in schema.ts) but
   // never the guard triggers, so the two triggers are the witness (as 218).

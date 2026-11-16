@@ -35,7 +35,7 @@ import { eq } from 'drizzle-orm';
 import { importPmCatalogueDefaults } from '../../integrations/pm-catalogue';
 import { assertGlobalAndonReleased } from '../../lib/global-andon-gate';
 import { readN8nWorkerScale, type WorkerScaleReading } from '../../lib/k8s-scale';
-import { KATA_TENANT_ID } from '../../middleware/internal-tenant-only';
+import { kataTenantId } from '../../middleware/internal-tenant-only';
 import { createSingleProject } from '../../routes/projects';
 import { ProjectCreateSchema } from '../../types/api';
 import type { User } from '../../types/api';
@@ -110,18 +110,36 @@ async function loadSourceProject(id: string): Promise<{ id: string; tenantId: st
   return { id: row.id, tenantId };
 }
 
+/**
+ * The kata tenant id, or the kata flows are NOT AVAILABLE (503
+ * `kata_tenant_not_configured`). ⛔ FAIL CLOSED: an unset FR_KATA_TENANT_ID is
+ * no tenant at all — never another workspace, never a substituted uuid — so
+ * every kata flow that needs the owner refuses before any side effect.
+ */
+function requireKataTenantId(): string {
+  const id = kataTenantId();
+  if (id === undefined) {
+    throw new AppError(
+      503,
+      'The kata operation is not available: this deployment has no FR_KATA_TENANT_ID (the kata tenant is not configured)',
+    ).withCode('kata_tenant_not_configured');
+  }
+  return id;
+}
+
 /** Amendment 11: the kata tenant's RM catalogue exists before the first kata project. */
 export async function ensureKataCatalogue(): Promise<void> {
+  const tenantId = requireKataTenantId();
   try {
-    await projectTypes(KATA_TENANT_ID);
+    await projectTypes(tenantId);
     return;
   } catch (err) {
     if (!(err instanceof CatalogueNotInitialised)) throw err;
   }
   try {
-    await importPmCatalogueDefaults(KATA_TENANT_ID, undefined);
+    await importPmCatalogueDefaults(tenantId, undefined);
   } finally {
-    invalidateTenantCatalogue(KATA_TENANT_ID);
+    invalidateTenantCatalogue(tenantId);
   }
 }
 
@@ -169,7 +187,7 @@ export async function openKataForLicence(user: User, input: LicenceOpenInput): P
     ({ planka } = await createSingleProject({
       validated,
       user,
-      repoGateTenantId: KATA_TENANT_ID,
+      repoGateTenantId: requireKataTenantId(),
       newProjectId: kataId,
       // fr's own first wf_change card (below) is the only first card: no conveyor start.
       startConveyor: false,
@@ -393,7 +411,7 @@ async function createTodoCard(input: {
   const stamps: Array<[string, string]> = [
     ['card_type', KATA_FIRST_CARD_TYPE],
     ['project_id', input.kataId],
-    ['keycloak_tenant_id', KATA_TENANT_ID],
+    ['keycloak_tenant_id', requireKataTenantId()],
   ];
   for (const [field, content] of stamps) {
     const f = field === 'card_type' ? cardTypeField : boardField(groups, { boardId: input.boardId, group: 'Metadata', field, context: 'katas.first_card', cardId: card.id });

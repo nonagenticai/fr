@@ -24,7 +24,7 @@ import { createDbSuite } from '../helpers/db-suite';
 const { itDb } = createDbSuite('project-vocabulary-checks');
 
 // A literal owner unique to this file, so cleanup can never touch other rows.
-const OWNER = '0195f48b-1165-7000-8000-00000000c165';
+const OWNER = 'aaaaaaaa-0000-4000-8000-00000000c165';
 
 afterEach(async () => {
   await queryClient`DELETE FROM projects WHERE owner_id = ${OWNER}::uuid`;

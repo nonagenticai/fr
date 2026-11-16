@@ -4,8 +4,8 @@
 // tenant?" from two independently-overridable configs, and until this file
 // existed nothing bound them equal:
 //
-//   fr             — `src/middleware/internal-tenant-only.ts`: the four
-//                    `INTERNAL_TENANT_IDS` plus `EXECUTION_TENANT_ID`.
+//   fr             — `src/lib/tenant-config.ts`: `internalTenantIds()` plus
+//                    the execution role (`executionTenantId()`).
 //                    `services/repo-access.ts` (`internalCaller`) admits
 //                    exactly that union to the clone-token minting branch for a
 //                    platform-owned (`nonagenticai`) repo.
@@ -40,7 +40,7 @@
 // expectation with the SAME generator shape it is testing:
 //
 //     assert ids == frozenset(
-//         f"0195f48b-d000-7000-8000-00000000000{i}" for i in range(1, 6))
+//         f"aaaaaaaa-0000-4000-8000-00000000000{i}" for i in range(1, 6))
 //
 // so it reds a lone `settings.py` edit and goes GREEN on a repo-wide
 // `range(1, 6)` → `range(1, 7)` that touches the test and the setting together.
@@ -59,14 +59,13 @@
 // ⚠️ Changing the platform-tenant set is a THREE-place edit. Change all three
 // in the same change window or the flag flip refuses real work:
 //
-//   1. fr           — `src/middleware/internal-tenant-only.ts`: BOTH the
-//                     `INTERNAL_TENANT_IDS` array AND the `isInternalTenant`
-//                     predicate (they are two parallel enumerations — see
-//                     `frAdmitsPlatformTenant` below), plus `EXECUTION_TENANT_ID`
-//                     and `PLATFORM_TENANTS_PINNED` here.
+//   1. fr           — `src/lib/tenant-config.ts` role envs: the `internalTenantIds()`
+//                     set AND the `isInternalTenant` predicate (see
+//                     `frAdmitsPlatformTenant` below), plus the execution role
+//                     (`executionTenantId()`) and `PLATFORM_TENANTS_PINNED` here.
 //   2. coding-github — `src/config/settings.py:32` `DEFAULT_PLATFORM_TENANTS`.
 //                     ⚠️ It is NOT a literal list: it is generated as
-//                     `",".join(f"0195f48b-d000-7000-8000-00000000000{i}"
+//                     `",".join(f"aaaaaaaa-0000-4000-8000-00000000000{i}"
 //                     for i in range(1, 6))`, so a change to that RANGE moves
 //                     the set with no UUID visible in the diff.
 //   3. deployment — `CODING_GITHUB_PLATFORM_TENANTS` in coding-github's
@@ -88,12 +87,17 @@
 
 import { describe, test, expect } from 'bun:test';
 import {
-  EXECUTION_TENANT_ID,
-  INTERNAL_TENANT_IDS,
-  INTERNAL_SYSTEM_TENANT_ID,
-  KATA_TENANT_ID,
+  executionTenantId,
+  internalSystemTenantId,
+  internalTenantIds,
+  kataTenantId,
   isInternalTenant,
 } from '../../src/middleware/internal-tenant-only';
+
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
+const KATA = kataTenantId()!;
+const INTERNAL = internalTenantIds();
 import { isRepoPlatformTenant } from '../../src/services/repo-access';
 
 /**
@@ -106,11 +110,11 @@ import { isRepoPlatformTenant } from '../../src/services/repo-access';
  * env. See the file header — all three places change together.
  */
 const PLATFORM_TENANTS_PINNED = [
-  '0195f48b-d000-7000-8000-000000000001', // system
-  '0195f48b-d000-7000-8000-000000000002', // workflow-improvement
-  '0195f48b-d000-7000-8000-000000000003', // execution (the conveyor)
-  '0195f48b-d000-7000-8000-000000000004', // prompt-improvement
-  '0195f48b-d000-7000-8000-000000000005', // procedure-improvement
+  'aaaaaaaa-0000-4000-8000-000000000001', // system
+  'aaaaaaaa-0000-4000-8000-000000000002', // workflow-improvement
+  'aaaaaaaa-0000-4000-8000-000000000003', // execution (the conveyor)
+  'aaaaaaaa-0000-4000-8000-000000000004', // prompt-improvement
+  'aaaaaaaa-0000-4000-8000-000000000005', // procedure-improvement
 ] as const;
 
 /**
@@ -122,13 +126,13 @@ const PLATFORM_TENANTS_PINNED = [
  * — any other drift still reds.
  */
 const FR_PLATFORM_TENANTS_PINNED = [
-  '0195f48b-d000-7000-8000-000000000001', // system
-  '0195f48b-d000-7000-8000-000000000003', // execution (the conveyor)
+  'aaaaaaaa-0000-4000-8000-000000000001', // system
+  'aaaaaaaa-0000-4000-8000-000000000003', // execution (the conveyor)
 ] as const;
 const DELETED_IMPROVEMENT_TENANTS = [
-  '0195f48b-d000-7000-8000-000000000002',
-  '0195f48b-d000-7000-8000-000000000004',
-  '0195f48b-d000-7000-8000-000000000005',
+  'aaaaaaaa-0000-4000-8000-000000000002',
+  'aaaaaaaa-0000-4000-8000-000000000004',
+  'aaaaaaaa-0000-4000-8000-000000000005',
 ] as const;
 
 /**
@@ -137,10 +141,10 @@ const DELETED_IMPROVEMENT_TENANTS = [
  *
  *     const internalCaller =
  *       isInternalTenant(scope.tenantId ?? undefined) ||
- *       scope.tenantId === EXECUTION_TENANT_ID;
+ *       scope.tenantId === executionTenantId();
  *
  * ⛔ THIS IS THE POINT OF THE FILE, AND THE EARLIER VERSION GOT IT WRONG.
- * `FR_ADMITTED` used to be spread from the `INTERNAL_TENANT_IDS` **array**
+ * `FR_ADMITTED` used to be spread from an `internalTenantIds()` **array**
  * while `repo-access.ts` calls the **function** — and `isInternalTenant`
  * (`internal-tenant-only.ts:103-110`) does NOT iterate that array. It hardcodes
  * four `===` comparisons. They were two parallel enumerations with nothing
@@ -170,9 +174,9 @@ function frAdmitsPlatformTenant(tenantId: string | undefined): boolean {
   return isRepoPlatformTenant(tenantId);
 }
 
-/** A uuid in fr's reserved `0195f48b-d000-7000-8000-*` workspace namespace. */
+/** A uuid in fr's reserved `aaaaaaaa-0000-4000-8000-*` workspace namespace. */
 const reservedNamespaceId = (slot: number): string =>
-  `0195f48b-d000-7000-8000-${slot.toString(16).padStart(12, '0')}`;
+  `aaaaaaaa-0000-4000-8000-${slot.toString(16).padStart(12, '0')}`;
 
 /**
  * Every tenant id the parity assertion interrogates the REAL predicate with.
@@ -199,7 +203,7 @@ const PARITY_PROBES: readonly string[] = [
 /**
  * The set fr actually admits — computed by asking the REAL predicate about
  * every probe, exactly as `repo-access.ts` asks it about a live caller. Nothing
- * here reads `INTERNAL_TENANT_IDS`, so narrowing OR widening the predicate
+ * here reads `internalTenantIds()`, so narrowing OR widening the predicate
  * changes this array and reds the parity assertion below.
  */
 const FR_ADMITTED: readonly string[] = PARITY_PROBES.filter((t) => frAdmitsPlatformTenant(t));
@@ -249,19 +253,19 @@ describe('fr admits a strict subset of coding-github: exactly system + execution
     for (const id of DELETED_IMPROVEMENT_TENANTS) expect(frAdmitsPlatformTenant(id)).toBe(false);
   });
 
-  // `INTERNAL_TENANT_IDS` and `isInternalTenant` are two hand-maintained
-  // enumerations; this drives both over the same probes.
-  test('INTERNAL_TENANT_IDS and isInternalTenant enumerate the SAME tenants', () => {
+  // `internalTenantIds()` and `isInternalTenant` read the same configured
+  // roles; this drives both over the same probes.
+  test('internalTenantIds() and isInternalTenant enumerate the SAME tenants', () => {
     const byPredicate = PARITY_PROBES.filter((t) => isInternalTenant(t)).sort();
-    expect(byPredicate).toEqual([...INTERNAL_TENANT_IDS].sort());
+    expect(byPredicate).toEqual([...INTERNAL].sort());
   });
 
   // The kata tenant (migration 228, …0006) is INTERNAL but deliberately NOT repo-platform:
   // coding-github's set does not hold it, so admitting it would be the silent widening direction.
   test('the set is system (+ kata, internal but not repo-platform) + the execution tenant, and no more', () => {
-    expect([...INTERNAL_TENANT_IDS]).toEqual([INTERNAL_SYSTEM_TENANT_ID, KATA_TENANT_ID]);
-    expect(frAdmitsPlatformTenant(KATA_TENANT_ID)).toBe(false);
-    expect(INTERNAL_TENANT_IDS).not.toContain(EXECUTION_TENANT_ID);
+    expect([...INTERNAL]).toEqual([SYSTEM, KATA]);
+    expect(frAdmitsPlatformTenant(KATA)).toBe(false);
+    expect(INTERNAL).not.toContain(EXECUTION);
     expect(FR_ADMITTED).toHaveLength(2);
   });
 
@@ -289,7 +293,7 @@ describe('negative control: the parity assertion rejects a drifted set', () => {
   const mutations: ReadonlyArray<readonly [string, readonly string[]]> = [
     ['one tenant REMOVED', FR_PLATFORM_TENANTS_PINNED.slice(0, 1)],
     ['a deleted tenant ADDED back', [...FR_PLATFORM_TENANTS_PINNED, DELETED_IMPROVEMENT_TENANTS[0]]],
-    ['one digit CHANGED', [FR_PLATFORM_TENANTS_PINNED[0], '0195f48b-d000-7000-8000-000000000006']],
+    ['one digit CHANGED', [FR_PLATFORM_TENANTS_PINNED[0], 'aaaaaaaa-0000-4000-8000-000000000006']],
     ['one entry UPPER-CASED', [FR_PLATFORM_TENANTS_PINNED[0], FR_PLATFORM_TENANTS_PINNED[1].toUpperCase()]],
     ['execution SWAPPED for a duplicate (dedups to 1)', [FR_PLATFORM_TENANTS_PINNED[0], FR_PLATFORM_TENANTS_PINNED[0]]],
     ['the empty set', []],
@@ -306,23 +310,19 @@ describe('negative control: the parity assertion rejects a drifted set', () => {
   });
 });
 
-// ── COMPILE-TIME BINDING ON THE TYPE PREDICATE ──────────────────────────────
+// ── THE PREDICATE AND THE ACCESSOR MUST AGREE ───────────────────────────────
 //
-// `isInternalTenant` is declared `tenantId is InternalTenantId`. tsc does not
-// verify that claim against the function BODY — so the declaration alone is
-// worth nothing at runtime, which is why the assertions above drive the
-// function instead. tsc DOES check assignability here, though: if
-// `InternalTenantId` is ever retyped wider than the members of
-// `INTERNAL_TENANT_IDS`, or the array and the type part company, `bun run
-// typecheck` stops compiling. That is the one half of the binding a test
-// cannot express.
-function _narrowedTenantIsAnArrayMember(
-  id: string,
-): (typeof INTERNAL_TENANT_IDS)[number] | null {
+// `isInternalTenant` and `internalTenantIds()` are two reads of the same
+// configured roles: the predicate must admit exactly the accessor's members.
+// `internalTenantIds()` returns `readonly string[]` (unset roles absent), so
+// there is no literal member type to bind at compile time any more — the
+// assertion below drives the predicate over the accessor and an unconfigured
+// member instead.
+function _narrowedTenantIsAnArrayMember(id: string): string | null {
   return isInternalTenant(id) ? id : null;
 }
 
-test('the type predicate narrows to a member of INTERNAL_TENANT_IDS (compile-time)', () => {
-  expect(_narrowedTenantIsAnArrayMember(INTERNAL_SYSTEM_TENANT_ID)).toBe(INTERNAL_SYSTEM_TENANT_ID);
-  expect(_narrowedTenantIsAnArrayMember(EXECUTION_TENANT_ID)).toBeNull();
+test('the predicate admits exactly the members of internalTenantIds()', () => {
+  for (const id of INTERNAL) expect(_narrowedTenantIsAnArrayMember(id)).toBe(id);
+  expect(_narrowedTenantIsAnArrayMember(EXECUTION)).toBeNull();
 });

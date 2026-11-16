@@ -10,17 +10,21 @@ import {
   validateStartEvent,
 } from '../../../src/lib/start-events';
 import {
-  AA_CONVEYOR_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  INTERNAL_SYSTEM_TENANT_ID,
+  aaConveyorTenantId,
+  executionTenantId,
+  internalSystemTenantId,
 } from '../../../src/middleware/internal-tenant-only';
 
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
+const AA_CONVEYOR = aaConveyorTenantId()!;
+
 const CUSTOMER = '11111111-2222-4333-8444-555555555555';
-const PROJECT = '0195f48b-0000-7000-8000-00000000abcd';
+const PROJECT = 'aaaaaaaa-0000-4000-8000-00000000abcd';
 const TEMPLATE = `it.bug_hunt@${'a'.repeat(64)}`;
 const ok = (over: Record<string, unknown> = {}) => ({
   event: 'start.outline_rejected',
-  tenant_id: EXECUTION_TENANT_ID,
+  tenant_id: EXECUTION,
   project_id: PROJECT,
   template: TEMPLATE,
   outline_version: 2,
@@ -74,7 +78,7 @@ describe('consumption: platform-only (PSD §9 consumption rule)', () => {
   const customerEv = ok({ tenant_id: CUSTOMER });
 
   test('a platform reader consumes platform-tenant events', () => {
-    for (const reader of [EXECUTION_TENANT_ID, INTERNAL_SYSTEM_TENANT_ID, AA_CONVEYOR_TENANT_ID]) {
+    for (const reader of [EXECUTION, SYSTEM, AA_CONVEYOR]) {
       expect(consumableStartEvents(reader, [platformEv]).events).toHaveLength(1);
     }
   });
@@ -87,13 +91,13 @@ describe('consumption: platform-only (PSD §9 consumption rule)', () => {
   });
 
   test('MUST-FAIL: a customer tenant’s event is never consumed by a platform reader', () => {
-    const r = consumableStartEvents(EXECUTION_TENANT_ID, [customerEv, platformEv]);
-    expect(r.events.map((e) => e.tenant_id)).toEqual([EXECUTION_TENANT_ID]);
+    const r = consumableStartEvents(EXECUTION, [customerEv, platformEv]);
+    expect(r.events.map((e) => e.tenant_id)).toEqual([EXECUTION]);
     expect(r.dropped.non_platform_event).toBe(1);
   });
 
   test('an invalid (free-text) event is dropped and counted, never repaired', () => {
-    const r = consumableStartEvents(EXECUTION_TENANT_ID, [ok({ reason: 'prose' }), platformEv]);
+    const r = consumableStartEvents(EXECUTION, [ok({ reason: 'prose' }), platformEv]);
     expect(r.events).toHaveLength(1);
     expect(r.dropped.invalid).toBe(1);
   });

@@ -27,7 +27,12 @@ export function shouldOrchestrateProjectStart(params: {
   projectType: string | undefined;
   cveSweep: boolean | undefined;
   tenantId: string;
-  execTenantId: string;
+  /**
+   * Undefined when FR_EXECUTION_TENANT_ID is unset. FAIL CLOSED: an absent id
+   * names no tenant, so the EXEC comparison is false and nothing orchestrates —
+   * it never stands in for another tenant.
+   */
+  execTenantId: string | undefined;
 }): boolean {
   const { projectType, cveSweep, tenantId, execTenantId } = params;
   // `system_ops` (SYSTEM tenant attribution projects) NEVER orchestrates, on

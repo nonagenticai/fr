@@ -30,7 +30,7 @@ import type { AssetType } from '../../../services/asset-assignments';
 import { getRequestContext } from '../../../integrations/_lib/context';
 import { withTenantFrame } from '../../admin/assets/_lib/gate';
 import {
-  INTERNAL_SYSTEM_TENANT_ID,
+  internalSystemTenantId,
   isPlatformTenant,
 } from '../../../middleware/internal-tenant-only';
 import { applyEffectiveFilter } from './effective-query';
@@ -75,13 +75,13 @@ function tag<T extends AssetRowLike>(
  * tenant. Never inferred from which frame fr read it under — fr reads only the
  * caller's frame, and the upstream decides what it inherits into that frame.
  */
-// PLATFORM_TENANT_IDS / AA_CONVEYOR_TENANT_ID / isPlatformTenant moved to
-// middleware/internal-tenant-only.ts (beside INTERNAL_TENANT_IDS, so the three
+// platformTenantIds() / aaConveyorTenantId() / isPlatformTenant moved to
+// middleware/internal-tenant-only.ts (beside internalTenantIds, so the three
 // tenant sets are read side by side). Re-exported here so existing imports keep
 // working — a pure move, the set contents are unchanged.
 export {
-  AA_CONVEYOR_TENANT_ID,
-  PLATFORM_TENANT_IDS,
+  aaConveyorTenantId,
+  platformTenantIds,
   isPlatformTenant,
 } from '../../../middleware/internal-tenant-only';
 
@@ -168,7 +168,7 @@ export function isSystemRow(row: unknown): boolean {
   return (
     row !== null &&
     typeof row === 'object' &&
-    (row as { tenant_id?: unknown }).tenant_id === INTERNAL_SYSTEM_TENANT_ID
+    (row as { tenant_id?: unknown }).tenant_id === internalSystemTenantId()
   );
 }
 
@@ -187,7 +187,7 @@ export async function listWithSystemUnion<T extends AssetRowLike>(
 ): Promise<Array<T & EnrichedRow>> {
   const ctx = getRequestContext();
   const active = ctx.tenantId ?? user.tenantId;
-  const isSystemActive = active === INTERNAL_SYSTEM_TENANT_ID;
+  const isSystemActive = active === internalSystemTenantId();
 
   let merged: Array<T & EnrichedRow>;
   if (isSystemActive) {
@@ -240,7 +240,7 @@ export async function getWithSystemUnion<T extends AssetRowLike>(
 ): Promise<T & EnrichedRow> {
   const ctx = getRequestContext();
   const active = ctx.tenantId ?? user.tenantId;
-  const isSystemActive = active === INTERNAL_SYSTEM_TENANT_ID;
+  const isSystemActive = active === internalSystemTenantId();
 
   if (isSystemActive) {
     const row = await getFn();
@@ -308,7 +308,7 @@ export async function mutateWithSystemUnion<T>(
   const ctx = getRequestContext();
   const active = ctx.tenantId ?? user.tenantId;
 
-  if (active === INTERNAL_SYSTEM_TENANT_ID) {
+  if (active === internalSystemTenantId()) {
     return mutateFn();
   }
 
@@ -351,11 +351,16 @@ export async function mutateWithSystemUnion<T>(
     // is a genuine 404. A super-admin already holds this exact capability on
     // the admin console (`gateWriteAsset` admits super-admin for system-tenant
     // writes), so admitting them here adds no new power, only a second door.
+    // FAIL CLOSED: with no configured system tenant there is no system frame to
+    // probe, so the row is genuinely not there — answer the caller's own 404,
+    // the same path a failed probe already takes.
+    const systemTenantId = internalSystemTenantId();
+    if (systemTenantId === undefined) throw err;
     try {
-      await withTenantFrame(INTERNAL_SYSTEM_TENANT_ID, fetchFn);
+      await withTenantFrame(systemTenantId, fetchFn);
     } catch {
       throw err;
     }
-    return withTenantFrame(INTERNAL_SYSTEM_TENANT_ID, mutateFn);
+    return withTenantFrame(systemTenantId, mutateFn);
   }
 }

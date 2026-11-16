@@ -1,74 +1,157 @@
 // tests/unit/middleware/tenant-sets.test.ts
 //
-// Pins the EXACT contents of fr's three tenant sets. They differ on purpose
-// (see the comment block above PLATFORM_TENANT_IDS in
-// src/middleware/internal-tenant-only.ts):
-//   INTERNAL_TENANT_IDS  (2) — system + kata (migration 228); the 3 improvement
-//                              tenants were deleted 2026-11-03
-//   isRepoPlatformTenant (2) — system + EXECUTION (coding-github refuses the AA
-//                              conveyor tenant for platform repos and does not
-//                              hold kata)
-//   PLATFORM_TENANT_IDS  (5) — system + kata + EXECUTION + the AA conveyor
-//                              tenant + the v4 conveyor tenant (George 10-14)
-// A change to any of them must be deliberate and must edit this file.
+// Pins HOW fr's three tenant sets relate — not a frozen literal inventory.
+// The ids are environment-supplied (`FR_*_TENANT_ID`, read through
+// src/lib/tenant-config.ts), so this file asserts the invariants that must
+// hold for ANY configured environment:
+//
+//   internalTenantIds()   = system + kata
+//   isRepoPlatformTenant  = system + execution (kata excluded: coding-github's
+//                           set does not hold it and a kata project carries no
+//                           repository; both conveyors excluded: coding-github
+//                           refuses them for platform repos)
+//   platformTenantIds()   = internal + execution + both conveyor tenants
+//
+// The relationships pinned:
+//   * internal ⊆ platform
+//   * execution and both conveyors are in platform, NOT in internal
+//   * canonicalTenantNames() names exactly the configured canonical roles
+//   * an unset role vanishes from every set (fail closed), never falling back
+// A change to any relationship must be deliberate and must edit this file.
 
-import { test, expect } from 'bun:test';
+import { describe, test, expect } from 'bun:test';
 import {
-  AA_CONVEYOR_TENANT_ID,
-  V4_CONVEYOR_TENANT_ID,
-  KATA_TENANT_ID,
-  INTERNAL_TENANT_IDS,
-  PLATFORM_TENANT_IDS,
+  aaConveyorTenantId,
+  canonicalTenantNames,
+  executionTenantId,
+  internalSystemTenantId,
+  internalTenantIds,
+  kataTenantId,
+  platformTenantIds,
+  v4ConveyorTenantId,
   isPlatformTenant,
 } from '../../../src/middleware/internal-tenant-only';
 import * as systemUnion from '../../../src/routes/assets/_lib/system-union';
 import { isRepoPlatformTenant } from '../../../src/services/repo-access';
 
-const SYSTEM = '0195f48b-d000-7000-8000-000000000001';
-// The three improvement tenants deleted 2026-11-03: in no set.
-const WORKFLOW = '0195f48b-d000-7000-8000-000000000002';
-const EXECUTION = '0195f48b-d000-7000-8000-000000000003';
-const PROMPT = '0195f48b-d000-7000-8000-000000000004';
-const PROCEDURE = '0195f48b-d000-7000-8000-000000000005';
-const AA_CONVEYOR = '019de842-c92a-7e37-8fdd-eb0d8c5396f9';
-const V4_CONVEYOR = '5f868d42-03f8-51f0-a93c-3e83070dc196';
-const KATA = '0195f48b-d000-7000-8000-000000000006';
+// tests/setup-env.ts (the preload) sets these synthetic ids; asserting the
+// literals here binds the accessors to the environment the tests run under.
+const SYSTEM = 'aaaaaaaa-0000-4000-8000-000000000001';
+const EXECUTION = 'aaaaaaaa-0000-4000-8000-000000000003';
+const KATA = 'aaaaaaaa-0000-4000-8000-000000000006';
+const AA_CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000a5';
+const V4_CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000a6';
+// The three improvement tenants deleted 2026-11-03, plus an ordinary customer
+// id: none of them may appear in any set.
+const DELETED = [
+  'aaaaaaaa-0000-4000-8000-000000000002',
+  'aaaaaaaa-0000-4000-8000-000000000004',
+  'aaaaaaaa-0000-4000-8000-000000000005',
+];
 const CUSTOMER = 'e0000000-0000-4000-8000-00000000c0de';
 
 const sorted = (xs: Iterable<string>) => [...xs].sort();
 
-test('INTERNAL_TENANT_IDS is exactly system + kata', () => {
-  expect(KATA_TENANT_ID).toBe(KATA);
-  expect(sorted(INTERNAL_TENANT_IDS)).toEqual(sorted([SYSTEM, KATA]));
-  expect((INTERNAL_TENANT_IDS as readonly string[]).includes(V4_CONVEYOR)).toBe(false);
+describe('the accessors read the configured roles', () => {
+  test('each single-role accessor returns its FR_*_TENANT_ID', () => {
+    expect(internalSystemTenantId()).toBe(SYSTEM);
+    expect(executionTenantId()).toBe(EXECUTION);
+    expect(kataTenantId()).toBe(KATA);
+    expect(aaConveyorTenantId()).toBe(AA_CONVEYOR);
+    expect(v4ConveyorTenantId()).toBe(V4_CONVEYOR);
+  });
 });
 
-test('isRepoPlatformTenant is exactly system + EXECUTION — NOT either conveyor tenant, NOT kata, nor a deleted tenant', () => {
-  const candidates = [SYSTEM, WORKFLOW, EXECUTION, PROMPT, PROCEDURE, KATA, AA_CONVEYOR, V4_CONVEYOR, CUSTOMER];
-  expect(sorted(candidates.filter((t) => isRepoPlatformTenant(t)))).toEqual(
-    sorted([SYSTEM, EXECUTION]),
-  );
-  expect(isRepoPlatformTenant(AA_CONVEYOR)).toBe(false);
-  expect(isRepoPlatformTenant(V4_CONVEYOR)).toBe(false);
-  expect(isRepoPlatformTenant(KATA)).toBe(false);
-  expect(isRepoPlatformTenant(null)).toBe(false);
+describe('internalTenantIds() and platformTenantIds()', () => {
+  test('internalTenantIds() is exactly system + kata', () => {
+    expect(sorted(internalTenantIds())).toEqual(sorted([SYSTEM, KATA]));
+  });
+
+  test('platformTenantIds() is exactly internal + execution + both conveyors', () => {
+    expect(platformTenantIds()).toEqual(
+      new Set([SYSTEM, KATA, EXECUTION, AA_CONVEYOR, V4_CONVEYOR]),
+    );
+  });
+
+  test('internal ⊆ platform; execution and both conveyors are platform but NOT internal', () => {
+    const platform = platformTenantIds();
+    for (const t of internalTenantIds()) expect(platform.has(t)).toBe(true);
+    for (const t of [EXECUTION, AA_CONVEYOR, V4_CONVEYOR]) {
+      expect(platform.has(t)).toBe(true);
+      expect(internalTenantIds()).not.toContain(t);
+    }
+  });
+
+  test('isPlatformTenant agrees with platformTenantIds() and refuses everything else', () => {
+    for (const t of platformTenantIds()) expect(isPlatformTenant(t)).toBe(true);
+    for (const t of [...DELETED, CUSTOMER]) expect(isPlatformTenant(t)).toBe(false);
+    expect(isPlatformTenant(null)).toBe(false);
+    expect(isPlatformTenant(undefined)).toBe(false);
+  });
 });
 
-test('PLATFORM_TENANT_IDS is exactly system + kata + EXECUTION + both conveyor tenants (5)', () => {
-  expect(AA_CONVEYOR_TENANT_ID).toBe(AA_CONVEYOR);
-  expect(V4_CONVEYOR_TENANT_ID).toBe(V4_CONVEYOR);
-  expect(sorted(PLATFORM_TENANT_IDS)).toEqual(
-    sorted([SYSTEM, KATA, EXECUTION, AA_CONVEYOR, V4_CONVEYOR]),
-  );
-  for (const t of PLATFORM_TENANT_IDS) expect(isPlatformTenant(t)).toBe(true);
-  expect(isPlatformTenant(CUSTOMER)).toBe(false);
-  for (const t of [WORKFLOW, PROMPT, PROCEDURE]) expect(isPlatformTenant(t)).toBe(false);
-  expect(isPlatformTenant(null)).toBe(false);
-  expect(isPlatformTenant(undefined)).toBe(false);
+describe('isRepoPlatformTenant — the narrower gate', () => {
+  test('admits exactly system + execution', () => {
+    const candidates = [SYSTEM, ...DELETED, EXECUTION, KATA, AA_CONVEYOR, V4_CONVEYOR, CUSTOMER];
+    expect(sorted(candidates.filter((t) => isRepoPlatformTenant(t)))).toEqual(
+      sorted([SYSTEM, EXECUTION]),
+    );
+  });
+
+  test('refuses kata and both conveyors even though they are in platformTenantIds()', () => {
+    for (const t of [KATA, AA_CONVEYOR, V4_CONVEYOR]) {
+      expect(platformTenantIds().has(t)).toBe(true);
+      expect(isRepoPlatformTenant(t)).toBe(false);
+    }
+    expect(isRepoPlatformTenant(null)).toBe(false);
+  });
 });
 
-test('system-union re-exports the SAME objects (a pure move)', () => {
-  expect(systemUnion.PLATFORM_TENANT_IDS).toBe(PLATFORM_TENANT_IDS);
-  expect(systemUnion.isPlatformTenant).toBe(isPlatformTenant);
-  expect(systemUnion.AA_CONVEYOR_TENANT_ID).toBe(AA_CONVEYOR_TENANT_ID);
+describe('canonicalTenantNames()', () => {
+  test('names exactly the three configured canonical roles, and nothing else', () => {
+    expect(canonicalTenantNames()).toEqual({
+      [SYSTEM]: 'system',
+      [EXECUTION]: 'execution',
+      [KATA]: 'kata',
+    });
+    for (const t of [AA_CONVEYOR, V4_CONVEYOR, ...DELETED, CUSTOMER]) {
+      expect(canonicalTenantNames()[t]).toBeUndefined();
+    }
+  });
+});
+
+describe('system-union re-exports the SAME accessors (a pure move)', () => {
+  test('identity, not equal-looking copies', () => {
+    expect(systemUnion.platformTenantIds).toBe(platformTenantIds);
+    expect(systemUnion.aaConveyorTenantId).toBe(aaConveyorTenantId);
+    expect(systemUnion.isPlatformTenant).toBe(isPlatformTenant);
+  });
+});
+
+describe('fail closed: an unset role vanishes from every set', () => {
+  test('unset ⇒ undefined accessor, empty sets, no names (env restored)', () => {
+    // Every FR_*_TENANT_ID the preload configured — found rather than listed, so
+    // this also restores any role added later.
+    const names = Object.keys(process.env).filter(
+      (k) => k.startsWith('FR_') && k.endsWith('_TENANT_ID'),
+    );
+    const saved = names.map((n) => [n, process.env[n]] as const);
+    try {
+      for (const n of names) delete process.env[n];
+      expect(internalSystemTenantId()).toBeUndefined();
+      expect(executionTenantId()).toBeUndefined();
+      expect(kataTenantId()).toBeUndefined();
+      expect(aaConveyorTenantId()).toBeUndefined();
+      expect(v4ConveyorTenantId()).toBeUndefined();
+      expect(internalTenantIds()).toEqual([]);
+      expect(platformTenantIds()).toEqual(new Set());
+      expect(canonicalTenantNames()).toEqual({});
+      expect(isPlatformTenant(SYSTEM)).toBe(false);
+    } finally {
+      for (const [n, v] of saved) {
+        if (v === undefined) delete process.env[n];
+        else process.env[n] = v;
+      }
+    }
+  });
 });

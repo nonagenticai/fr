@@ -12,7 +12,7 @@
 import { config } from '../config';
 import { createHttpClient, type HttpClient } from './_lib/http-client';
 import { IntegrationError } from './_lib/errors';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../middleware/internal-tenant-only';
 
 const CRUD_TIMEOUT_MS = 10_000;
 
@@ -32,7 +32,7 @@ function http(): HttpClient {
       // does NOT inject X-Tenant-Id on service-to-service calls. buildHeaders
       // only fills the ALS tenant when the header is ABSENT, so this default
       // always wins.
-      defaultHeaders: { 'X-Tenant-Id': INTERNAL_SYSTEM_TENANT_ID },
+      defaultHeaders: { 'X-Tenant-Id': internalSystemTenantId() ?? '' },
     });
   }
   return cachedClient;

@@ -9,7 +9,7 @@ import {
 } from '../../../src/lib/wm-byo-errors';
 import { IntegrationError } from '../../../src/integrations/_lib/errors';
 
-const TENANT = '0195f48b-d000-7000-8000-0000000003a1';
+const TENANT = 'aaaaaaaa-0000-4000-8000-0000000003a1';
 
 describe('wmByoErrorFromBody', () => {
   test('reads the JSON envelope', () => {

@@ -6,7 +6,7 @@
 import { afterEach, describe, expect, test } from 'bun:test';
 import { buildRequestContext } from '../../../src/middleware/request-context';
 
-const BYPASS_TENANT = '0195f48b-d000-7000-8000-0000000000b1';
+const BYPASS_TENANT = 'aaaaaaaa-0000-4000-8000-0000000000b1';
 
 const saved = {
   bypass: process.env.AUTH_BYPASS,

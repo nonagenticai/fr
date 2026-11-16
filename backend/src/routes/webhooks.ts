@@ -328,7 +328,7 @@ export async function handleN8nExecutionEvent(req: Request): Promise<Response> {
     // tenant. fr is right to refuse.
     //
     // MEASURED 2026-09-10 in the prod pod log: the ids being refused include
-    // `0195f48b-d000-7000-8000-000000000004`, which is not a missing project at
+    // `aaaaaaaa-0000-4000-8000-000000000004`, which is not a missing project at
     // all — it is the `prompt-improvement` WORKSPACE id (migration 062;
     // middleware/internal-tenant-only.ts). A workspace id can never match a
     // `projects` row, so this event was structurally unanswerable and would have
@@ -907,7 +907,7 @@ export async function resolveCardApprovalTenant(
 // same board chain: measured on prod fr on 2026-09-04, all 99 live
 // `router_dedupe` rows carry ONE scope id, `1813235616851167013`, which joins
 // `streams.planka_board_id` and yields tenant
-// `0195f48b-d000-7000-8000-000000000001` (workspace `system`). 0 of 99 matched
+// `aaaaaaaa-0000-4000-8000-000000000001` (workspace `system`). 0 of 99 matched
 // a project board; 18 of 18 streams-with-a-board carry a tenant.
 //
 // ⛔ WHAT THIS DOES NOT DO. It never substitutes a fallback tenant. When the

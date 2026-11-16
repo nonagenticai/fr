@@ -13,7 +13,7 @@
 //   session — and it was. Measured on production 2026-09-10 as the
 //   super-admin `fr-test`: the switcher offered SIX workspaces, the usage
 //   breakdown listed FOUR. The two missing rows were `EXEC · nonagentic-exec`
-//   (the switcher's list carried `EXECUTION_TENANT_ID`, the usage copy's
+//   (the switcher's list carried `executionTenantId()`, the usage copy's
 //   hard-coded array did not) and `EXEC · fr-test` — the caller's OWN JWT
 //   tenant, which the switcher synthesises for a user holding zero
 //   `user_roles` rows and the usage copy had no equivalent of. The active
@@ -59,11 +59,11 @@ import { eq, inArray, isNull } from 'drizzle-orm';
 import { db, userRoles, workspaces } from '../db/client';
 import { isSuperAdmin } from './super-admin-gate';
 import {
-  INTERNAL_SYSTEM_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  AA_CONVEYOR_TENANT_ID,
-  V4_CONVEYOR_TENANT_ID,
-  KATA_TENANT_ID,
+  internalSystemTenantId,
+  executionTenantId,
+  aaConveyorTenantId,
+  v4ConveyorTenantId,
+  kataTenantId,
 } from '../middleware/internal-tenant-only';
 import { normalizeTenantId } from '../utils/tenant';
 import { isRealmTenantAdminOf } from '../services/user-roles';
@@ -99,20 +99,29 @@ export const SUPER_ADMIN_SCOPE_ROLE = 'super_admin_scope';
  * kept its own copy of this array without the execution id, silently omitted
  * that workspace's whole row.
  */
-export const SUPER_ADMIN_SWITCHABLE_IDS = [
-  INTERNAL_SYSTEM_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  // fr row 14d: the X-Active-Tenant gate admits every PLATFORM tenant, so the
-  // AA conveyor tenant is switchable too (its approvals were unreachable in
-  // the UI before). Offered only when a `workspaces` row exists for it.
-  AA_CONVEYOR_TENANT_ID,
-  // v4 conveyor (George 10-14): super_admin decides its ask_fr approvals.
-  // Its `workspaces` row is migration 193_v4_conveyor_workspace.
-  V4_CONVEYOR_TENANT_ID,
-  // The kata tenant (migration 228): every kata project lives here; a super-admin
-  // reaches a kata's board by switching in.
-  KATA_TENANT_ID,
-] as const;
+/**
+ * The canonical workspaces a super-admin may switch into.
+ *
+ * ⛔ A FUNCTION, not a module-scope array: the ids are environment-supplied, so
+ * an array built at import would snapshot whatever the env held at import time.
+ * An unconfigured role is simply ABSENT — it is not offered in the switcher.
+ */
+export function superAdminSwitchableIds(): readonly string[] {
+  return [
+    internalSystemTenantId(),
+    executionTenantId(),
+    // fr row 14d: the X-Active-Tenant gate admits every PLATFORM tenant, so the
+    // AA conveyor tenant is switchable too (its approvals were unreachable in
+    // the UI before). Offered only when a `workspaces` row exists for it.
+    aaConveyorTenantId(),
+    // v4 conveyor (George 10-14): super_admin decides its ask_fr approvals.
+    // Its `workspaces` row is migration 193_v4_conveyor_workspace.
+    v4ConveyorTenantId(),
+    // The kata tenant (migration 228): every kata project lives here; a super-admin
+    // reaches a kata's board by switching in.
+    kataTenantId(),
+  ].filter((id): id is string => typeof id === 'string');
+}
 
 /** Which of the three sources produced a row. */
 export type AccessibleTenantSource =
@@ -225,7 +234,7 @@ export async function listAccessibleTenants(
   //    user doesn't already hold a real role in.
   if (isSuperAdmin(user)) {
     const alreadyVisible = new Set(out.map((e) => e.id));
-    const missingInternalIds = SUPER_ADMIN_SWITCHABLE_IDS.filter(
+    const missingInternalIds = superAdminSwitchableIds().filter(
       (id) => !alreadyVisible.has(id),
     );
     if (missingInternalIds.length > 0) {
@@ -254,15 +263,15 @@ export async function listAccessibleTenants(
   //    Measured in the production fr Postgres 2026-08-28/30: the super-admin
   //    `fr-test` (32969c16-6ecd-49fe-a106-ba13e6640dc8) holds ZERO `user_roles`
   //    rows (positive control: the table has 13 rows and other users do have
-  //    them), and their Keycloak `tenant_id` attribute is `0195f48b-…-0099` —
-  //    NOT in SUPER_ADMIN_SWITCHABLE_IDS. Without this block their own
+  //    them), and their Keycloak `tenant_id` attribute is `aaaaaaaa-…-0099` —
+  //    NOT in superAdminSwitchableIds(). Without this block their own
   //    workspace appears in no list at all, which made the switcher auto-pick
   //    and PERSIST somebody else's workspace and made the usage breakdown omit
   //    the very tenant its headline total was computed from.
   //
   //    Safety: `middleware/request-context.ts` accepts an `X-Active-Tenant`
   //    header only from a caller carrying the SIGNED `super_admin` realm role,
-  //    and then only for INTERNAL_TENANT_SET, EXECUTION_TENANT_ID, **or
+  //    and then only for INTERNAL_TENANT_SET, executionTenantId, **or
   //    `activeTenantHeader === jwtTenantId`** — and `jwtTenantId` is exactly
   //    the value `keycloak.validateToken` puts on `user.tenantId`. The row we
   //    add here therefore always carries an id that gate accepts.

@@ -12,9 +12,9 @@ import {
   DEFAULT_FIXTURE_REQUESTORS,
 } from '../../../src/lib/execution-signoff';
 
-const OWNER = '0195f48b-1111-7000-8000-000000000abc'; // a valid v7-shaped UUID
-const A = '0195f48b-2222-7000-8000-0000000000a1';
-const B = '0195f48b-3333-7000-8000-0000000000b2';
+const OWNER = 'aaaaaaaa-0000-4000-8000-000000000abc'; // a valid v7-shaped UUID
+const A = 'aaaaaaaa-0000-4000-8000-0000000000a1';
+const B = 'aaaaaaaa-0000-4000-8000-0000000000b2';
 
 describe('resolveSignoffStakeholderIds', () => {
   test('no approvers → falls back to the owner', () => {

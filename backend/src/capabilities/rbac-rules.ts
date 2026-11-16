@@ -9,9 +9,9 @@ import { isConveyorAllowedRequest } from '../lib/conveyor-identity';
 import { isLicenceRouteAllowed } from '../lib/licence-route-allowlist';
 import { isSuperAdmin } from '../lib/super-admin-gate';
 import {
-  AA_CONVEYOR_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  V4_CONVEYOR_TENANT_ID,
+  aaConveyorTenantId,
+  executionTenantId,
+  v4ConveyorTenantId,
   isInternalTenant,
   isPlatformTenant,
 } from '../middleware/internal-tenant-only';
@@ -181,7 +181,7 @@ export async function isLicenceCallerWithTenant(ctx: ActionContext, route: Capab
  * `mint_design_units_exec_only`.
  */
 export async function isAuthenticatedUserInExecutionTenant(ctx: ActionContext, route: CapabilityRoute): Promise<boolean> {
-  return Boolean(ctx.userId) && principalDoorAdmits(route) && (tryGetRequestContext()?.tenantId || ctx.tenantId) === EXECUTION_TENANT_ID;
+  return Boolean(ctx.userId) && principalDoorAdmits(route) && (tryGetRequestContext()?.tenantId || ctx.tenantId) === executionTenantId();
 }
 
 /**
@@ -204,7 +204,7 @@ export function isKataCaller(opts: { withSuperAdmin: boolean }) {
     const frame = tryGetRequestContext();
     if (frame?.authKind === 'licence') {
       const tenant = (frame.tenantId || ctx.tenantId || '').toLowerCase();
-      return tenant === V4_CONVEYOR_TENANT_ID || tenant === AA_CONVEYOR_TENANT_ID;
+      return tenant === v4ConveyorTenantId() || tenant === aaConveyorTenantId();
     }
     return opts.withSuperAdmin && isSuperAdmin({ roles: ctx.tenantRoles ?? [] });
   };

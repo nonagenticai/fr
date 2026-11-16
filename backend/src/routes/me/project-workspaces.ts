@@ -15,7 +15,7 @@
 //   1. Candidates are the caller's switchable workspaces (`listAccessibleTenants`,
 //      the same list the header switcher shows) filtered by `isPlatformTenant`.
 //   2. The count query itself additionally requires the project's own tag to be
-//      in `PLATFORM_TENANT_IDS`, so even a dept-lane row or a future widening
+//      in `platformTenantIds()`, so even a dept-lane row or a future widening
 //      of the shared filter cannot count a customer-tagged project.
 //
 // Each count is the SAME visibility the caller would get after switching —
@@ -34,7 +34,7 @@ import {
   licenceProjectScope,
   tenantScopedProjectFilter,
 } from '../../lib/project-access';
-import { isPlatformTenant, PLATFORM_TENANT_IDS } from '../assets/_lib/system-union';
+import { isPlatformTenant, platformTenantIds } from '../assets/_lib/system-union';
 import { jsonResponse } from '../../utils/response';
 import { projectIsVisible } from '../../lib/project-live-status';
 
@@ -71,7 +71,7 @@ export async function handleListMyProjectWorkspaces(req: Request): Promise<Respo
   }
 
   const activeTenantId = ctxTenantId(user.tenantId);
-  const platformIds = [...PLATFORM_TENANT_IDS];
+  const platformIds = [...platformTenantIds()];
   const tenants = await listAccessibleTenants(user);
   const candidates = projectHintCandidates(tenants, activeTenantId);
 

@@ -133,8 +133,8 @@ test('preserves order from the upstream list', async () => {
 // "customer owns <system decision>" row (assigned_by='system-lazy') — measured
 // on netcare.
 
-const SYSTEM = '0195f48b-d000-7000-8000-000000000001';
-const OTHER = '0195f48b-d000-7000-8000-0000000000aa';
+const SYSTEM = 'aaaaaaaa-0000-4000-8000-000000000001';
+const OTHER = 'aaaaaaaa-0000-4000-8000-0000000000aa';
 const C = 'dddddddd-dddd-dddd-dddd-ddddddddd00c';
 
 async function ownedIds(): Promise<string[]> {
@@ -194,7 +194,7 @@ test('rows with no tenant_id keep the old lazy-own behaviour', async () => {
 // them made newly inherited system rows vanish from their `?project_id=` lists
 // (validator repro: origin/main [A, B] vs the first strict-separation cut [A]).
 
-const EXEC = '0195f48b-d000-7000-8000-000000000003';
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000003';
 const EXEC_PROJ = '99999999-1111-2222-3333-4444444444ee';
 
 test('a PLATFORM tenant (execution) still lazily owns and returns an inherited system-tenant row', async () => {

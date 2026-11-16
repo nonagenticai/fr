@@ -19,12 +19,15 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { flushSync, mount, unmount } from 'svelte';
 import Warning, {
 	warnsAnalysisSkipped,
-	orchestratesProjectStart,
-	EXECUTION_TENANT_ID
+	orchestratesProjectStart
 } from './ProjectTypeAnalysisWarning.svelte';
 
-const EXEC = EXECUTION_TENANT_ID;
-const CUSTOMER = '0195f48b-d000-7000-8000-0000000000ff';
+// Synthetic ids. The EXEC tenant id is resolved at runtime from the workspace
+// store (`canonicalOf('execution')`), so the tests pass it explicitly — exactly
+// what the component receives as a prop — and no production UUID is a build-time
+// constant in this public repo.
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000001';
+const CUSTOMER = 'aaaaaaaa-0000-4000-8000-0000000000ff';
 
 /** [projectType, cveSweep, tenantId, orchestrates?] */
 export const ORCHESTRATION_MATRIX: Array<
@@ -58,34 +61,68 @@ describe('orchestratesProjectStart — parity with the backend gate', () => {
 	for (const [projectType, cveSweep, tenantId, expected] of ORCHESTRATION_MATRIX) {
 		const tenant = tenantId === EXEC ? 'EXEC' : 'customer';
 		it(`${String(projectType)} + cve_sweep=${String(cveSweep)} on ${tenant} → ${expected}`, () => {
-			expect(orchestratesProjectStart({ projectType, cveSweep, tenantId })).toBe(expected);
+			expect(
+				orchestratesProjectStart({ projectType, cveSweep, tenantId, executionTenantId: EXEC })
+			).toBe(expected);
 		});
 	}
+
+	it('fails safe when the execution workspace is not resolved yet', () => {
+		expect(
+			orchestratesProjectStart({ projectType: 'feature', tenantId: '', executionTenantId: undefined })
+		).toBe(false);
+		expect(
+			orchestratesProjectStart({
+				projectType: 'feature',
+				tenantId: undefined,
+				executionTenantId: undefined
+			})
+		).toBe(false);
+	});
 });
 
 describe('warnsAnalysisSkipped', () => {
 	it('warns for system_ops even on EXEC — it never orchestrates (fr#1487 parity)', () => {
-		expect(warnsAnalysisSkipped({ projectType: 'system_ops', tenantId: EXEC })).toBe(true);
+		expect(
+			warnsAnalysisSkipped({ projectType: 'system_ops', tenantId: EXEC, executionTenantId: EXEC })
+		).toBe(true);
 	});
 
 	it('never warns on the EXEC tenant — every other project there orchestrates', () => {
 		for (const t of ['feature', 'it', 'program', '', undefined]) {
-			expect(warnsAnalysisSkipped({ projectType: t, tenantId: EXEC })).toBe(false);
+			expect(warnsAnalysisSkipped({ projectType: t, tenantId: EXEC, executionTenantId: EXEC })).toBe(
+				false
+			);
 		}
 	});
 
 	it('warns on a customer tenant unless it is an it+cve_sweep project', () => {
-		expect(warnsAnalysisSkipped({ projectType: 'program', tenantId: CUSTOMER })).toBe(true);
-		expect(warnsAnalysisSkipped({ projectType: 'it', tenantId: CUSTOMER })).toBe(true);
 		expect(
-			warnsAnalysisSkipped({ projectType: 'it', cveSweep: true, tenantId: CUSTOMER })
+			warnsAnalysisSkipped({ projectType: 'program', tenantId: CUSTOMER, executionTenantId: EXEC })
+		).toBe(true);
+		expect(
+			warnsAnalysisSkipped({ projectType: 'it', tenantId: CUSTOMER, executionTenantId: EXEC })
+		).toBe(true);
+		expect(
+			warnsAnalysisSkipped({
+				projectType: 'it',
+				cveSweep: true,
+				tenantId: CUSTOMER,
+				executionTenantId: EXEC
+			})
 		).toBe(false);
 	});
 
 	it('does NOT warn when the tenant is unknown — a warning we cannot stand behind misleads', () => {
-		expect(warnsAnalysisSkipped({ projectType: 'program', tenantId: '' })).toBe(false);
-		expect(warnsAnalysisSkipped({ projectType: 'program', tenantId: undefined })).toBe(false);
-		expect(warnsAnalysisSkipped({ projectType: 'program', tenantId: '  ' })).toBe(false);
+		expect(warnsAnalysisSkipped({ projectType: 'program', tenantId: '', executionTenantId: EXEC })).toBe(
+			false
+		);
+		expect(
+			warnsAnalysisSkipped({ projectType: 'program', tenantId: undefined, executionTenantId: EXEC })
+		).toBe(false);
+		expect(
+			warnsAnalysisSkipped({ projectType: 'program', tenantId: '  ', executionTenantId: EXEC })
+		).toBe(false);
 	});
 });
 

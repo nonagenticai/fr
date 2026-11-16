@@ -6,7 +6,7 @@
 // x2, kaizen/log x2) with nothing anywhere holding a number for any of them —
 // the only trace was pod stdout, which dies with the pod.
 //
-// Also pins the id-KIND diagnosis. `0195f48b-d000-7000-8000-000000000004` was
+// Also pins the id-KIND diagnosis. `aaaaaaaa-0000-4000-8000-000000000004` was
 // being refused as a missing PROJECT; it is the `prompt-improvement` WORKSPACE
 // id (migration 062), so it can never match a `projects` row under any tenant
 // and the event was structurally unanswerable. That one fact separates "n8n
@@ -17,31 +17,34 @@ import { describe, test, expect } from 'bun:test';
 
 import {
   canonicalTenantName,
-  INTERNAL_SYSTEM_TENANT_ID,
-  EXECUTION_TENANT_ID,
+  executionTenantId,
+  internalSystemTenantId,
 } from '../../../src/middleware/internal-tenant-only';
+
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
 import {
   reportConveyorRefusal,
   renderConveyorRefusalMetrics,
 } from '../../../src/lib/conveyor-refusal-metrics';
-import { CANONICAL_TENANTS } from '../../../src/routes/tenants';
+import { canonicalTenants } from '../../../src/routes/tenants';
 
 
 describe('canonicalTenantName — a workspace id mistaken for a project id', () => {
   test('the deleted prompt-improvement tenant id is no longer a canonical tenant (2026-11-03)', () => {
     // The id production was refusing in 2026-09 was the prompt-improvement
     // WORKSPACE. That workspace is gone, so it now reads as an ordinary uuid.
-    expect(canonicalTenantName('0195f48b-d000-7000-8000-000000000004')).toBeNull();
+    expect(canonicalTenantName('aaaaaaaa-0000-4000-8000-000000000004')).toBeNull();
   });
 
   test('both canonical tenants resolve', () => {
-    expect(canonicalTenantName(INTERNAL_SYSTEM_TENANT_ID)).toBe('system');
-    expect(canonicalTenantName(EXECUTION_TENANT_ID)).toBe('execution');
+    expect(canonicalTenantName(SYSTEM)).toBe('system');
+    expect(canonicalTenantName(EXECUTION)).toBe('execution');
   });
 
   test('CONTROL — an ordinary uuid is not a tenant', () => {
     // Without this the diagnosis would fire on every 404 and say nothing.
-    expect(canonicalTenantName('0195f48b-d000-7000-8000-000000000099')).toBeNull();
+    expect(canonicalTenantName('aaaaaaaa-0000-4000-8000-000000000099')).toBeNull();
     expect(canonicalTenantName('11111111-1111-4111-8111-111111111111')).toBeNull();
     expect(canonicalTenantName('')).toBeNull();
     expect(canonicalTenantName(null)).toBeNull();
@@ -51,7 +54,7 @@ describe('canonicalTenantName — a workspace id mistaken for a project id', () 
   test('routes/tenants.ts and the diagnostic map cannot disagree', () => {
     // They used to be two lists of literals. A drifted name would make the
     // refusal message name a tenant the switcher does not.
-    for (const t of CANONICAL_TENANTS) {
+    for (const t of canonicalTenants()) {
       expect(canonicalTenantName(t.id)).toBe(t.name);
     }
   });
