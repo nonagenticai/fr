@@ -44,7 +44,7 @@ const message = z.object({
   direction: z.enum(['inbound', 'outbound']),
   text: z.string(),
   correlation_id: z.string().nullable(),
-  meta_json: z.record(z.unknown()).nullable(),
+  meta_json: z.record(z.string(), z.unknown()).nullable(),
   created_at: z.string(),
 });
 

@@ -446,7 +446,7 @@ export async function handleProvisionUser(req: Request): Promise<Response> {
   } catch (e) {
     if (e instanceof z.ZodError) {
       return jsonResponse(
-        { error: 'invalid request body', details: e.errors },
+        { error: 'invalid request body', details: e.issues },
         422,
       );
     }
@@ -1324,7 +1324,7 @@ export async function handleDeprovisionUser(req: Request): Promise<Response> {
   } catch (e) {
     if (e instanceof z.ZodError) {
       return jsonResponse(
-        { error: 'invalid request body', details: e.errors },
+        { error: 'invalid request body', details: e.issues },
         422,
       );
     }

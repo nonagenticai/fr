@@ -74,7 +74,7 @@ export const CardGenerationRequest = z
     // Accepts a string OR a structured object: the post-contract decomposition
     // approval card (WI-4 slice 2) carries `{ approval_kind, analysis_payload }`
     // here so done-finalize can read the tier child_cards back at DONE time.
-    additional_context: z.union([z.string(), z.record(z.unknown())]).optional(),
+    additional_context: z.union([z.string(), z.record(z.string(), z.unknown())]).optional(),
 
     // ---- Workflow-internal scoring fields ---------------------------
     // Read by todo_pickup.json's priority sort. Detector populates
@@ -100,7 +100,7 @@ export const CardGenerationRequest = z
     // stored INSERT-ONCE in fr (`card_plan_pins`, migration 148) and the card
     // carries `Metadata.plan_pin = {"store":"fr","sha256":"<hex>"}`. Shape is
     // checked by services/improvement-cards/plan-pin.ts preparePlanPin (422).
-    plan_pin: z.record(z.unknown()).optional(),
+    plan_pin: z.record(z.string(), z.unknown()).optional(),
   });
 
 export type CardGenerationRequestT = z.infer<typeof CardGenerationRequest>;

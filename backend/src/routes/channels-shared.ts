@@ -28,7 +28,7 @@ export const ChannelCreateSchema = z
     kind: ChannelKindEnum,
     name: z.string().min(1).max(200),
     dept_id: z.string().uuid().optional().nullable(),
-    config: z.record(z.unknown()).optional(),
+    config: z.record(z.string(), z.unknown()).optional(),
     credentials: z.string().min(1).max(8192).optional().nullable(),
   })
   .strip();
@@ -55,7 +55,7 @@ export const UpdateBodySchema = z
     kind: ChannelKindEnum.optional(),
     name: z.string().min(1).max(200).optional(),
     dept_id: z.string().uuid().nullable().optional(),
-    config: z.record(z.unknown()).optional(),
+    config: z.record(z.string(), z.unknown()).optional(),
     credentials: z.string().min(1).max(8192).nullable().optional(),
   })
   .strip();

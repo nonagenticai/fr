@@ -28,7 +28,7 @@ const listItem = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   expires_at: z.string().nullable(),
-  metadata: z.record(z.unknown()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
 });
 
 const PROXY_RESPONSES: ResponseSpec[] = [
@@ -59,8 +59,8 @@ const ASSET_ROUTES: SettingsRoute[] = [
     output: z.object({
       data: listItem
         .extend({
-          secrets: z.record(z.unknown()).describe('🔐 SECRET: the decrypted secret values.'),
-          env_vars: z.record(z.unknown()).describe('🔐 SECRET: the decrypted environment variables.'),
+          secrets: z.record(z.string(), z.unknown()).describe('🔐 SECRET: the decrypted secret values.'),
+          env_vars: z.record(z.string(), z.unknown()).describe('🔐 SECRET: the decrypted environment variables.'),
         })
         .passthrough(),
     }),
@@ -79,14 +79,14 @@ const ASSET_ROUTES: SettingsRoute[] = [
       .object({
         identifier: z.string().max(255).describe('A user-friendly identifier, unique per user (secrets-service requires it).'),
         secrets: z
-          .record(z.string().max(10000))
+          .record(z.string(), z.string().max(10000))
           .optional()
           .describe('🔐 SECRET values: string keys to string values (secrets-service defaults it to {}).'),
         env_vars: z
-          .record(z.string().max(10000))
+          .record(z.string(), z.string().max(10000))
           .optional()
           .describe('🔐 SECRET environment variables: string keys to string values (secrets-service defaults it to {}).'),
-        metadata: z.record(z.unknown()).nullable().optional().describe('Additional metadata (any JSON object), or null.'),
+        metadata: z.record(z.string(), z.unknown()).nullable().optional().describe('Additional metadata (any JSON object), or null.'),
         ttl: z
           .number()
           .int()

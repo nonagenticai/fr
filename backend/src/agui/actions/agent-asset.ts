@@ -33,7 +33,7 @@ const inputSchema = z.object({
   project_id: z.string().uuid().optional(),
   asset_type: assetTypeSchema,
   /** Free-form payload — passed through to the upstream `create` body. */
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
 });
 
 const outputSchema = z.object({
@@ -118,7 +118,7 @@ const updateInputSchema = z.object({
   /** Id of the existing asset to revise. */
   asset_id: z.string().min(1),
   /** Free-form payload — passed through to the upstream change loop. */
-  payload: z.record(z.unknown()),
+  payload: z.record(z.string(), z.unknown()),
 });
 
 const updateOutputSchema = z.object({

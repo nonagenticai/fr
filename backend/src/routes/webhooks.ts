@@ -291,7 +291,7 @@ const N8nExecutionEventSchema = z.object({
   // Explicit recipients — ADDED to every member of the project's tenant (P1-TEAM-b);
   // an id that is not a member of that tenant is dropped, never notified.
   recipient_user_ids: z.array(z.string().uuid()).optional(),
-  metadata: z.record(z.unknown()).optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**

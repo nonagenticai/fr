@@ -171,7 +171,7 @@ export const PutFamilyBundleBody = z
     version: z.number().int().min(1),
     bundle_hash: z.string().min(1).max(200),
     items: z.array(z.unknown()),
-    retrieval_trace: z.record(z.unknown()).optional(),
+    retrieval_trace: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 

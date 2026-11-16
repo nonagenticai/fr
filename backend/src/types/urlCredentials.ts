@@ -38,7 +38,7 @@ export const ApiKeyCredentialsSchema = z.object({
  */
 export const CookieCredentialsSchema = z.object({
   auth_type: z.literal('cookie'),
-  cookies: z.record(z.string()),
+  cookies: z.record(z.string(), z.string()),
 });
 
 /**
@@ -46,7 +46,7 @@ export const CookieCredentialsSchema = z.object({
  */
 export const CustomHeadersCredentialsSchema = z.object({
   auth_type: z.literal('custom'),
-  custom_headers: z.record(z.string()),
+  custom_headers: z.record(z.string(), z.string()),
 });
 
 /**
@@ -81,7 +81,7 @@ export const URLCredentialCreateSchema = z.object({
   identifier: z.string().min(1).max(255),
   url: z.string().url(),
   credentials: CredentialsSchema,
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   ttl: z.number().positive().optional(),
 });
 
@@ -98,7 +98,7 @@ export const URLCredentialResponseSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   expires_at: z.string().nullable(),
-  metadata: z.record(z.any()).nullable(),
+  metadata: z.record(z.string(), z.any()).nullable(),
 });
 
 export type URLCredentialResponse = z.infer<typeof URLCredentialResponseSchema>;

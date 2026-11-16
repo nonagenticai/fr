@@ -79,7 +79,7 @@ const READS: ProjectRead[] = [
       data: z
         .object({
           project_id: z.string().uuid().describe('The bound project — every answer carries it'),
-          repositories: z.array(z.record(z.unknown())),
+          repositories: z.array(z.record(z.string(), z.unknown())),
           analyze_repo_cap: z.number(),
           analysis: z.unknown(),
         })

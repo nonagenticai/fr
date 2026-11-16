@@ -147,7 +147,7 @@ export async function handleApplyTenantInference(req: Request, tenantId: string)
   }
   const parsed = InferenceInputSchema.safeParse(raw);
   if (!parsed.success) {
-    return jsonResponse({ error: 'invalid request body', details: parsed.error.errors }, 422);
+    return jsonResponse({ error: 'invalid request body', details: parsed.error.issues }, 422);
   }
   const key = newApplyIdempotencyKey(scope.tenantId);
   return handle(
@@ -175,7 +175,7 @@ export async function handleActivateTenantInferencePolicy(req: Request, tenantId
   }
   const parsed = ActivateBody.safeParse(raw);
   if (!parsed.success) {
-    return jsonResponse({ error: 'invalid request body', details: parsed.error.errors }, 422);
+    return jsonResponse({ error: 'invalid request body', details: parsed.error.issues }, 422);
   }
   return handle(
     () => activateTenantInferencePolicy(scope.tenantId, parsed.data.version, scope.ownerToken),

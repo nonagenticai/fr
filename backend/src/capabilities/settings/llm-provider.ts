@@ -38,7 +38,7 @@ const configView = z.object({
   baseUrl: z.string().nullable(),
   temperature: z.number().nullable(),
   maxTokens: z.number().nullable(),
-  params: z.record(z.unknown()),
+  params: z.record(z.string(), z.unknown()),
   hasKey: z.boolean().describe('Whether a key is stored. The key itself is never returned.'),
   updatedAt: z.string().nullable(),
 });
@@ -55,7 +55,7 @@ const catalogProvider = z
     requires_base_url: z.boolean(),
     is_external: z.boolean(),
     models: z.array(z.string()),
-    model_classes: z.record(z.string()),
+    model_classes: z.record(z.string(), z.string()),
     required_params: z.array(z.string()),
   })
   .passthrough();
@@ -68,7 +68,7 @@ const putBody = z.object({
   baseUrl: z.string().nullable().optional().describe('An empty string or null is dropped (no base URL).'),
   temperature: z.number().nullable().optional(),
   maxTokens: z.number().int().nullable().optional(),
-  params: z.record(z.unknown()).nullable().optional(),
+  params: z.record(z.string(), z.unknown()).nullable().optional(),
   apiKey: z
     .string()
     .optional()

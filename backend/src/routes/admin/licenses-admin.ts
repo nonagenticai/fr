@@ -157,7 +157,7 @@ async function gated<T>(
   } catch (e) {
     if (isIntegrationError(e)) return integrationErrorResponse(e);
     if (e instanceof z.ZodError) {
-      return jsonResponse({ error: 'invalid request body', details: e.errors }, 422);
+      return jsonResponse({ error: 'invalid request body', details: e.issues }, 422);
     }
     if (e instanceof SyntaxError) {
       return jsonResponse({ error: 'invalid JSON body' }, 400);
@@ -1074,7 +1074,7 @@ export async function handleTopUpTenant(req: Request, tenantId: string): Promise
     idempotencyKey = parsed.idempotency_key;
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return jsonResponse({ error: 'invalid request body', details: e.errors }, 422);
+      return jsonResponse({ error: 'invalid request body', details: e.issues }, 422);
     }
     if (e instanceof SyntaxError) return jsonResponse({ error: 'invalid JSON body' }, 400);
     throw e;

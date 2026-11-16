@@ -20,7 +20,7 @@ export const SourceConnectorEnum = z.enum([
 export const CardTemplateSchema = z.object({
   card_type: z.string().min(1),
   labels: z.array(z.string()).optional(),
-  custom_fields: z.record(z.unknown()).optional(),
+  custom_fields: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const ScheduledTriggerCreateSchema = z
@@ -30,8 +30,8 @@ export const ScheduledTriggerCreateSchema = z
     cron: z.string().min(1),
     timezone: z.string().min(1).default('UTC'),
     source_connector: SourceConnectorEnum,
-    connector_config: z.record(z.unknown()),
-    payload_mapper: z.record(z.string()),
+    connector_config: z.record(z.string(), z.unknown()),
+    payload_mapper: z.record(z.string(), z.string()),
     target_list: z.string().min(1).default('INBOX'),
     card_template: CardTemplateSchema,
     enabled: z.boolean().default(true),
@@ -46,8 +46,8 @@ export const ScheduledTriggerPatchSchema = z
     name: z.string().min(1).max(256).optional(),
     cron: z.string().min(1).optional(),
     timezone: z.string().min(1).optional(),
-    connector_config: z.record(z.unknown()).optional(),
-    payload_mapper: z.record(z.string()).optional(),
+    connector_config: z.record(z.string(), z.unknown()).optional(),
+    payload_mapper: z.record(z.string(), z.string()).optional(),
     target_list: z.string().min(1).optional(),
     card_template: CardTemplateSchema.optional(),
     enabled: z.boolean().optional(),

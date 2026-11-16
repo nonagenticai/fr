@@ -440,7 +440,7 @@ export function handleError(error: unknown): Response {
     return new Response(
       JSON.stringify({
         error: 'Validation error',
-        details: error.errors,
+        details: error.issues,
       }),
       {
         status: 422,

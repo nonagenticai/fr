@@ -23,6 +23,7 @@ import { z } from 'zod';
 
 import { registerAction } from '../registry';
 import type { ActionContext, AgentCallableAction } from '../types';
+import { nativeEnum } from '../../capabilities/json-schema';
 import { AppError } from '../../utils/errors';
 import { callRouteAsHuman, lazyRoute } from './project-core';
 import {
@@ -90,8 +91,8 @@ const routes = () => import('../../routes/assets/architecture-uml');
 const UML = '/api/assets/architecture/modeling/uml';
 
 /** RM types a trace link's ends and link types as enums: the agent's choices are those, from the generated client. */
-const TRACE_KINDS = z.nativeEnum(TraceRefKind);
-const TRACE_LINK_TYPES = z.nativeEnum(TraceLinkInLinkType);
+const TRACE_KINDS = nativeEnum(TraceRefKind);
+const TRACE_LINK_TYPES = nativeEnum(TraceLinkInLinkType);
 
 const id = (what: string) => z.string().min(1).max(100).describe(what);
 const modelIdReq = z.string().min(1).max(100).describe("The UML model of THIS project to add to (from architecture.list_models, language 'uml').");
@@ -297,7 +298,8 @@ function umlWrites(resource: UmlResource, create: z.ZodRawShape, describe: strin
   const field = RES_FIELD[resource];
   const Name = HANDLER_NAME[resource];
   const createInput = z.object({ project_id: projectId, model_id: modelIdReq, ...create, idempotency_key: idempotencyKey }).strict();
-  const updShape: z.ZodRawShape = {};
+  // zod 4's ZodRawShape is readonly; build a plain object and hand it over.
+  const updShape: Record<string, z.ZodTypeAny> = {};
   for (const [k, v] of Object.entries(create)) updShape[k] = (v as z.ZodTypeAny).optional();
   const updateInput = z
     .object({
@@ -394,7 +396,7 @@ const OCC: Record<'objects' | 'connections', { one: string; Name: string; ref: s
       lifeline_id: z.string().nullable().optional().describe('The lifeline shown (sequence diagrams).'),
       bounds: bounds.nullable().optional(),
       position: z.number().int().min(0).nullable().optional().describe('Drawing order (0 = bottom).'),
-      style: z.record(z.unknown()).nullable().optional().describe('Fill / line / font settings, as stored.'),
+      style: z.record(z.string(), z.unknown()).nullable().optional().describe('Fill / line / font settings, as stored.'),
     },
   },
   connections: {
@@ -408,7 +410,7 @@ const OCC: Record<'objects' | 'connections', { one: string; Name: string; ref: s
       source_object_id: z.string().optional(),
       target_object_id: z.string().optional(),
       bendpoints: z.array(z.object({ x: z.number().int(), y: z.number().int() })).nullable().optional(),
-      style: z.record(z.unknown()).nullable().optional(),
+      style: z.record(z.string(), z.unknown()).nullable().optional(),
     },
   },
 };

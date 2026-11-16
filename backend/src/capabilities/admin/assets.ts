@@ -35,6 +35,7 @@ import {
 } from '../../integrations/_lib/asset-query-schemas';
 import { PatchProjectSchema } from '../../routes/admin/assets/projects-schemas';
 import type { Capability } from '../define';
+import { nativeEnum } from '../json-schema';
 import {
   isAuthenticatedProductionWorkflowReader,
   isAuthenticatedUserInFrameTenant,
@@ -90,9 +91,9 @@ const rmWritable = {
   version: z.string().optional(),
   version_notes: ns.optional(),
   // The upstream's own enum (requirements_management *InVersionStatus: Principle / Requirement / Decision carry the same three).
-  version_status: z.nativeEnum(RequirementInVersionStatus).optional(),
+  version_status: nativeEnum(RequirementInVersionStatus).optional(),
 };
-const lens = z.record(z.unknown()).optional();
+const lens = z.record(z.string(), z.unknown()).optional();
 
 const principleOut = z
   .object({ ...rmCommon, statement: z.string(), rationale: ns.optional(), implications: z.array(z.string()).optional(), tags: z.array(z.string()).optional(), active: z.boolean().optional() })
@@ -108,7 +109,7 @@ const requirementFields = {
   impact: z.number().optional(),
   reach: z.number().optional(),
   lens_metadata: lens,
-  links: z.record(z.array(z.string())).optional(),
+  links: z.record(z.string(), z.array(z.string())).optional(),
   project_id: ns.optional(),
   stable_key: ns.optional(),
 };
@@ -188,7 +189,7 @@ function kindRoutes(k: Kind): SettingsRoute[] {
   const one = `${base}/:${k.key}`;
   const keyIn = { [k.key]: pathId(`${k.singular} id`) };
   const write = workspaceAdminRule({ superAdmin: true, systemTenantSuperOnly: true, frameTenant: true });
-  const tagged = k.out instanceof z.ZodObject ? (k.out as z.AnyZodObject).extend({ is_system: isSystem }) : k.out;
+  const tagged = k.out instanceof z.ZodObject ? (k.out as z.ZodObject<z.ZodRawShape>).extend({ is_system: isSystem }) : k.out;
   return [
     {
       id: k.ids[0].id, method: 'GET', path: base, handler: k.handlers.list, effect: 'read',
@@ -203,7 +204,7 @@ function kindRoutes(k: Kind): SettingsRoute[] {
     {
       id: k.ids[1].id, method: 'GET', path: one, handler: k.handlers.get, effect: 'read',
       summary: `One ${k.singular} of the request tenant (asset console)`,
-      input: z.object(keyIn).merge(k.get as z.AnyZodObject),
+      input: z.object(keyIn).merge(k.get as z.ZodObject<z.ZodRawShape>),
       output: z.object({ [k.singular]: tagged }),
       responses: READ(k.service, { noTenant400: false, badQuery: false }),
     },
@@ -221,7 +222,7 @@ function kindRoutes(k: Kind): SettingsRoute[] {
       summary: `Replace a ${k.singular} of the request tenant (asset console: workspace-admin; super_admin in the system tenant)`,
       description:
         'Mounted PATCH, but the upstream call is a WHOLE-BODY PUT (there is no merge): send the complete object. ' + (k.updateNote ?? forwarded(`${k.singular[0]!.toUpperCase()}${k.singular.slice(1)}In`)),
-      input: z.object(keyIn).merge(k.update as z.AnyZodObject),
+      input: z.object(keyIn).merge(k.update as z.ZodObject<z.ZodRawShape>),
       output: z.object({ [k.singular]: k.out }),
       responses: WRITE(k.service, k.update422 ?? ''),
       rule: write,
@@ -287,7 +288,7 @@ const projectRow = z
     container_name: z.string().nullable(),
     repository_provisioned: z.boolean().nullable(),
     graph_initialized: z.boolean().nullable(),
-    project_data: z.record(z.unknown()).nullable(),
+    project_data: z.record(z.string(), z.unknown()).nullable(),
     project_type: z.string().nullable(),
     scope_level: z.string().nullable(),
     shape: z.enum(['deliverable', 'continuous_flow']),

@@ -97,7 +97,7 @@ export async function handleSendInappNotification(req: Request): Promise<Respons
   const parsed = sendInappNotificationSchema.safeParse(raw);
   if (!parsed.success) {
     return jsonResponse(
-      { error: 'Validation error', details: parsed.error.errors },
+      { error: 'Validation error', details: parsed.error.issues },
       422,
     );
   }

@@ -152,7 +152,7 @@ const draftRowSchema = z.object({
   approval_id: z.string().nullable(),
   committed_card_id: z.string().nullable(),
   dedup_of_card_id: z.string().nullable(),
-  metadata: z.record(z.unknown()).nullable().optional(),
+  metadata: z.record(z.string(), z.unknown()).nullable().optional(),
   created_at: z.date(),
   updated_at: z.date(),
 });
@@ -234,7 +234,7 @@ const listSourcesAction: AgentCallableAction<
 
 const listOutputsInput = z.object({
   producer: z.enum(PRODUCERS),
-  filters: z.record(z.string()).optional(),
+  filters: z.record(z.string(), z.string()).optional(),
 });
 type ListOutputsInput = z.infer<typeof listOutputsInput>;
 

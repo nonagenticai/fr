@@ -117,7 +117,7 @@ export async function handleResendSetPasswordEmail(req: Request): Promise<Respon
   if (!parsed.success) {
     const auditId = await openAudit(user.id, null, { requested_user_id: rawUserId });
     await closeAudit(auditId, 'error', { refused: 'invalid_body' }, 'invalid request body');
-    return jsonResponse({ error: 'invalid request body', details: parsed.error.errors }, 422);
+    return jsonResponse({ error: 'invalid request body', details: parsed.error.issues }, 422);
   }
   const userId: string = parsed.data.user_id;
 

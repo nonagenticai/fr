@@ -69,6 +69,7 @@ import {
 
 import { registerAction } from '../registry';
 import type { ActionContext, AgentCallableAction, ProposalSpec } from '../types';
+import { nativeEnum } from '../../capabilities/json-schema';
 import { AppError } from '../../utils/errors';
 import { bound, callRouteAsHuman, lazyRoute } from './project-core';
 import { getModelingChangeSet, getModelingModel, getModelingRuleset, getModelingValidationRun, rmCall, seg } from '../../integrations/architecture';
@@ -153,7 +154,7 @@ export const MODELING_READ_ACTIONS: ReadonlyArray<AgentCallableAction<any, unkno
     "List this project's architecture models (title, language, visibility, draft head, published version). Optional filters: language, q (title contains), limit, offset.",
     z.object({
       project_id: z.string().optional(),
-      language: z.nativeEnum(ModelInLanguage).optional(),
+      language: nativeEnum(ModelInLanguage).optional(),
       q: z.string().max(200).optional(),
       limit: z.number().int().min(1).max(1000).optional(),
       offset: z.number().int().min(0).optional(),
@@ -181,7 +182,7 @@ export const MODELING_READ_ACTIONS: ReadonlyArray<AgentCallableAction<any, unkno
   read(
     'architecture.list_validation_runs',
     "A model's validation runs, newest first, each with the modeling service's own verdict (status, counts, clean). Optional filters: target ('draft_head' | 'revision'), clean.",
-    z.object({ model_id: modelId, target: z.nativeEnum(ListModelValidationRunsTarget).optional(), clean: z.boolean().optional() }),
+    z.object({ model_id: modelId, target: nativeEnum(ListModelValidationRunsTarget).optional(), clean: z.boolean().optional() }),
     async (i) => ({ items: await rmData<ValidationRunOut[]>(getListModelValidationRunsUrl(seg(i.model_id), params({ target: i.target, clean: i.clean }) as ListModelValidationRunsParams | undefined)) }),
   ),
   read(
@@ -195,7 +196,7 @@ export const MODELING_READ_ACTIONS: ReadonlyArray<AgentCallableAction<any, unkno
     "A validation run's findings (rule, severity, message, the elements concerned). Optional filters: severity, rule_id, target_id, limit, offset.",
     z.object({
       run_id: z.string().min(1).max(100),
-      severity: z.nativeEnum(ListValidationFindingsSeverity).optional(),
+      severity: nativeEnum(ListValidationFindingsSeverity).optional(),
       rule_id: z.string().max(100).optional(),
       target_id: z.string().max(100).optional(),
       limit: z.number().int().min(1).max(1000).optional(),
@@ -230,7 +231,7 @@ export const MODELING_READ_ACTIONS: ReadonlyArray<AgentCallableAction<any, unkno
   read(
     'architecture.list_change_sets',
     "A model's change sets (imported or proposed changes) with their status: proposed, invalid, applied or rejected.",
-    z.object({ model_id: modelId, status: z.nativeEnum(ListChangeSetsStatus).optional() }),
+    z.object({ model_id: modelId, status: nativeEnum(ListChangeSetsStatus).optional() }),
     async (i) => ({ items: await rmData<ChangeSetOut[]>(getListChangeSetsUrl(seg(i.model_id), params({ status: i.status }) as ListChangeSetsParams | undefined)) }),
   ),
   read(
@@ -340,9 +341,9 @@ const createInput = z
   .object({
     project_id: projectId,
     title: z.string().min(1).describe('The model title.'),
-    language: z.nativeEnum(ModelInLanguage).optional().describe("'archimate' (default): enterprise architecture; 'uml': classes, components, sequences."),
+    language: nativeEnum(ModelInLanguage).optional().describe("'archimate' (default): enterprise architecture; 'uml': classes, components, sequences."),
     description: z.string().optional(),
-    visibility: z.nativeEnum(ModelInVisibility).optional().describe("'tenant' (default): everyone in the workspace can see it; 'user': only the person who confirms."),
+    visibility: nativeEnum(ModelInVisibility).optional().describe("'tenant' (default): everyone in the workspace can see it; 'user': only the person who confirms."),
     idempotency_key: idempotencyKey,
   })
   .strict();
@@ -352,7 +353,7 @@ const updateInput = z
     model_id: modelId,
     title: z.string().min(1).optional(),
     description: z.string().optional(),
-    visibility: z.nativeEnum(ModelInVisibility).optional(),
+    visibility: nativeEnum(ModelInVisibility).optional(),
     expected_head: z.number().int().min(0).optional().describe("The model's head from architecture.get_model; the change is refused if someone changed the model since."),
     idempotency_key: idempotencyKey,
   })
@@ -389,7 +390,7 @@ const reviewInput = z
     project_id: projectId,
     model_id: modelId,
     revision_id: revisionId,
-    decision: z.nativeEnum(ReviewInDecision).optional().describe('Chosen by the human on the card — never by the agent.'),
+    decision: nativeEnum(ReviewInDecision).optional().describe('Chosen by the human on the card — never by the agent.'),
     reason: z.string().optional().describe('Written by the human on the card.'),
     idempotency_key: idempotencyKey,
   })

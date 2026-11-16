@@ -130,7 +130,7 @@ const licenceBase = z
       created_at: z.string(),
       updated_at: z.string(),
       revoked_at: isoOrNull,
-      metadata: z.record(z.unknown()).nullable(),
+      metadata: z.record(z.string(), z.unknown()).nullable(),
       metering_provisioned_at: isoOrNull,
       metering_verified_at: isoOrNull,
       token_budget_override: z.number().int().nullable(),

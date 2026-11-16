@@ -35,7 +35,7 @@ const step = z
     at: z.string(),
     code: z.string().nullable().optional(),
     error: z.string().nullable().optional(),
-    detail: z.record(z.unknown()).optional(),
+    detail: z.record(z.string(), z.unknown()).optional(),
   })
   .describe('One provisioning step outcome.');
 
@@ -58,7 +58,7 @@ const approval = z
     tenant_slug: z.string().nullable(),
     tenant_id: z.string().nullable(),
     suggested_tenant_name: z.string(),
-    steps: z.record(step).describe('identity, provision, workspace, budget, catalogue, bundle, invite_email.'),
+    steps: z.record(z.string(), step).describe('identity, provision, workspace, budget, catalogue, bundle, invite_email.'),
     steps_not_ok: z.array(z.object({ step: z.string(), status: z.string(), code: z.string().nullable() })),
     email_state: z.enum(['sent', 'waiting']),
     steps_attempts: z.number().int(),
@@ -87,12 +87,13 @@ const approval = z
         blockers: z.array(z.string()),
         steps: z
           .record(
+            z.string(),
             z.object({
               status: z.enum(['ok', 'skipped', 'failed', 'blocked']),
               at: z.string(),
               code: z.string().nullable().optional(),
               error: z.string().nullable().optional(),
-              detail: z.record(z.unknown()).optional(),
+              detail: z.record(z.string(), z.unknown()).optional(),
             }),
           )
           .describe('provisioning, licences, licences_tenant, workspace, grants, identity, finalize.'),

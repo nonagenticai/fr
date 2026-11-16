@@ -26,12 +26,12 @@ import { describe, expect, test } from 'bun:test';
 import { N8nApprovalRequestSchema } from '../../../src/routes/webhooks';
 
 const base = {
-  fr_project_id: '11111111-1111-1111-1111-111111111111',
+  fr_project_id: '11111111-1111-4111-8111-111111111111',
   card_name: 'Ship the thing',
   reason: 'Needs a human',
   callback_path: '/webhook/cb',
   card_id: 'card-1',
-  required_approvers: [{ user_id: '22222222-2222-2222-2222-222222222222' }],
+  required_approvers: [{ user_id: '22222222-2222-4222-8222-222222222222' }],
 };
 
 describe('the payload can carry the gate evidence', () => {

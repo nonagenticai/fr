@@ -86,8 +86,8 @@ const projectScopeSchema = z.object({
 
 const outputSchema = z.object({
   results: z.array(resultItemSchema),
-  per_source: z.record(z.number()),
-  errors: z.record(z.string()).optional(),
+  per_source: z.record(z.string(), z.number()),
+  errors: z.record(z.string(), z.string()).optional(),
   /**
    * Present only when a project filter was actually applied. Absent means this
    * call asserted nothing about a project scope — the same contract the routes

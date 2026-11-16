@@ -32,7 +32,7 @@ const channel = z.object({
   name: z.string(),
   tenant_id: z.string(),
   dept_id: z.string().optional(),
-  config: z.record(z.unknown()).optional(),
+  config: z.record(z.string(), z.unknown()).optional(),
   created_at: z.string(),
   archived_at: z.string().nullable(),
 });

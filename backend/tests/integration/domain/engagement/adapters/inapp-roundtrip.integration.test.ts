@@ -17,7 +17,10 @@ import { createDbSuite } from '../../../helpers/db-suite';
 const sql = queryClient;
 let reachable = false;
 
-const USER_ID = '11111111-2222-3333-4444-555555555555';
+// RFC 9562 shape on purpose: zod 4's `z.string().uuid()` validates the version
+// and variant nibbles, so the old `…-3333-4444-…` fixture (variant `4`) is no
+// longer a UUID as far as the inapp envelope schema is concerned.
+const USER_ID = '11111111-2222-4333-8444-555555555555';
 
 beforeAll(async () => {
   try {

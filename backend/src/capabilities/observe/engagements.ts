@@ -28,7 +28,7 @@ const delivery = z.object({
   recipient_address: z.string().describe('🔐 Where the message was sent (an address; for Teams, the incoming-webhook URL).'),
   status: z.string().describe(`${StatusEnum.options.join(', ')}, or 'pending' while a record-before-send delivery is in flight.`),
   error: z.string().nullable().describe('The transport failure; rewritten to a generic line for anyone but a super_admin.'),
-  metadata_json: z.record(z.unknown()).nullable().describe('Error-keyed strings are rewritten for anyone but a super_admin.'),
+  metadata_json: z.record(z.string(), z.unknown()).nullable().describe('Error-keyed strings are rewritten for anyone but a super_admin.'),
   action_id: z.string().nullable(),
   created_at: isoTime,
 });

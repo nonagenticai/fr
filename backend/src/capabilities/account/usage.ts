@@ -253,7 +253,7 @@ export const MY_USAGE_CAPABILITIES = settingsCapabilities(
           groups: z.array(
             z
               .object({
-                key: z.record(z.string()).describe('One entry per requested dimension.'),
+                key: z.record(z.string(), z.string()).describe('One entry per requested dimension.'),
                 cost_usd: usd.nullable(),
                 input_tokens: z.number(),
                 output_tokens: z.number(),

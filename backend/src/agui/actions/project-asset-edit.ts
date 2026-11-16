@@ -227,7 +227,7 @@ const inputSchema = z
     project_id: z.string().uuid().describe('The project (set from this conversation; never chosen by the model).'),
     kind: z.enum(['requirement', 'principle', 'decision']),
     asset_id: z.string().min(1).max(255).describe('The asset as the project lists it: its id.'),
-    changes: z.record(z.unknown()).describe('The fields to change, by upstream field name (see the error for the allowed list).'),
+    changes: z.record(z.string(), z.unknown()).describe('The fields to change, by upstream field name (see the error for the allowed list).'),
     idempotency_key: z.string().min(1).max(255).optional(),
   })
   .strict();

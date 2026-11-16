@@ -57,7 +57,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 function errorResponse(err: unknown): Response {
   if (err instanceof SignupError) return jsonResponse({ error: err.code, detail: err.message, ...(err.details ?? {}) }, err.statusCode);
   if (err instanceof SignupAuthError) return jsonResponse({ error: err.code, detail: err.message }, err.statusCode);
-  if (err instanceof z.ZodError) return jsonResponse({ error: 'invalid request body', details: err.errors }, 422);
+  if (err instanceof z.ZodError) return jsonResponse({ error: 'invalid request body', details: err.issues }, 422);
   if (err instanceof SyntaxError) return jsonResponse({ error: 'invalid JSON body' }, 400);
   console.error('[signup] unexpected error:', err);
   return jsonResponse({ error: 'signup_internal_error', detail: err instanceof Error ? err.message : String(err) }, 500);

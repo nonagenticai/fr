@@ -45,9 +45,9 @@ const kata = z.object({
   state_detail: z.string().nullable(),
   replay_passed: z.number().int().nullable(),
   replay_total: z.number().int().nullable(),
-  evidence: z.record(z.unknown()),
-  ops: z.array(z.record(z.unknown())).nullable(),
-  replays: z.array(z.record(z.unknown())).nullable(),
+  evidence: z.record(z.string(), z.unknown()),
+  ops: z.array(z.record(z.string(), z.unknown())).nullable(),
+  replays: z.array(z.record(z.string(), z.unknown())).nullable(),
   linked_cards: z.array(linkedCard),
   kata_board_id: z.string().nullable(),
   kata_card_id: z.string().nullable(),
@@ -201,7 +201,7 @@ export const KATA_CAPABILITIES: ReadonlyArray<Capability<unknown, unknown>> = [
       target_flow: z.string().optional(),
       target_flow_id: z.string().optional(),
       base_version_id: z.string().optional(),
-      evidence: z.record(z.unknown()).optional().describe('Licence: required. The coach\'s evidence object.'),
+      evidence: z.record(z.string(), z.unknown()).optional().describe('Licence: required. The coach\'s evidence object.'),
       requested_by: z
         .string()
         .uuid()
@@ -288,8 +288,8 @@ export const KATA_CAPABILITIES: ReadonlyArray<Capability<unknown, unknown>> = [
       published_version_id: z.string().nullable().optional(),
       replay_passed: z.number().int().nullable().optional(),
       replay_total: z.number().int().nullable().optional(),
-      ops: z.array(z.record(z.unknown())).optional(),
-      replays: z.array(z.record(z.unknown())).optional(),
+      ops: z.array(z.record(z.string(), z.unknown())).optional(),
+      replays: z.array(z.record(z.string(), z.unknown())).optional(),
       linked_card_rerun: z.array(z.string()).optional(),
     }),
     output: z.object({ kata, cord_release: cordRelease }),

@@ -78,7 +78,7 @@ const projectSummarySchema = z.object({
   card_count: z.number().int().nullable(),
   /** Per-list card counts (key = list name, e.g. "TODO" → 3). When the
    * kanban side is unreachable, omitted. */
-  by_list: z.record(z.number().int()).nullable(),
+  by_list: z.record(z.string(), z.number().int()).nullable(),
   /** Populated when getBoard threw — the agent can still render the
    * other fields and surface this as a soft warning. */
   kanban_error: z.string().nullable(),

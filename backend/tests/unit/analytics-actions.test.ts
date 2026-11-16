@@ -52,7 +52,7 @@ describe('AG-UI catalog — analytics.*', () => {
   test('summary input accepts canonical filter set, rejects bad window', () => {
     const ok = (summary!.input as { safeParse: (v: unknown) => { success: boolean } }).safeParse({
       window: '7d',
-      project_id: '11111111-1111-1111-1111-111111111111',
+      project_id: '11111111-1111-4111-8111-111111111111',
     });
     expect(ok.success).toBe(true);
 
@@ -72,7 +72,7 @@ describe('AG-UI catalog — analytics.*', () => {
   });
 
   test('idempotency keys are deterministic + non-empty within the same minute', async () => {
-    const inputA = { window: '7d', project_id: '11111111-1111-1111-1111-111111111111' };
+    const inputA = { window: '7d', project_id: '11111111-1111-4111-8111-111111111111' };
     const k1 = await summary!.idempotencyKey(inputA);
     const k2 = await summary!.idempotencyKey(inputA);
     expect(k1).toBe(k2);
@@ -111,7 +111,7 @@ describe('AG-UI catalog — analytics.*', () => {
 
   test('per_channel input accepts default + project_id', () => {
     const ok = (perChannel!.input as { safeParse: (v: unknown) => { success: boolean } }).safeParse({
-      project_id: '11111111-1111-1111-1111-111111111111',
+      project_id: '11111111-1111-4111-8111-111111111111',
     });
     expect(ok.success).toBe(true);
 
