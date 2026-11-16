@@ -50,3 +50,7 @@ frontend/src/routes/settings/usage/+page.svelte:\.internal
 
 # A filename fixture (`isLanguageVersionFile`), not a machine hostname.
 backend/tests/unit/services/constraint-check.test.ts:\.local
+
+# A spread of a helper identifier (`...internalTenantIds()`), not a hostname.
+backend/src/lib/tenant-config.ts:\.internal
+backend/src/services/last-workspace-admin-guard.ts:\.internal
