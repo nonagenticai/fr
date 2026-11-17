@@ -11,7 +11,7 @@
 --   1. Extend the `stream_kind` enum with `procedure` (idempotent via
 --      ADD VALUE IF NOT EXISTS).
 --   2. Insert the `procedure-improvement` workspace row
---      (0195f48b-d000-7000-8000-000000000005 — keep in lock-step with
+--      (aaaaaaaa-0000-4000-8000-000000000005 — keep in lock-step with
 --      INTERNAL_PROCEDURE_TENANT_ID in
 --      backend/src/middleware/internal-tenant-only.ts).
 --   3. Rebuild `streams_kind_tenant_check` to additionally pin
@@ -32,7 +32,7 @@ ALTER TYPE stream_kind ADD VALUE IF NOT EXISTS 'procedure';
 
 INSERT INTO workspaces (id, name, created_at)
 VALUES
-  ('0195f48b-d000-7000-8000-000000000005', 'procedure-improvement', NOW())
+  ('aaaaaaaa-0000-4000-8000-000000000005', 'procedure-improvement', NOW())
 ON CONFLICT (id) DO NOTHING;
 
 ALTER TABLE streams DROP CONSTRAINT IF EXISTS streams_kind_tenant_check;
@@ -41,13 +41,13 @@ ALTER TABLE streams
   ADD CONSTRAINT streams_kind_tenant_check
   CHECK (
     (kind::text = 'workflow'
-       AND tenant_id = '0195f48b-d000-7000-8000-000000000002'::uuid)
+       AND tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'::uuid)
     OR
     (kind::text = 'prompt'
-       AND tenant_id = '0195f48b-d000-7000-8000-000000000004'::uuid)
+       AND tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'::uuid)
     OR
     (kind::text = 'procedure'
-       AND tenant_id = '0195f48b-d000-7000-8000-000000000005'::uuid)
+       AND tenant_id = 'aaaaaaaa-0000-4000-8000-000000000005'::uuid)
     OR (kind::text = 'principle')
     OR (kind::text = 'requirement')
     OR (kind::text = 'decision')

@@ -17,7 +17,7 @@ import { mount, unmount, flushSync } from 'svelte';
 import ApprovalDecisionSurface from './ApprovalDecisionSurface.svelte';
 import type { Approval } from '$lib/types/api';
 
-const T = '0195f48b-d000-7000-8000-0000000001a1';
+const T = 'aaaaaaaa-0000-4000-8000-0000000001a1';
 const PROPOSAL = 'Use the fixtures repo';
 
 let host: HTMLDivElement;

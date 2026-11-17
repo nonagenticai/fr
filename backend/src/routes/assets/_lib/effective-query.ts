@@ -27,7 +27,7 @@ import { upsertOwnsMany, type AssetType } from '../../../services/asset-assignme
 import { ensureWorkspace } from '../../../services/workspaces';
 import { db as defaultDb } from '../../../db/client';
 import { BadRequestError } from '../../../utils/errors';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../middleware/internal-tenant-only';
 // Function-only use, so the system-union <-> effective-query import cycle is
 // safe: neither module touches the other's bindings at evaluation time.
 import { isPlatformTenant } from './system-union';
@@ -175,7 +175,7 @@ function rowTenantId(row: unknown): string | undefined {
  * documents, fr-local channels/triggers report no owner at all).
  */
 function isSystemOwnedRow(row: unknown): boolean {
-  if (rowTenantId(row) === INTERNAL_SYSTEM_TENANT_ID) return true;
+  if (rowTenantId(row) === internalSystemTenantId()) return true;
   return (
     row !== null &&
     typeof row === 'object' &&
@@ -209,7 +209,7 @@ function mayRecordOwnership(workspaceId: string, row: unknown): boolean {
   // A system-tenant row is owned by PLATFORM tenants (system, improvement,
   // execution, AA conveyor) — they inherit system decisions and must
   // keep seeing them in `?project_id=` lists — and by no customer.
-  if (t === INTERNAL_SYSTEM_TENANT_ID) return isPlatformTenant(workspaceId);
+  if (t === internalSystemTenantId()) return isPlatformTenant(workspaceId);
   return t === workspaceId;
 }
 

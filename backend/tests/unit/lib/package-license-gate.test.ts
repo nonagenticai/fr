@@ -21,9 +21,12 @@ import {
   type PackageGateFlags,
 } from '../../../src/lib/package-license-gate';
 import {
-  INTERNAL_SYSTEM_TENANT_ID,
-  EXECUTION_TENANT_ID,
+  internalSystemTenantId,
+  executionTenantId,
 } from '../../../src/middleware/internal-tenant-only';
+
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
 
 const CUSTOMER_TENANT = '0190b6a0-0000-7000-8000-0000000000aa'; // a normal, non-internal tenant
 
@@ -56,11 +59,11 @@ describe('isPackageLicenseExempt (axes 1 + 2 combined)', () => {
   test('internal platform tenants are exempt on ANY route (axis 2)', () => {
     // The regression this fix targets: super-admin on the system workspace
     // hitting the global app shell (andon, kanban liveness, cards).
-    expect(isPackageLicenseExempt('/api/andon', INTERNAL_SYSTEM_TENANT_ID)).toBe(true);
-    expect(isPackageLicenseExempt('/api/cards', INTERNAL_SYSTEM_TENANT_ID)).toBe(true);
-    expect(isPackageLicenseExempt('/api/kanban/boards', INTERNAL_SYSTEM_TENANT_ID)).toBe(true);
+    expect(isPackageLicenseExempt('/api/andon', SYSTEM)).toBe(true);
+    expect(isPackageLicenseExempt('/api/cards', SYSTEM)).toBe(true);
+    expect(isPackageLicenseExempt('/api/kanban/boards', SYSTEM)).toBe(true);
     // The deleted prompt-improvement tenant (2026-11-03) is no longer internal: gated.
-    expect(isPackageLicenseExempt('/api/kanban/boards', '0195f48b-d000-7000-8000-000000000004')).toBe(false);
+    expect(isPackageLicenseExempt('/api/kanban/boards', 'aaaaaaaa-0000-4000-8000-000000000004')).toBe(false);
   });
 
   test('a non-exempt route on a normal customer tenant is NOT exempt (gate runs)', () => {
@@ -69,7 +72,7 @@ describe('isPackageLicenseExempt (axes 1 + 2 combined)', () => {
   });
 
   test('the execution tenant is NOT internal — it stays gated (should be licensed)', () => {
-    expect(isPackageLicenseExempt('/api/cards', EXECUTION_TENANT_ID)).toBe(false);
+    expect(isPackageLicenseExempt('/api/cards', EXECUTION)).toBe(false);
   });
 
   test('route exemption still applies regardless of tenant (axis 1)', () => {
@@ -331,7 +334,7 @@ describe('packageGateDecision — the single decision seam', () => {
     // both flags off and must be byte-for-byte unchanged.
     for (const appKey of ['fr', 'kag'] as const) {
       for (const path of ['/api/cards', '/api/andon', '/api/auth/me', '/api/me/workspaces']) {
-        for (const tenant of [CUSTOMER_TENANT, INTERNAL_SYSTEM_TENANT_ID, null, undefined]) {
+        for (const tenant of [CUSTOMER_TENANT, SYSTEM, null, undefined]) {
           expect(packageGateDecision(appKey, path, tenant, UNGATED)).toBe('skip');
         }
       }
@@ -359,14 +362,14 @@ describe('packageGateDecision — the single decision seam', () => {
   });
 
   test('internal platform tenants still short-circuit on ANY route (axis 2)', () => {
-    expect(packageGateDecision('fr', '/api/cards', INTERNAL_SYSTEM_TENANT_ID, FR_DEPLOYMENT))
+    expect(packageGateDecision('fr', '/api/cards', SYSTEM, FR_DEPLOYMENT))
       .toBe('skip');
-    expect(packageGateDecision('kag', '/api/cards', INTERNAL_SYSTEM_TENANT_ID, KAG_DEPLOYMENT))
+    expect(packageGateDecision('kag', '/api/cards', SYSTEM, KAG_DEPLOYMENT))
       .toBe('skip');
   });
 
   test('the execution tenant stays gated — it is not internal', () => {
-    expect(packageGateDecision('fr', '/api/cards', EXECUTION_TENANT_ID, FR_DEPLOYMENT))
+    expect(packageGateDecision('fr', '/api/cards', EXECUTION, FR_DEPLOYMENT))
       .toBe('require-fr');
   });
 

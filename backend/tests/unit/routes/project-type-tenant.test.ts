@@ -10,7 +10,7 @@
 import { describe, expect, test } from 'bun:test';
 
 import {
-  PROJECT_TYPE_TENANT,
+  projectTypeTenantMap,
   ProjectCreateError,
   assertProjectTypeTenant,
   projectTypeCreatableOn,
@@ -20,10 +20,10 @@ import {
 
 // Literal on purpose: the ids must not be derived from the constants under
 // test, or re-homing a constant would silently re-home the assertion.
-const SYSTEM = '0195f48b-d000-7000-8000-000000000001';
-const EXEC = '0195f48b-d000-7000-8000-000000000003';
-const KATA = '0195f48b-d000-7000-8000-000000000006';
-const CUSTOMER = '0195f48b-d000-7000-8000-000000000100';
+const SYSTEM = 'aaaaaaaa-0000-4000-8000-000000000001';
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000003';
+const KATA = 'aaaaaaaa-0000-4000-8000-000000000006';
+const CUSTOMER = 'aaaaaaaa-0000-4000-8000-000000000100';
 const ALL = [SYSTEM, EXEC, KATA, CUSTOMER];
 
 const EXPECTED: Record<string, string> = {
@@ -53,9 +53,9 @@ function expectRefused(projectType: string | undefined, tenant: string, expected
   expect(err!.payload.active_tenant_id).toBe(tenant);
 }
 
-describe('PROJECT_TYPE_TENANT', () => {
+describe('projectTypeTenantMap()', () => {
   test('it pins exactly these five type names (literal on purpose)', () => {
-    expect(Object.keys(PROJECT_TYPE_TENANT).sort()).toEqual(Object.keys(EXPECTED).sort());
+    expect(Object.keys(projectTypeTenantMap()).sort()).toEqual(Object.keys(EXPECTED).sort());
   });
 
   test('a type name the map does not know is unpinned (RM decides whether it exists)', () => {
@@ -74,9 +74,9 @@ describe('PROJECT_TYPE_TENANT', () => {
   });
 
   test('is exactly the map (only system_ops maps to SYSTEM)', () => {
-    expect({ ...PROJECT_TYPE_TENANT }).toEqual(EXPECTED);
+    expect({ ...projectTypeTenantMap() }).toEqual(EXPECTED);
     expect(
-      Object.entries(PROJECT_TYPE_TENANT)
+      Object.entries(projectTypeTenantMap())
         .filter(([, t]) => t === SYSTEM)
         .map(([k]) => k),
     ).toEqual(['system_ops']);

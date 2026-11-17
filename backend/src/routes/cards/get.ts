@@ -761,7 +761,7 @@ export async function handleGetCard(
   const is_system = isInternalTenant(tenant ?? undefined);
   // ⭐ `tenant_is_platform` — computed from the SAME `tenant` the gate above just
   // authorised this read on (board → project/stream, `loadCardTenantByBoardId`),
-  // and from fr's ONE platform list (`PLATFORM_TENANT_IDS` via `isPlatformTenant`).
+  // and from fr's ONE platform list (`platformTenantIds()` via `isPlatformTenant`).
   // No second list, no second tenant source. The ncn signoff callback reads it to
   // refuse acting on a customer card (strict tenant separation).
   // ⛔ Fail-closed: an unresolved tenant (`null`) is `false`, never `true` —

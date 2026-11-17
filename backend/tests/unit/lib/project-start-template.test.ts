@@ -12,8 +12,8 @@ import {
 } from '../../../src/lib/project-start-template';
 import { startTemplateFromOutline } from '../../../src/routes/project-requests';
 
-const EXEC = '0195f48b-d000-7000-8000-000000000003';
-const OTHER = '0195f48b-d000-7000-8000-0000000000ff';
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000003';
+const OTHER = 'aaaaaaaa-0000-4000-8000-0000000000ff';
 const saved = process.env[PROJECT_START_TEMPLATE_REQUIRED_ENV];
 afterEach(() => {
   if (saved === undefined) delete process.env[PROJECT_START_TEMPLATE_REQUIRED_ENV];

@@ -27,8 +27,8 @@ class Rollback extends Error {}
 
 const INDEX = 'projects_one_live_bug_hunt_per_repo_idx';
 const FILE = '189_bug_hunt_index_covers_bug_hunt_fix.sql';
-const OWNER = '0195f48b-1189-7000-8000-00000001c189';
-const TENANT = '0195f48b-1189-7000-8000-00000002c189';
+const OWNER = 'aaaaaaaa-0000-4000-8000-00000001c189';
+const TENANT = 'aaaaaaaa-0000-4000-8000-00000002c189';
 const REPO = `https://github.com/nonagenticai/mig189-fixture-${process.pid}-${Date.now()}`;
 
 async function rolledBack(fn: (tx: postgres.Sql) => Promise<void>): Promise<void> {

@@ -25,7 +25,7 @@ import { z } from 'zod';
 
 import { KATA_STATES, type KataState } from '../db/schema';
 import { validateAuth } from '../middleware/auth';
-import { AA_CONVEYOR_TENANT_ID, V4_CONVEYOR_TENANT_ID } from '../middleware/internal-tenant-only';
+import { aaConveyorTenantId, v4ConveyorTenantId } from '../middleware/internal-tenant-only';
 import { isSuperAdmin } from '../lib/super-admin-gate';
 import { isUuidShape } from '../lib/uuid-shape';
 import {
@@ -56,12 +56,20 @@ import { jsonResponse } from '../utils/response';
 
 export type KataCallerKind = 'super_admin' | 'conveyor_licence';
 
-const CONVEYOR_TENANTS: ReadonlySet<string> = new Set([V4_CONVEYOR_TENANT_ID, AA_CONVEYOR_TENANT_ID]);
+function conveyorTenants(): ReadonlySet<string> {
+  // Built per call: the ids are environment-supplied, so a module-scope Set
+  // would freeze whatever the env held at import.
+  return new Set(
+    [v4ConveyorTenantId(), aaConveyorTenantId()].filter(
+      (id): id is string => typeof id === 'string',
+    ),
+  );
+}
 
 /** Pure: which kata caller `user` is, or null (every tenant role, any other licence). */
 export function kataCallerKind(user: Pick<User, 'authKind' | 'roles' | 'tenantId'>): KataCallerKind | null {
   if (user.authKind === 'licence') {
-    return user.tenantId && CONVEYOR_TENANTS.has(user.tenantId.toLowerCase()) ? 'conveyor_licence' : null;
+    return user.tenantId && conveyorTenants().has(user.tenantId.toLowerCase()) ? 'conveyor_licence' : null;
   }
   return isSuperAdmin(user) ? 'super_admin' : null;
 }

@@ -25,7 +25,7 @@ import {
 } from '../../../../integrations/_lib/context';
 import { isSuperAdmin } from '../../../../lib/super-admin-gate';
 import { hasRole, isRealmTenantAdminOf } from '../../../../services/user-roles';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../../middleware/internal-tenant-only';
 import { jsonResponse } from '../../../../utils/response';
 
 /**
@@ -77,7 +77,7 @@ export async function gateWriteAsset(req: Request): Promise<GateResult> {
     };
   }
 
-  if (activeTenant === INTERNAL_SYSTEM_TENANT_ID) {
+  if (activeTenant === internalSystemTenantId()) {
     if (!isSuperAdmin(user)) {
       return {
         ok: false,

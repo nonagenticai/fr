@@ -9,14 +9,25 @@
 //
 // Mount pattern as ProjectForm.rewrite-layout.test.ts (no @testing-library/svelte).
 
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushSync, mount, unmount } from 'svelte';
 
 import ProjectForm, { type ProjectFormState } from './ProjectForm.svelte';
 import { auth } from '$lib/stores/auth.svelte';
-import { EXECUTION_TENANT_ID } from './ProjectTypeAnalysisWarning.svelte';
+import type { Workspace } from '$lib/stores/workspaces.svelte';
 
-const CONVEYOR = '0195f48b-d000-7000-8000-0000000000ff';
+// Synthetic ids. ProjectForm now resolves the EXEC tenant id from the workspace
+// store at runtime (`canonicalOf('execution')`) instead of importing a hardcoded
+// UUID — fr is a public repo — so these tests pin that resolution explicitly.
+const EXECUTION_TENANT_ID = 'aaaaaaaa-0000-4000-8000-000000000001';
+const CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000ff';
+const EXECUTION_WORKSPACE: Workspace = {
+	id: EXECUTION_TENANT_ID,
+	name: 'execution',
+	kind: 'execution',
+	role: 'member',
+	archived_at: null
+};
 const BUG: Partial<ProjectFormState> = { project_type: 'it', it_flow: 'bug' };
 
 function signIn(tenant_id: string, roles: string[] = []): void {
@@ -30,7 +41,10 @@ let target: HTMLElement | null = null;
 function render(initial: Partial<ProjectFormState>, ownerTenantId?: string): HTMLElement {
 	target = document.createElement('div');
 	document.body.appendChild(target);
-	instance = mount(ProjectForm, { target, props: { initial, ownerTenantId, onSubmit: async () => {} } });
+	instance = mount(ProjectForm, {
+		target,
+		props: { initial, ownerTenantId, executionTenantId: EXECUTION_WORKSPACE.id, onSubmit: async () => {} }
+	});
 	flushSync();
 	return target;
 }

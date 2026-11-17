@@ -118,7 +118,7 @@ import {
   type DeliverableAttachRefusal,
   type MintDeliverableRow,
 } from '../../lib/deliverable-covers';
-import { EXECUTION_TENANT_ID } from '../tenants';
+import { executionTenantId } from '../tenants';
 
 /**
  * A deliverable link refused inside the create's rollback scope (fr#1481).
@@ -605,7 +605,7 @@ export function cardRouteTenantRefusal(
   activeTenantId: string,
 ): Response | null {
   if (
-    activeTenantId !== EXECUTION_TENANT_ID &&
+    activeTenantId !== executionTenantId() &&
     !isSuperAdminSwitchedView(user, activeTenantId)
   ) {
     return jsonResponse({ error: 'project_cards_only_on_exec_tenant' }, 403);

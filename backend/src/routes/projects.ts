@@ -75,7 +75,7 @@ import {
   shouldRedactUpstreamDetailForCaller,
 } from '../integrations/_lib/errors';
 import type { GithubGitHubRepoRequest } from '@fr/service-client-coding';
-import { EXECUTION_TENANT_ID } from './tenants';
+import { executionTenantId } from './tenants';
 import { canonicalTenantName } from '../middleware/internal-tenant-only';
 import { getTenantIsServiceAccountSubject } from '../integrations/_lib/context';
 import { reportConveyorRefusal } from '../lib/conveyor-refusal-metrics';
@@ -280,12 +280,12 @@ export function scopeFieldsForBrief(
 // Project type → owning tenant, and the ONE creatability rule shared with the type picker:
 // `lib/project-type-tenant.ts`. Re-exported below so every existing importer keeps its path.
 import {
-  PROJECT_TYPE_TENANT,
+  projectTypeTenantMap,
   projectTypeCreatableOn,
   projectTypeTenant,
 } from '../lib/project-type-tenant';
 
-export { PROJECT_TYPE_TENANT, projectTypeCreatableOn, projectTypeTenant } from '../lib/project-type-tenant';
+export { projectTypeCreatableOn, projectTypeTenant, projectTypeTenantMap } from '../lib/project-type-tenant';
 export { SYSTEM_OPS_PROJECT_TYPE } from '../lib/project-type-tenant';
 
 /**
@@ -304,7 +304,7 @@ export function assertProjectTypeTenant(
 ): void {
   if (projectTypeCreatableOn(projectType, activeTenantId)) return;
   const expected = projectTypeTenant(projectType);
-  const allowedHere = Object.entries(PROJECT_TYPE_TENANT)
+  const allowedHere = Object.entries(projectTypeTenantMap())
     .filter(([, t]) => t === activeTenantId)
     .map(([k]) => k);
   throw new ProjectCreateError(
@@ -315,7 +315,7 @@ export function assertProjectTypeTenant(
         `${activeTenantId} (${canonicalTenantName(activeTenantId) ?? 'unknown'}); ` +
         (expected !== undefined
           ? `it belongs to tenant ${expected} (${canonicalTenantName(expected) ?? 'unknown'})` +
-            (expected === EXECUTION_TENANT_ID ? ' or a customer tenant' : '')
+            (expected === executionTenantId() ? ' or a customer tenant' : '')
           : `this tenant accepts ${allowedHere.length ? allowedHere.join(', ') : 'no projects'}`) +
         '. Switch workspace and retry.',
       project_type: projectType ?? null,
@@ -548,7 +548,7 @@ export function assertItExecIntakeInputs(
   // tenant (and, for `bug_hunt_fix`, for every tenant).
   if (
     validated.bug_hunt === true &&
-    (!isBugHuntFlagProjectType(validated.project_type) || activeTenantId !== EXECUTION_TENANT_ID)
+    (!isBugHuntFlagProjectType(validated.project_type) || activeTenantId !== executionTenantId())
   ) {
     throw new BadRequestError(
       'bug_hunt_exec_only: bug_hunt is only allowed on project_type="bug_hunt_fix" (or legacy "it") projects on the EXEC tenant',
@@ -562,7 +562,7 @@ export function assertItExecIntakeInputs(
   if (
     // legacy (pre-RM) project type
     validated.project_type !== 'it' ||
-    activeTenantId !== EXECUTION_TENANT_ID
+    activeTenantId !== executionTenantId()
   ) {
     return;
   }
@@ -1169,7 +1169,7 @@ export async function createSingleProject(input: {
     projectType: validated.project_type,
     cveSweep: validated.cve_sweep,
     tenantId: ownerTenantId,
-    execTenantId: EXECUTION_TENANT_ID,
+    execTenantId: executionTenantId(),
   });
   // U-PS-ENTRY (flag PROJECT_START_TEMPLATE_REQUIRED, default OFF): with the
   // flag on, an orchestrated EXEC project is born ONLY from a promoted request
@@ -1179,7 +1179,7 @@ export async function createSingleProject(input: {
     templateRequiredForCreate({
       orchestrated: isOrchestratedProject,
       ownerTenantId,
-      execTenantId: EXECUTION_TENANT_ID,
+      execTenantId: executionTenantId(),
       hasTemplate: input.startTemplate !== undefined,
     })
   ) {
@@ -2462,7 +2462,7 @@ export async function handleGetProject(req: Request, projectId: string): Promise
     // canonical TENANT (workspace) uuid it is neither: a workspace id can never
     // be a `projects.id`, under any tenant, so no scoping decision was involved
     // and nothing is leaked by saying so in fr's OWN telemetry. Measured
-    // 2026-09-10, prod pod: `GET /api/projects/0195f48b-d000-7000-8000-000000000004`
+    // 2026-09-10, prod pod: `GET /api/projects/aaaaaaaa-0000-4000-8000-000000000004`
     // → 404 x4, and that uuid is `prompt-improvement` (migration 062).
     //
     // ⛔ RESPONSE TEXT IS UNCHANGED on purpose. This route is reachable by any

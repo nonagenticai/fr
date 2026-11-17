@@ -45,7 +45,7 @@ const sqlc = postgres(config.database.url, { max: 1, onnotice: () => {} });
 const ARBITRARY_TENANT_A = '11111111-2222-4333-8444-555555555555';
 const ARBITRARY_TENANT_B = '22222222-3333-4444-8555-666666666666';
 const PLACEHOLDER = 'planka-tbd';
-const DELETED_WORKFLOW_TENANT = '0195f48b-d000-7000-8000-000000000002';
+const DELETED_WORKFLOW_TENANT = 'aaaaaaaa-0000-4000-8000-000000000002';
 
 let reachable = false;
 

@@ -1,7 +1,7 @@
 -- Migration: 062_super_admin_workspaces_namespace_realign
 -- Plan ref: ~/.claude/plans/in-fr-there-are-jazzy-pine.md
 --
--- Re-aligns fr's tenant UUIDs onto the canonical `0195f48b-d000-7000-8000-*`
+-- Re-aligns fr's tenant UUIDs onto the canonical `aaaaaaaa-0000-4000-8000-*`
 -- namespace (the one AA_IMPLEMENTATION/SPEC.md Plan 4 seeded system assets
 -- under and the one the super-admin's Keycloak tenant_id claim already uses).
 -- Also inserts the new system workspace row, renames the super-admin's
@@ -10,12 +10,12 @@
 --
 -- Mapping:
 --   00000000-0000-4000-8000-000000000001  (__system_workflow__)
---     →  0195f48b-d000-7000-8000-000000000002  (workflow-improvement)
+--     →  aaaaaaaa-0000-4000-8000-000000000002  (workflow-improvement)
 --   00000000-0000-4000-8000-000000000002  (__system_prompt__)
---     →  0195f48b-d000-7000-8000-000000000004  (prompt-improvement)
---   0195f48b-d000-7000-8000-000000000001  (system)
+--     →  aaaaaaaa-0000-4000-8000-000000000004  (prompt-improvement)
+--   aaaaaaaa-0000-4000-8000-000000000001  (system)
 --     →  INSERT (was never a row in fr's workspaces; only existed upstream)
---   0195f48b-d000-7000-8000-000000000003  (george-dev → nonagentic-exec)
+--   aaaaaaaa-0000-4000-8000-000000000003  (george-dev → nonagentic-exec)
 --     →  rename only; UUID stays
 --
 -- Pre-migration audit (from 2026-05-15 discovery, see plan §Discovery):
@@ -34,7 +34,7 @@
 --   - Workspace renames are absolute (SET name = '…' WHERE id = …).
 --
 -- Out of scope (separate session, see plan):
---   - Upstream req_mgmt / proc_mgmt re-key (n8n-dev string tenant, 019de842
+--   - Upstream req_mgmt / proc_mgmt re-key (n8n-dev string tenant, the AA conveyor tenant
 --     procedure system tenant). The new asset-console UI will see those rows
 --     under the old upstream UUIDs until that follow-up lands.
 
@@ -49,9 +49,9 @@ ALTER TABLE streams DROP CONSTRAINT IF EXISTS streams_kind_tenant_check;
 --    prompt-improvement). ON CONFLICT preserves rows on re-run.
 INSERT INTO workspaces (id, name, created_at)
 VALUES
-  ('0195f48b-d000-7000-8000-000000000001', 'system',               NOW()),
-  ('0195f48b-d000-7000-8000-000000000002', 'workflow-improvement', NOW()),
-  ('0195f48b-d000-7000-8000-000000000004', 'prompt-improvement',   NOW())
+  ('aaaaaaaa-0000-4000-8000-000000000001', 'system',               NOW()),
+  ('aaaaaaaa-0000-4000-8000-000000000002', 'workflow-improvement', NOW()),
+  ('aaaaaaaa-0000-4000-8000-000000000004', 'prompt-improvement',   NOW())
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Update child rows in semantic-tenant tables from legacy → new UUIDs.
@@ -59,47 +59,47 @@ ON CONFLICT (id) DO NOTHING;
 --    but grouped by table for review.
 
 UPDATE streams
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE streams
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE tenant_improvement_projects
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE tenant_improvement_projects
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE approvals
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE approvals
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE required_approvers
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE required_approvers
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE user_roles
-   SET tenant_id   = '0195f48b-d000-7000-8000-000000000002',
+   SET tenant_id   = 'aaaaaaaa-0000-4000-8000-000000000002',
        tenant_name = 'workflow-improvement'
  WHERE tenant_id   = '00000000-0000-4000-8000-000000000001';
 UPDATE user_roles
-   SET tenant_id   = '0195f48b-d000-7000-8000-000000000004',
+   SET tenant_id   = 'aaaaaaaa-0000-4000-8000-000000000004',
        tenant_name = 'prompt-improvement'
  WHERE tenant_id   = '00000000-0000-4000-8000-000000000002';
 
 UPDATE provisioning_audit
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE provisioning_audit
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 -- 3. Text-typed tenant_id tables. Discovery showed 0 rows on legacy UUIDs
@@ -107,45 +107,45 @@ UPDATE provisioning_audit
 --    migration runs, it gets re-keyed too. UUIDs are bare strings here.
 
 UPDATE kaizen_candidates
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE kaizen_candidates
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE analytics_rollups
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE analytics_rollups
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE scheduled_triggers
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE scheduled_triggers
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE scheduled_reports
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE scheduled_reports
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE scheduled_trigger_runs
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE scheduled_trigger_runs
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 UPDATE suggested_schedules
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000002'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000001';
 UPDATE suggested_schedules
-   SET tenant_id = '0195f48b-d000-7000-8000-000000000004'
+   SET tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'
  WHERE tenant_id = '00000000-0000-4000-8000-000000000002';
 
 -- 5. Delete the legacy workspace rows. FK-bound child tables
@@ -160,7 +160,7 @@ DELETE FROM workspaces
 -- 6. Rename the super-admin's execution workspace.
 UPDATE workspaces
    SET name = 'nonagentic-exec'
- WHERE id = '0195f48b-d000-7000-8000-000000000003';
+ WHERE id = 'aaaaaaaa-0000-4000-8000-000000000003';
 
 -- 7. Rebuild the streams kind→tenant CHECK constraint around the new UUIDs.
 --    Mirrors migration 060 exactly except for the two literal UUIDs.
@@ -168,10 +168,10 @@ ALTER TABLE streams
   ADD CONSTRAINT streams_kind_tenant_check
   CHECK (
     (kind::text = 'workflow'
-       AND tenant_id = '0195f48b-d000-7000-8000-000000000002'::uuid)
+       AND tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'::uuid)
     OR
     (kind::text = 'prompt'
-       AND tenant_id = '0195f48b-d000-7000-8000-000000000004'::uuid)
+       AND tenant_id = 'aaaaaaaa-0000-4000-8000-000000000004'::uuid)
     OR (kind::text = 'principle')
     OR (kind::text = 'requirement')
     OR (kind::text = 'decision')
@@ -186,7 +186,7 @@ INSERT INTO user_roles (
 VALUES (
   gen_random_uuid(),
   'e148e8af-3751-49bf-a0fa-56ab46d31ddc',
-  '0195f48b-d000-7000-8000-000000000003',
+  'aaaaaaaa-0000-4000-8000-000000000003',
   'nonagentic-exec',
   'workspace-admin',
   NOW(),

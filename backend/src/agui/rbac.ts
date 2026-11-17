@@ -28,7 +28,7 @@ import { isSuperAdmin } from '../lib/super-admin-gate';
 import { and, eq } from 'drizzle-orm';
 
 import { db, departments } from '../db/client';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../middleware/internal-tenant-only';
 import { getMemberRole } from '../services/department-members';
 import { hasRole as defaultHasRole, isWorkspaceAdminVia } from '../services/user-roles';
 import { AppError } from '../utils/errors';
@@ -430,7 +430,7 @@ async function evaluateRule(
       }
       const superArm = rule.superAdmin === true && isSuperAdmin({ roles: [...(ctx.tenantRoles ?? [])] });
       // P4c part 2 `systemTenantSuperOnly`: in the SYSTEM tenant the super_admin arm is the only one.
-      const systemOnlySuper = rule.systemTenantSuperOnly === true && tenantId === INTERNAL_SYSTEM_TENANT_ID;
+      const systemOnlySuper = rule.systemTenantSuperOnly === true && tenantId === internalSystemTenantId();
       const ok =
         Boolean(ctx.userId) &&
         tenantId !== undefined &&

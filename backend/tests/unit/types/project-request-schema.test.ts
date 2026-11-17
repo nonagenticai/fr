@@ -74,7 +74,7 @@ describe('ProjectRequestSchema — approvers must be UUIDs', () => {
   test('a real user id is accepted', () => {
     const r = ProjectRequestSchema.safeParse({
       ...base,
-      approvers: ['0195f48b-d000-7000-8000-000000000001'],
+      approvers: ['aaaaaaaa-0000-4000-8000-000000000001'],
     });
     expect(r.success).toBe(true);
   });

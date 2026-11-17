@@ -10,8 +10,8 @@ import { flushSync, mount, unmount } from 'svelte';
 
 import ExecutionToolResult from './ExecutionToolResult.svelte';
 
-const P = '0195f48b-d000-7000-8000-0000000e5b01';
-const Q = '0195f48b-d000-7000-8000-0000000e5b02';
+const P = 'aaaaaaaa-0000-4000-8000-0000000e5b01';
+const Q = 'aaaaaaaa-0000-4000-8000-0000000e5b02';
 
 let host: HTMLElement;
 let app: ReturnType<typeof mount> | null = null;

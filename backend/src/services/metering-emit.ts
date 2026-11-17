@@ -84,7 +84,7 @@ interface RecordSpanInput {
   /**
    * George 2026-10-27 decision: a super_admin switched into another tenant is
    * OPERATOR activity, billed to the system tenant — never to the customer. The
-   * span's `tenantId` is then INTERNAL_SYSTEM_TENANT_ID and this names the tenant
+   * span's `tenantId` is then internalSystemTenantId() and this names the tenant
    * the operator was acting in (field `operator_target_tenant_id`), so the usage
    * stays attributable without being billed to it.
    */

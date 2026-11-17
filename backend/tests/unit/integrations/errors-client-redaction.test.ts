@@ -23,7 +23,7 @@ function frame(callerIsSuperAdmin?: boolean): RequestContext {
     correlationId: 'redaction-test',
     initiator: 'human',
     channel: 'web',
-    tenantId: '0195f48b-d000-7000-8000-0000000000cc',
+    tenantId: 'aaaaaaaa-0000-4000-8000-0000000000cc',
     ...(callerIsSuperAdmin === undefined ? {} : { callerIsSuperAdmin }),
   };
 }
@@ -230,7 +230,7 @@ describe('buildRequestContext: callerIsSuperAdmin is false without a VERIFIED su
   const forgedClaims = {
     iss: 'https://test-issuer.fr.test/realms/test',
     sub: '7c9b6c8f-1111-2222-3333-444444444444',
-    tenant_id: '0195f48b-d000-7000-8000-0000000000cc',
+    tenant_id: 'aaaaaaaa-0000-4000-8000-0000000000cc',
     realm_access: { roles: ['super_admin'] },
   };
   async function ctxForToken(token: string) {

@@ -2,9 +2,9 @@
 //
 // Cover for the duplicate-stream fix in services/streams/provisioner.ts.
 //
-// The measured defect (live, 2026-09-11): tenant 0195f48b-…0002 owns TWO active
+// The measured defect (live, 2026-09-11): tenant aaaaaaaa-…0002 owns TWO active
 // streams for EACH of decision / principle / requirement. Migration 062 re-keyed
-// `streams.tenant_id` from 00000000-…0001 to 0195f48b-…0002 without rewriting
+// `streams.tenant_id` from 00000000-…0001 to aaaaaaaa-…0002 without rewriting
 // `slug` — which EMBEDS the tenant uuid — so `getOrCreateAssetStream`'s by-slug
 // lookup missed a row it had created itself and minted a second one beside it.
 //
@@ -20,7 +20,7 @@ const { pickAdoptableAssetStream } = await import(
 );
 
 const LEGACY_TENANT = '00000000-0000-4000-8000-000000000001';
-const TENANT = '0195f48b-d000-7000-8000-000000000002';
+const TENANT = 'aaaaaaaa-0000-4000-8000-000000000002';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function row(slug: string, createdAt: string, id = slug): any {

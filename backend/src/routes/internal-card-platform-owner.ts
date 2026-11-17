@@ -26,7 +26,7 @@
 //   cardId not ^[0-9]{19}$            -> 404 NOT_FOUND   (no reflection)
 //   Planka 404 / card has no board    -> 404 NOT_FOUND
 //   board not fr-owned (null tenant)  -> 404 NOT_FOUND
-//   tenant not in PLATFORM_TENANT_IDS -> 404 NOT_FOUND   (customer card: never
+//   tenant not in platformTenantIds() -> 404 NOT_FOUND   (customer card: never
 //                                       disclose that it exists)
 //   Planka / DB error or timeout      -> 503 {error:"card_lookup_unavailable"}
 //                                       (an outage must not read as "no such

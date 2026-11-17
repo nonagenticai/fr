@@ -13,7 +13,6 @@ import { TRIAGE_AGENT_USER_IDS, decidedByKindFor, triageAgentUserIds } from '../
 const BACKEND_ROOT = path.resolve(import.meta.dir, '..', '..', '..');
 const read = (rel: string): string => readFileSync(path.join(BACKEND_ROOT, rel), 'utf8');
 const MIGRATION = 'migrations/211_approval_decided_by_kind.sql';
-const UUID_G = /'([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})'/g;
 
 /** SQL with `--` comment lines removed (the header names the ids too). */
 function sqlCode(rel: string): string {
@@ -28,15 +27,18 @@ afterEach(() => {
 });
 
 describe('the triage-agent id list has ONE meaning in both places', () => {
-  // KILLING MUTATION: add or drop an id in either the migration's IN-list or TRIAGE_AGENT_USER_IDS.
-  test("migration 211's backfill IN-list equals TRIAGE_AGENT_USER_IDS", () => {
-    const code = sqlCode(MIGRATION);
-    const inList = code.slice(code.indexOf('approver_id IN ('), code.indexOf(')', code.indexOf('approver_id IN (')));
-    const sqlIds = [...inList.matchAll(UUID_G)].map((m) => m[1]!);
-    // CONTROL: the slice found the list (a wrong anchor would read as two empty lists agreeing).
-    expect(sqlIds.length).toBeGreaterThanOrEqual(1);
-    expect([...sqlIds].sort()).toEqual([...TRIAGE_AGENT_USER_IDS].sort());
-    expect(TRIAGE_AGENT_USER_IDS).toContain('72084c2b-d87a-44fe-bcf0-9baddde3be78');
+  // KILLING MUTATION: reintroduce a compiled-in id here or in the migration's IN-list.
+  test('no triage-agent id is compiled in, and the runtime set comes only from the env', () => {
+    expect(TRIAGE_AGENT_USER_IDS).toEqual([]);
+    // The migration keeps its backfill as a recorded no-op — no uuid may live in it.
+    expect(sqlCode(MIGRATION).slice(sqlCode(MIGRATION).indexOf('WITH moved AS'))).not.toMatch(
+      /\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/i,
+    );
+    // CONTROL: the env is the only way in, and it works.
+    process.env.FR_TRIAGE_AGENT_USER_IDS = 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee';
+    expect([...triageAgentUserIds()]).toEqual(['aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee']);
+    delete process.env.FR_TRIAGE_AGENT_USER_IDS;
+    expect([...triageAgentUserIds()]).toEqual([]);
   });
 
   test("the CHECK as last defined (migration 220, which added 'agent') and schema.ts names exactly DECIDED_BY_KINDS", () => {
@@ -54,21 +56,23 @@ describe('the triage-agent id list has ONE meaning in both places', () => {
 });
 
 describe('decidedByKindFor', () => {
-  test('a built-in triage id (any case) is triage_agent; anything else is human', () => {
-    expect(decidedByKindFor('72084c2b-d87a-44fe-bcf0-9baddde3be78')).toBe('triage_agent');
-    expect(decidedByKindFor('72084C2B-D87A-44FE-BCF0-9BADDDE3BE78')).toBe('triage_agent');
-    expect(decidedByKindFor('d16aa38b-30b7-46af-b47a-ae24d87527f4')).toBe('triage_agent');
+  test('with no env nothing is a triage agent, and identity is the whole uuid, not a prefix', () => {
+    // Fail-closed: no FR_TRIAGE_AGENT_USER_IDS means no approval is credited to a triage agent.
+    expect(decidedByKindFor('72084c2b-d87a-44fe-bcf0-9baddde3be78')).toBe('human');
     expect(decidedByKindFor('72084c2b-0000-4000-8000-000000000000')).toBe('human'); // prefix is not identity
     expect(decidedByKindFor('c5eab0aa-0000-4000-8000-0000000000b1')).toBe('human');
     expect(decidedByKindFor(null)).toBe('human');
     expect(decidedByKindFor(undefined)).toBe('human');
   });
 
-  test('FR_TRIAGE_AGENT_USER_IDS adds well-formed uuids only and never removes a built-in', () => {
+  test('FR_TRIAGE_AGENT_USER_IDS is the only source, matched case-insensitively', () => {
     process.env.FR_TRIAGE_AGENT_USER_IDS = ' AAAAAAAA-0000-4000-8000-000000000001 , not-a-uuid,';
     expect(decidedByKindFor('aaaaaaaa-0000-4000-8000-000000000001')).toBe('triage_agent');
+    expect(decidedByKindFor('AAAAAAAA-0000-4000-8000-000000000001')).toBe('triage_agent');
     expect(triageAgentUserIds().has('not-a-uuid')).toBe(false);
-    expect(decidedByKindFor('72084c2b-d87a-44fe-bcf0-9baddde3be78')).toBe('triage_agent');
+    // Removing the env removes the only id that was ever there — nothing is compiled in to fall back on.
+    delete process.env.FR_TRIAGE_AGENT_USER_IDS;
+    expect(decidedByKindFor('aaaaaaaa-0000-4000-8000-000000000001')).toBe('human');
   });
 });
 

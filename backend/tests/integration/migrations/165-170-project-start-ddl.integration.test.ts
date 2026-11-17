@@ -55,8 +55,8 @@ const { itDb } = createDbSuite('165-170-project-start-ddl');
 class Rollback extends Error {}
 
 const TAG = `mig165-${process.pid}-${Date.now()}`;
-const OWNER = '0195f48b-1165-7000-8000-00000001c170';
-const TENANT = '0195f48b-1165-7000-8000-00000002c170';
+const OWNER = 'aaaaaaaa-0000-4000-8000-00000001c170';
+const TENANT = 'aaaaaaaa-0000-4000-8000-00000002c170';
 
 async function rolledBack(fn: (tx: postgres.Sql) => Promise<void>): Promise<void> {
   try {

@@ -27,7 +27,7 @@ function getJwtSecret(): Uint8Array {
 // P1-TEAM-a: a token WITHOUT a `tenant_id` claim (pre-097) is refused 401 — the
 // `getUserTenant` LIMIT-1 fallback is no longer authority — so every helper token
 // carries a tenant unless a test passes `tenantId: null` to mint the legacy shape.
-const DEFAULT_TOKEN_TENANT = '0195f48b-d000-7000-8000-0000000000aa';
+const DEFAULT_TOKEN_TENANT = 'aaaaaaaa-0000-4000-8000-0000000000aa';
 
 async function signValidToken(opts: {
   sub?: string;

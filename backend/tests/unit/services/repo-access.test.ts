@@ -13,7 +13,7 @@ import {
   platformRepoRefusals,
   REPO_ACCESS_INTERNAL_OWNERS_ENV,
 } from '../../../src/services/repo-access';
-import { EXECUTION_TENANT_ID, INTERNAL_SYSTEM_TENANT_ID } from '../../../src/middleware/internal-tenant-only';
+import { executionTenantId, internalSystemTenantId } from '../../../src/middleware/internal-tenant-only';
 import {
   CODING_GITHUB_URL_ENV,
   CODING_GITHUB_TOKEN_ENV,
@@ -21,6 +21,8 @@ import {
 import { platformRepoRefusalResponse } from '../../../src/routes/project-request-repo-gate';
 
 const SECRET = 'fr-internal-secret-DO-NOT-LEAK';
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
 
 const saved: Record<string, string | undefined> = {};
 beforeEach(() => {
@@ -49,7 +51,7 @@ afterEach(() => {
 // injected because none may happen — a fetch here would be a bug.
 describe('platformRepoRefusals: only platform tenants may use internal-owner repos', () => {
   const NETCARE = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
-  const AA_CONVEYOR = '019de842-c92a-7e37-8fdd-eb0d8c5396f9';
+  const AA_CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000a5';
   const DETAIL = (owner: string) =>
     `${owner} is a platform-owned organisation — this workspace is not permitted to use its repositories`;
   const refusedAs = (url: string, owner = 'nonagenticai') => [
@@ -57,11 +59,11 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
   ];
 
   test('system and execution are platform; nothing else is (the three improvement tenants were deleted 2026-11-03)', () => {
-    expect(isRepoPlatformTenant('0195f48b-d000-7000-8000-000000000001')).toBe(true);
+    expect(isRepoPlatformTenant('aaaaaaaa-0000-4000-8000-000000000001')).toBe(true);
     for (const i of [2, 4, 5]) {
-      expect(isRepoPlatformTenant(`0195f48b-d000-7000-8000-00000000000${i}`)).toBe(false);
+      expect(isRepoPlatformTenant(`aaaaaaaa-0000-4000-8000-00000000000${i}`)).toBe(false);
     }
-    expect(isRepoPlatformTenant(EXECUTION_TENANT_ID)).toBe(true);
+    expect(isRepoPlatformTenant(EXECUTION)).toBe(true);
     expect(isRepoPlatformTenant(NETCARE)).toBe(false);
     expect(isRepoPlatformTenant(AA_CONVEYOR)).toBe(false);
     expect(isRepoPlatformTenant(null)).toBe(false);
@@ -71,8 +73,8 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
 
   test('platform tenants …0001 and …0003 are allowed an internal-owner repo', () => {
     const url = 'https://github.com/nonagenticai/fr';
-    expect(platformRepoRefusals([url], '0195f48b-d000-7000-8000-000000000001')).toEqual([]);
-    expect(platformRepoRefusals([url], '0195f48b-d000-7000-8000-000000000003')).toEqual([]);
+    expect(platformRepoRefusals([url], 'aaaaaaaa-0000-4000-8000-000000000001')).toEqual([]);
+    expect(platformRepoRefusals([url], 'aaaaaaaa-0000-4000-8000-000000000003')).toEqual([]);
   });
 
   test('a customer tenant, a null tenant and the AA conveyor tenant are refused', () => {
@@ -80,7 +82,7 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
     expect(platformRepoRefusals([url], NETCARE)).toEqual(refusedAs(url));
     expect(platformRepoRefusals([url], null)).toEqual(refusedAs(url));
     expect(platformRepoRefusals([url], undefined)).toEqual(refusedAs(url));
-    // In PLATFORM_TENANT_IDS (system-union.ts) but refused by coding-github.
+    // In platformTenantIds() but refused by coding-github.
     expect(platformRepoRefusals([url], AA_CONVEYOR)).toEqual(refusedAs(url));
   });
 
@@ -107,7 +109,7 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
   }
 
   test('every variant is still allowed for a platform tenant (the gate is the tenant, not the url)', () => {
-    expect(platformRepoRefusals(VARIANTS, INTERNAL_SYSTEM_TENANT_ID)).toEqual([]);
+    expect(platformRepoRefusals(VARIANTS, SYSTEM)).toEqual([]);
   });
 
   test('non-internal owners pass for a non-platform tenant', () => {
@@ -165,7 +167,7 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
   }
 
   test('github-family variants are allowed for a platform tenant', () => {
-    expect(platformRepoRefusals(GITHUB_FAMILY_VARIANTS, INTERNAL_SYSTEM_TENANT_ID)).toEqual([]);
+    expect(platformRepoRefusals(GITHUB_FAMILY_VARIANTS, SYSTEM)).toEqual([]);
   });
 
   test('github-family look-alike OWNERS still pass', () => {
@@ -228,7 +230,7 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
   }
 
   test('host-agnostic variants are allowed for a platform tenant', () => {
-    expect(platformRepoRefusals(HOST_AGNOSTIC_VARIANTS, INTERNAL_SYSTEM_TENANT_ID)).toEqual([]);
+    expect(platformRepoRefusals(HOST_AGNOSTIC_VARIANTS, SYSTEM)).toEqual([]);
   });
 
   test('host-agnostic negatives: look-alike owners, other owners, empty', () => {
@@ -255,7 +257,7 @@ describe('platformRepoRefusals: only platform tenants may use internal-owner rep
     const body = (await res!.json()) as { error: string; items: unknown[] };
     expect(body.error).toBe('repo_access_denied');
     expect(body.items).toEqual(refusedAs(url));
-    expect(platformRepoRefusalResponse([url], EXECUTION_TENANT_ID)).toBeNull();
+    expect(platformRepoRefusalResponse([url], EXECUTION)).toBeNull();
   });
 
   test('dot segments: WHATWG-resolved owner is refused (agrees with deriveRepositoryNameFromUrl)', () => {

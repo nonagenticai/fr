@@ -22,8 +22,8 @@ import {
   tenantMemberArmPrecondition,
 } from '../../../../src/domain/engagement/decision-guards';
 
-const T = '0195f48b-d000-7000-8000-0000000000a1';
-const OTHER = '0195f48b-d000-7000-8000-0000000000b2';
+const T = 'aaaaaaaa-0000-4000-8000-0000000000a1';
+const OTHER = 'aaaaaaaa-0000-4000-8000-0000000000b2';
 const OWNER = 'owner-1';
 
 describe('tenantMemberArmPrecondition', () => {
@@ -78,7 +78,7 @@ describe('isSystemRaisedApproval / isHumanRequesterDecidingOwnApproval — the r
   });
 
   test('⛔ an ACTION approval is never system-raised, even when its caller-controlled X-Channel said n8n', () => {
-    const action = { source: 'n8n', action_id: '0195f48b-d000-7000-8000-00000000ac71', requester_id: OWNER };
+    const action = { source: 'n8n', action_id: 'aaaaaaaa-0000-4000-8000-00000000ac71', requester_id: OWNER };
     expect(isSystemRaisedApproval(action)).toBe(false);
     expect(isHumanRequesterDecidingOwnApproval(action, OWNER)).toBe(true);
   });

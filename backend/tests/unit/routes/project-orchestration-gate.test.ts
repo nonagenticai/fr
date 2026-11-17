@@ -17,7 +17,7 @@
 import { test, expect, describe } from 'bun:test';
 import { shouldOrchestrateProjectStart } from '../../../src/routes/projects';
 
-const EXEC = '0195f48b-d000-7000-8000-000000000003';
+const EXEC = 'aaaaaaaa-0000-4000-8000-000000000003';
 const CUSTOMER = '0199aaaa-bbbb-7ccc-8ddd-000000000abc';
 
 describe('shouldOrchestrateProjectStart', () => {

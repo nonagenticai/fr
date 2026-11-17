@@ -28,12 +28,12 @@ import { createDbSuite } from '../helpers/db-suite';
 const { itDb } = createDbSuite('remap-user-sub');
 
 // Literal subs unique to this file, so cleanup touches nothing else.
-const FROM = '0195f48b-1188-7000-8000-00000ee00001';
-const TO = '0195f48b-1188-7000-8000-00000ee00002';
-const OTHER = '0195f48b-1188-7000-8000-00000ee00003';
-const TENANT = '0195f48b-1188-7000-8000-00000ee0000a';
-const PROJECT = '0195f48b-1188-7000-8000-00000ee0000b';
-const STREAM = '0195f48b-1188-7000-8000-00000ee0000c';
+const FROM = 'aaaaaaaa-0000-4000-8000-00000ee00001';
+const TO = 'aaaaaaaa-0000-4000-8000-00000ee00002';
+const OTHER = 'aaaaaaaa-0000-4000-8000-00000ee00003';
+const TENANT = 'aaaaaaaa-0000-4000-8000-00000ee0000a';
+const PROJECT = 'aaaaaaaa-0000-4000-8000-00000ee0000b';
+const STREAM = 'aaaaaaaa-0000-4000-8000-00000ee0000c';
 const CARD = 'remap-user-sub-ledger-card';
 // super_admin_tenant_actions is APPEND-ONLY too (migration 215): one row, keyed by this correlation id.
 const AUDIT_CID = 'remap-user-sub-ledger-audit';

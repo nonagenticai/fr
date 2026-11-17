@@ -26,14 +26,14 @@ import { eq, inArray } from 'drizzle-orm';
 import { db, queryClient, inappMessages } from '../../../src/db/client';
 import { handleSendInappNotification } from '../../../src/routes/notifications/inapp';
 import { withRequestContext } from '../../../src/integrations/_lib/context';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../src/middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../src/middleware/internal-tenant-only';
 
 import { createDbSuite } from '../helpers/db-suite';
 
 const { itDb } = createDbSuite('notifications-inapp');
 
 const sql = queryClient;
-const TENANT = INTERNAL_SYSTEM_TENANT_ID;
+const TENANT = internalSystemTenantId()!;
 const OTHER_TENANT = '99999999-9999-4999-8999-999999999999';
 const RECIPIENT = '11111111-1111-4111-8111-aaaaaaaaaaaa';
 const RECIPIENT_2 = '22222222-2222-4222-8222-bbbbbbbbbbbb';
@@ -163,7 +163,7 @@ describe('POST /api/notifications/inapp', () => {
   });
 
   itDb('a deleted improvement tenant (prompt-improvement, 2026-11-03) → 404', async () => {
-    const resp = await withRequestContext(ctx('0195f48b-d000-7000-8000-000000000004'), () =>
+    const resp = await withRequestContext(ctx('aaaaaaaa-0000-4000-8000-000000000004'), () =>
       handleSendInappNotification(
         makeReq({
           recipientUserId: RECIPIENT_PROMPT,

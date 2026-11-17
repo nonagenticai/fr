@@ -58,7 +58,7 @@ export function stripComments(src: string): string {
 
 const grant = (user_id: string, role = 'workspace-member'): RoleGrant => ({
   user_id,
-  tenant_id: '0195f48b-d000-7000-8000-000000000001',
+  tenant_id: 'aaaaaaaa-0000-4000-8000-000000000001',
   tenant_name: 'Acme',
   role,
   granted_at: '2026-09-01T00:00:00.000Z',

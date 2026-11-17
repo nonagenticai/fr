@@ -209,7 +209,7 @@ function tenantGateShortCircuits(user: ScopeUser): boolean {
  *
  * ⛔ Use the PLATFORM set (6), never `isInternalTenant` (4): the ruling names
  * the platform set explicitly, and the 4-set would keep EXEC (…0003) and the
- * conveyor tenant (019de842) cards unreachable to the other platform tenants.
+ * conveyor tenant cards unreachable to the other platform tenants.
  */
 export function platformAwareTenantReadable(
   owningTenant: string | null | undefined,
@@ -300,7 +300,7 @@ async function assertBoardTenant(
  * ⛔ DO NOT remove the platform allow from this function to fix a WRITE
  * problem. `handleGetBoard` and `handleGetCard`
  * depend on it: AA / framework boards are owned by the reserved
- * `0195f48b-d000-7000-8000-*` tenants, and a human stakeholder reading one is
+ * `aaaaaaaa-0000-4000-8000-*` tenants, and a human stakeholder reading one is
  * by construction in a DIFFERENT tenant. Narrowing this breaks every read of a
  * system board. The write side has its own predicate — `assertBoardTenantWritable`
  * below — precisely so that the two can differ without either being a

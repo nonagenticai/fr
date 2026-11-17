@@ -63,7 +63,7 @@
 // The asymmetry is that the ENFORCER's decision runs through
 // `packageGateDecision` → `isPackageLicenseExempt` (lib/package-license-gate.ts
 // :84), which has TWO exemption axes, and this probe implemented only one of
-// them. Axis 2 is `isInternalTenant`: the four reserved `0195f48b-d000-7000-
+// them. Axis 2 is `isInternalTenant`: the four reserved `aaaaaaaa-d000-7000-
 // 8000-*` workspaces (system + workflow-/prompt-/procedure-improvement) are the
 // platform's OWN infrastructure tenants, not licensable fr/kag customers. The
 // enforcer therefore SKIPS the entitlement check for them entirely — it never

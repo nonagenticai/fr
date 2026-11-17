@@ -107,6 +107,18 @@ class WorkspacesStore {
   }
 
   /**
+   * The workspace of `kind` this session can see, if any. Undefined until loaded.
+   *
+   * Callers resolve fr's canonical workspace ids (`kata`, `execution`) through
+   * this instead of hardcoding production tenant UUIDs — the frontend is a
+   * public repo, and `/api/me/workspaces` already classifies every row. Treat
+   * `undefined` as "not resolved yet": never compare against it or open it.
+   */
+  canonicalOf(kind: 'system' | 'kata' | 'execution'): Workspace | undefined {
+    return this.#workspaces.find((w) => w.kind === kind);
+  }
+
+  /**
    * The tenant id the NEXT request will actually carry in `X-Active-Tenant`.
    *
    * `activeId` is `undefined` until `load()` resolves, but `auth-fetch` reads
@@ -303,7 +315,7 @@ class WorkspacesStore {
     // Measured in the production fr Postgres 2026-08-28/30: the super-admin
     // `fr-test` (32969c16-6ecd-49fe-a106-ba13e6640dc8) holds ZERO `user_roles`
     // rows (positive control: the table has 13 rows and other users do have
-    // them) and their JWT `tenant_id` is `0195f48b-…-0099`, which is NOT one of
+    // them) and their JWT `tenant_id` is `aaaaaaaa-…-0099`, which is NOT one of
     // the five `SUPER_ADMIN_SWITCHABLE_IDS`. Cold storage therefore landed them
     // in `system`, `load()` PERSISTED it, and `X-Active-Tenant: <system>` then
     // overrode their JWT tenant on every request — KAG Ask answered from
@@ -320,7 +332,7 @@ class WorkspacesStore {
     // and stamped `OWN_WORKSPACE_ROLE`. Preferring it is safe for EVERY caller,
     // not just a super-admin, because `middleware/request-context.ts:255-262`
     // accepts an `X-Active-Tenant` header for INTERNAL_TENANT_SET,
-    // EXECUTION_TENANT_ID, or `activeTenantHeader === jwtTenantId` — the
+    // the execution workspace, or `activeTenantHeader === jwtTenantId` — the
     // caller's own tenant is unconditionally in that set, so the switcher can
     // never show a workspace the requests are not scoped to. (For a
     // non-super-admin the gate ignores the header entirely and the context

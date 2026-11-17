@@ -54,7 +54,7 @@ import { jsonResponse } from '../../utils/response';
  *  - **Switched** — `middleware/request-context.ts` accepts `X-Active-Tenant`
  *    ONLY for the four reserved internal tenants, the execution tenant, or the
  *    caller's own JWT tenant. The first five are exactly the keys of
- *    `CANONICAL_TENANT_NAMES`, so the constant answers every reachable case
+ *    `canonicalTenantNames()`, so the constant answers every reachable case
  *    with no query.
  *
  * ⛔ No `workspaces` lookup on purpose. It would add a DB round-trip to an

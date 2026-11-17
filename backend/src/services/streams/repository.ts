@@ -187,7 +187,7 @@ export async function getStreamBySlug(
  *   * `deriveMembershipForStream` grows only the incumbent, so a duplicate pair
  *     cannot double every membership row.
  *
- * Measured 2026-09-11: tenant 0195f48b-…0002 owns TWO active streams for each of
+ * Measured 2026-09-11: tenant aaaaaaaa-…0002 owns TWO active streams for each of
  * decision / principle / requirement (migration 062 re-keyed `tenant_id` without
  * rewriting the tenant-uuid embedded in `slug`). `created_at ASC` makes the
  * winner the pre-existing row rather than whichever the planner returned first.

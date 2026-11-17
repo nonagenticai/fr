@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'bun:test';
 import { withRequestContextFromReq } from '../../../src/middleware/request-context';
 import {
-  INTERNAL_SYSTEM_TENANT_ID,
+  internalSystemTenantId,
   assetStreamKindForCardType,
   isAssetAnalysisCardType,
   isAssetAuthoringCardType,
@@ -11,6 +11,8 @@ import {
   requireAnyInternalTenant,
 } from '../../../src/middleware/internal-tenant-only';
 import { IntegrationError } from '../../../src/integrations/_lib/errors';
+
+const SYSTEM = internalSystemTenantId()!;
 
 describe('asset analysis card_types (scoring half)', () => {
   const analysis = [
@@ -44,14 +46,14 @@ describe('asset analysis card_types (scoring half)', () => {
 
 describe('isInternalTenant', () => {
   test('accepts the system tenant UUID', () => {
-    expect(isInternalTenant(INTERNAL_SYSTEM_TENANT_ID)).toBe(true);
+    expect(isInternalTenant(SYSTEM)).toBe(true);
   });
 
   test('rejects the three deleted improvement tenants (2026-11-03)', () => {
     for (const id of [
-      '0195f48b-d000-7000-8000-000000000002',
-      '0195f48b-d000-7000-8000-000000000004',
-      '0195f48b-d000-7000-8000-000000000005',
+      'aaaaaaaa-0000-4000-8000-000000000002',
+      'aaaaaaaa-0000-4000-8000-000000000004',
+      'aaaaaaaa-0000-4000-8000-000000000005',
     ]) {
       expect(isInternalTenant(id)).toBe(false);
     }

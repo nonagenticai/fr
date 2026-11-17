@@ -207,7 +207,7 @@
   "scrubUnchanged": [
     {
       "name": "uuid in text",
-      "input": "run 0195f48b-d000-7000-8000-00000000b0aa finished"
+      "input": "run aaaaaaaa-0000-4000-8000-00000000b0aa finished"
     },
     {
       "name": "40-hex commit sha in text",
@@ -235,7 +235,7 @@
     },
     {
       "name": "uuid list",
-      "input": "ids: 0195f48b-d000-7000-8000-00000000b0aa, 0195f48b-d000-7000-8000-00000000b0bb"
+      "input": "ids: aaaaaaaa-0000-4000-8000-00000000b0aa, aaaaaaaa-0000-4000-8000-00000000b0bb"
     },
     {
       "name": "ratio-like colon",

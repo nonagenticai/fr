@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { canRequestPromotion, isPromotableCopy, promotionErrorText, promotionLabel } from './promotionRequest';
 
-const P = '0195f48b-d000-7000-8000-00000000a8a1';
+const P = 'aaaaaaaa-0000-4000-8000-00000000a8a1';
 const copy = { origin_kind: 'project', origin_project_id: P, supersedes: 'use-postgres', version_status: 'DRAFT' };
 
 describe('isPromotableCopy', () => {

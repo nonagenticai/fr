@@ -19,7 +19,7 @@ import {
   isIntegrationError,
   integrationErrorResponse,
 } from '../../../../integrations/_lib/errors';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../../middleware/internal-tenant-only';
 import { jsonResponse } from '../../../../utils/response';
 import { isSystemRow } from '../../../assets/_lib/system-union';
 
@@ -34,7 +34,7 @@ export async function refuseSystemOwnedWrite(
   fetchRow: () => Promise<unknown>,
 ): Promise<Response | null> {
   if (isSuperAdmin(user)) return null;
-  if (getRequestContext().tenantId === INTERNAL_SYSTEM_TENANT_ID) return null;
+  if (getRequestContext().tenantId === internalSystemTenantId()) return null;
   let row: unknown;
   try {
     row = await fetchRow();

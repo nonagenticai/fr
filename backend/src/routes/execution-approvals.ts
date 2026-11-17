@@ -105,7 +105,7 @@ import {
 import { isValidUuid } from '../utils/tenant';
 import { findTenantScopedProject } from '../lib/project-access';
 import { ctxTenantId } from '../middleware/request-context';
-import { PLATFORM_TENANT_IDS, isPlatformTenant } from '../middleware/internal-tenant-only';
+import { platformTenantIds, isPlatformTenant } from '../middleware/internal-tenant-only';
 import { assertProjectNotArchived } from '../lib/project-live-status';
 import type { User } from '../types/api';
 import {
@@ -1536,7 +1536,7 @@ export async function handleListStrandedSignoffs(req: Request): Promise<Response
   // customer tenant's rows: the approval-backed buckets carry
   // `approvals.tenant_id IN <platform set>`, and the ledger bucket keeps only
   // blocks whose `tenant_id` is a platform tenant (a NULL tenant fails closed).
-  const platformScope = inArray(approvals.tenant_id, [...PLATFORM_TENANT_IDS]);
+  const platformScope = inArray(approvals.tenant_id, [...platformTenantIds()]);
   const unreleasable = (await listOpenSignoffBlocks()).filter((b) =>
     isPlatformTenant(b.tenant_id),
   );

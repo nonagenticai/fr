@@ -11,8 +11,8 @@
 import { describe, expect, it } from 'vitest';
 import { checkUiIntent } from './ui-intent';
 
-const P = '0195f48b-d000-7000-8000-0000000000a1';
-const Q = '0195f48b-d000-7000-8000-0000000000b2';
+const P = 'aaaaaaaa-0000-4000-8000-0000000000a1';
+const Q = 'aaaaaaaa-0000-4000-8000-0000000000b2';
 
 /** What a browser does with the route (the thing `goto` and `<a href>` follow). */
 const resolved = (route: string): string => {

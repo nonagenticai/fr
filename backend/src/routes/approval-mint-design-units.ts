@@ -11,7 +11,7 @@
 // cross-tenant arm (cardRouteTenantRefusal has one): a customer tenant can never call this.
 // The approval is then read under that tenant — another tenant's approval is 404, byte-
 // identical to a missing one. Every card is minted through `createProjectCardFor` (the in-
-// process body of POST /api/cards/project) under EXECUTION_TENANT_ID, exactly as
+// process body of POST /api/cards/project) under executionTenantId, exactly as
 // decomposition-commit does — same EXEC pin, suppression read, asset_id dedupe, create lease.
 //
 // ORDER (each step refuses with ZERO cards minted — validation is all-or-nothing):
@@ -68,7 +68,7 @@ import { validateAuth } from '../middleware/auth';
 import { ctxTenantId } from '../middleware/request-context';
 import { isUuidShape } from '../lib/uuid-shape';
 import { jsonResponse } from '../utils/response';
-import { EXECUTION_TENANT_ID } from './tenants';
+import { executionTenantId } from './tenants';
 import { createProjectCardFor } from './cards/project';
 import { MINT_REFUSAL_STATUSES } from './decomposition-commit';
 import { stampDeliverableMinted } from './deliverable-minted';
@@ -203,7 +203,10 @@ async function refuseVisibly(
 export async function handleMintDesignUnits(req: Request, approvalIdRaw: string): Promise<Response> {
   const user = await validateAuth(req);
   const activeTenantId = ctxTenantId(user.tenantId);
-  if (activeTenantId !== EXECUTION_TENANT_ID) {
+  // FAIL CLOSED: an unset FR_EXECUTION_TENANT_ID is no tenant, never a fallback —
+  // no caller can equal it, so this EXEC-only refusal is the one path.
+  const execTenantId = executionTenantId();
+  if (execTenantId === undefined || activeTenantId !== execTenantId) {
     return refusal(
       403,
       'mint_design_units_exec_only',
@@ -336,7 +339,7 @@ export async function handleMintDesignUnits(req: Request, approvalIdRaw: string)
     const requiresCardIds = body.requires.map((k) => cardIdByUnit.get(k)).filter((x): x is string => !!x);
     const res = await createProjectCardFor(
       user,
-      EXECUTION_TENANT_ID,
+      execTenantId,
       mintRequestBody(body, approval.project_id, requiresCardIds, deliverableByUnit?.get(body.unit_key)),
     );
     const out = (await res.json().catch(() => null)) as Record<string, unknown> | null;

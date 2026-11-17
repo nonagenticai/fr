@@ -16,9 +16,9 @@ import {
 } from '../../../../src/services/planka/webhook-subscription';
 
 // Literal on purpose: not derived from the constants under test.
-const KATA = '0195f48b-d000-7000-8000-000000000006';
-const V4_CONVEYOR = '5f868d42-03f8-51f0-a93c-3e83070dc196';
-const CUSTOMER = '0195f48b-d000-7000-8000-000000000100';
+const KATA = 'aaaaaaaa-0000-4000-8000-000000000006';
+const V4_CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000a6';
+const CUSTOMER = 'aaaaaaaa-0000-4000-8000-000000000100';
 
 const WEBHOOKS = [
   { id: '11', name: 'n8n-per-flow', boardIds: [] as string[] },

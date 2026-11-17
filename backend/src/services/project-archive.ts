@@ -339,7 +339,7 @@ export async function teardownProjectPlankaResources(
  * `purgeAndDeleteProjectDocuments`: each document is purged under ITS OWN recorded
  * `documents.tenant_id` (record-and-replay). Filtering by the caller's active tenant
  * would be actively harmful here: a fleet-view admin's active tenant is
- * INTERNAL_SYSTEM_TENANT_ID, which matches ZERO real document rows, so the purge
+ * internalSystemTenantId, which matches ZERO real document rows, so the purge
  * would silently do nothing.
  *
  * `opts.actor` is REQUIRED and is written verbatim to `approvals.voided_by` for

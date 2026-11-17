@@ -25,7 +25,7 @@ const ctx: ActionContext = {
   correlationId: 'cid-1',
   initiator: 'human',
   channel: 'telegram',
-  tenantId: '0195f48b-d000-7000-8000-00000000e0e1',
+  tenantId: 'aaaaaaaa-0000-4000-8000-00000000e0e1',
   tenantName: 'Acme',
 };
 

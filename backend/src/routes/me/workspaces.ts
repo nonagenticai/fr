@@ -35,7 +35,7 @@
 // control the backend refuses.
 
 import { validateAuth } from '../../middleware/auth';
-import { INTERNAL_SYSTEM_TENANT_ID, KATA_TENANT_ID, isPlatformTenant } from '../../middleware/internal-tenant-only';
+import { internalSystemTenantId, kataTenantId, isPlatformTenant } from '../../middleware/internal-tenant-only';
 import {
   listPickerWorkspaces,
   OWN_WORKSPACE_ROLE,
@@ -91,9 +91,9 @@ export interface MyWorkspaceEntry {
 
 function kindFor(workspaceId: string): WorkspaceKind {
   switch (workspaceId) {
-    case INTERNAL_SYSTEM_TENANT_ID:
+    case internalSystemTenantId():
       return 'system';
-    case KATA_TENANT_ID:
+    case kataTenantId():
       return 'kata';
     default:
       return isPlatformTenant(workspaceId) ? 'execution' : 'customer';

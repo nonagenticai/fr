@@ -16,9 +16,9 @@ import { pathParams } from '../../../src/capabilities/derive-openapi';
 
 export const HOME = 'a100000c-0000-4000-8000-00000000000c';
 export const OTHER = 'b200000d-0000-4000-8000-00000000000d';
-export const UUID = '0195f48b-d000-7000-8000-0000000000b2';
+export const UUID = 'aaaaaaaa-0000-4000-8000-0000000000b2';
 /** An active PLATFORM tenant (lib/production-workflows-gate.ts: it reads the production n8n catalogue). */
-export const PLATFORM_TENANT = '019de842-c92a-7e37-8fdd-eb0d8c5396f9';
+export const PLATFORM_TENANT = 'aaaaaaaa-0000-4000-8000-0000000000a5';
 export const T0 = '2026-10-01T00:00:00.000Z';
 
 type Cap = Capability<unknown, unknown>;

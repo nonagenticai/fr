@@ -20,7 +20,7 @@ import {
 const entry = (action: string): HistoryEntry => ({
   at: '2026-09-21T12:00:00.000Z',
   action,
-  by: '0195f48b-d000-7000-8000-000000000001',
+  by: 'aaaaaaaa-0000-4000-8000-000000000001',
 });
 
 /**

@@ -1,93 +1,64 @@
 // src/middleware/internal-tenant-only.ts
 //
-// The reserved canonical tenants in the `0195f48b-d000-7000-8000-*` namespace
-// and the tenant sets built from them.
+// The reserved canonical tenants and the tenant sets built from them.
 //
-//   system    (…0001) → cross-tenant system assets (Plan 4 seed target)
-//   execution (…0003) → George's canonical working / demo tenant
+//   system    → cross-tenant system assets (Plan 4 seed target)
+//   execution → George's canonical working / demo tenant
+//   kata      → the ONE internal workspace whose projects run as a kata
 //
-// The three v3 improvement tenants (workflow-improvement …0002,
-// prompt-improvement …0004, procedure-improvement …0005) were deleted
-// 2026-11-03 with the v3 improvement loop (kata-super-admin §7, migration 230);
-// the kata replaced them.
+// The three v3 improvement tenants (workflow-improvement, prompt-improvement,
+// procedure-improvement) were deleted 2026-11-03 with the v3 improvement loop
+// (kata-super-admin §7, migration 230); the kata replaced them.
+//
+// ⛔ THE IDS THEMSELVES ARE NO LONGER IN THIS FILE, OR IN THIS REPOSITORY. They
+// are environment-supplied (`FR_*_TENANT_ID`) and read through
+// `src/lib/tenant-config.ts`. This module keeps the AUTHORISATION rules built on
+// top of them — the sets, the predicates and the 404 gates.
 //
 // Internal-only routes respond 404 to any other tenant — 404 (not 403) so the
 // existence of the surface stays private from regular tenants.
 
 import { getCorrelationId, getTenantId } from '../integrations/_lib/context';
+import { canonicalTenantNames, internalTenantIds, platformTenantIds } from '../lib/tenant-config';
 import { IntegrationError } from '../integrations/_lib/errors';
 
-export const INTERNAL_SYSTEM_TENANT_ID =
-  '0195f48b-d000-7000-8000-000000000001';
-
-// George's canonical working / demo "execution" tenant. NOT an internal /
-// improvement tenant (it holds regular user-owned projects + boards, not
-// system streams) — so it is deliberately absent from INTERNAL_TENANT_IDS.
-// It IS, however, one of the canonical tenants a super-admin may switch into
-// via the top-bar workspace switcher (see routes/tenants.ts CANONICAL_TENANTS
-// + the X-Active-Tenant switch gate in middleware/request-context.ts). Kept
-// here so the gate and routes/tenants.ts share a single source of truth.
-export const EXECUTION_TENANT_ID = '0195f48b-d000-7000-8000-000000000003';
-
-/**
- * The `kata` tenant (migration 228; docs/design/kata-super-admin.md §3a). ONE internal workspace
- * that holds every kata project — and the ONLY tenant whose projects run as a kata. No human
- * members: a super-admin reaches it by switching in. Only `POST /api/katas` creates projects in
- * it, server-side, so the conveyor licence never names it.
- */
-export const KATA_TENANT_ID = '0195f48b-d000-7000-8000-000000000006';
-
-export const INTERNAL_TENANT_IDS = [INTERNAL_SYSTEM_TENANT_ID, KATA_TENANT_ID] as const;
-
-export type InternalTenantId = (typeof INTERNAL_TENANT_IDS)[number];
+export {
+  aaConveyorTenantId,
+  canonicalTenantNames,
+  executionTenantId,
+  internalSystemTenantId,
+  internalTenantIds,
+  kataTenantId,
+  platformTenantIds,
+  v4ConveyorTenantId,
+} from '../lib/tenant-config';
 
 // ── The three tenant sets, side by side ─────────────────────────────────────
 //
 // They DIFFER on purpose; never collapse one into another:
-//   * INTERNAL_TENANT_IDS (2)   — the reserved system tenant + kata.
-//   * isRepoPlatformTenant (2)  — services/repo-access.ts: system + EXECUTION.
+//   * internalTenantIds()   — the reserved system tenant + kata.
+//   * isRepoPlatformTenant — services/repo-access.ts: system + EXECUTION.
 //     Kata is excluded: coding-github's platform set does not hold it, and a
 //     kata project carries no repository.
 //     Who may put an internal-owner (`nonagenticai`) repo into fr. The AA
 //     conveyor tenant is deliberately ABSENT: coding-github refuses it for
 //     platform repos, so admitting it here would let fr store a repo that
 //     every downstream clone then refuses.
-//   * PLATFORM_TENANT_IDS (5)   — system + kata + EXECUTION + the AA conveyor tenant
+//   * platformTenantIds()  — system + kata + EXECUTION + the AA conveyor tenant
 //     + the v4 conveyor tenant.
 //     Who may see system-owned rows at all, and the tenants the conveyor
 //     priority identity may name via X-Tenant-Id (routes/cards/priority.ts).
 // Pinned by tests/unit/middleware/tenant-sets.test.ts.
 
-/** The n8n-dev / AA conveyor tenant. A PLATFORM tenant, not an internal one. */
-export const AA_CONVEYOR_TENANT_ID = '019de842-c92a-7e37-8fdd-eb0d8c5396f9';
-
-/**
- * v4 conveyor (svc-n8n-local-conveyor, George 10-14): super_admin decides its
- * ask_fr approvals. A PLATFORM tenant exactly like the AA conveyor tenant —
- * NOT internal (INTERNAL_TENANT_IDS) and NOT repo-platform (isRepoPlatformTenant).
- * Its `workspaces` row (the switcher offers only rows that exist) is migration 193.
- */
-export const V4_CONVEYOR_TENANT_ID = '5f868d42-03f8-51f0-a93c-3e83070dc196';
-
-/**
- * Tenants that may see system-owned rows at all: the internal system
- * tenant, the execution tenant, the n8n-dev/AA conveyor tenant
- * (it runs system procedures) and the v4 conveyor tenant (George 10-14). Owner ruling 2026-09-30: system
- * data is NEVER visible to any other tenant. The upstreams enforce the same
- * set; this is fr's second layer so a customer never sees a system row even if
- * an upstream regresses. (Moved here from routes/assets/_lib/system-union.ts,
- * which re-exports it.)
- */
-export const PLATFORM_TENANT_IDS: ReadonlySet<string> = new Set<string>([
-  ...INTERNAL_TENANT_IDS,
-  EXECUTION_TENANT_ID,
-  AA_CONVEYOR_TENANT_ID,
-  V4_CONVEYOR_TENANT_ID,
-]);
-
+// ⛔ THE PLATFORM SET IS DERIVED (platformTenantIds() in tenant-config), not
+// restated here: internal (system + kata) + execution + both conveyor tenants.
+// Tenants that may see system-owned rows at all. Owner ruling 2026-09-30:
+// system data is NEVER visible to any other tenant. The upstreams enforce the
+// same set; this is fr's second layer so a customer never sees a system row
+// even if an upstream regresses.
 
 export function isPlatformTenant(tenantId: string | null | undefined): boolean {
-  return typeof tenantId === 'string' && PLATFORM_TENANT_IDS.has(tenantId);
+  return typeof tenantId === 'string' && platformTenantIds().has(tenantId);
 }
 
 /**
@@ -99,16 +70,13 @@ export function isPlatformTenant(tenantId: string | null | undefined): boolean {
  * one in a `project_id` field gets a truthful "not found" that reads as a
  * missing row. Measured 2026-09-10: `/api/webhooks/n8n/execution-event` and
  * `GET /api/projects/:id` were both refusing
- * `0195f48b-d000-7000-8000-000000000004`, which is `prompt-improvement` — a
+ * the `prompt-improvement` workspace id, which is a TENANT id — a
  * tenant, and therefore an id that can never match a `projects` row under any
  * tenant. `canonicalTenantName` lets a refusal SAY that instead of leaving the
  * reader to guess between "deleted", "other tenant" and "wrong entity kind".
  */
-export const CANONICAL_TENANT_NAMES: Readonly<Record<string, string>> = {
-  [INTERNAL_SYSTEM_TENANT_ID]: 'system',
-  [EXECUTION_TENANT_ID]: 'execution',
-  [KATA_TENANT_ID]: 'kata',
-};
+// ⛔ Derived (canonicalTenantNames() in tenant-config) — only CONFIGURED roles
+// appear. An unset role has no name to report.
 
 /**
  * The canonical tenant's name if `id` is one, else null.
@@ -121,11 +89,11 @@ export const CANONICAL_TENANT_NAMES: Readonly<Record<string, string>> = {
  */
 export function canonicalTenantName(id: string | null | undefined): string | null {
   if (!id) return null;
-  return CANONICAL_TENANT_NAMES[id] ?? null;
+  return canonicalTenantNames()[id] ?? null;
 }
 
-export function isInternalTenant(tenantId: string | undefined): tenantId is InternalTenantId {
-  return tenantId === INTERNAL_SYSTEM_TENANT_ID || tenantId === KATA_TENANT_ID;
+export function isInternalTenant(tenantId: string | null | undefined): boolean {
+  return typeof tenantId === 'string' && internalTenantIds().includes(tenantId);
 }
 
 /**
@@ -192,12 +160,14 @@ function refuseTenant(
  * `service` is surfaced in the 404 response body by
  * `integrationErrorResponse`, so callers pass their own name.
  */
-export function requireAnyInternalTenant(service: string): InternalTenantId {
+export function requireAnyInternalTenant(service: string): string {
   const tenant = getTenantId();
   if (!isInternalTenant(tenant)) {
-    refuseTenant('requireAnyInternalTenant', service, tenant, INTERNAL_TENANT_IDS);
+    refuseTenant('requireAnyInternalTenant', service, tenant, internalTenantIds());
   }
-  return tenant;
+  // `isInternalTenant` narrows to `string | null | undefined`; a refusal above
+  // has already thrown for anything that is not a configured internal tenant.
+  return tenant as string;
 }
 
 /**

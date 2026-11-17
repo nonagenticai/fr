@@ -23,9 +23,9 @@ import { drainDetachedWork } from '../../../src/lib/detached-work';
 import { linkBoardThenStartConveyor } from '../../../src/services/rm-board-link';
 import { LICENCE_ROUTE_ALLOWLIST } from '../../../src/lib/licence-route-allowlist';
 import {
-  AA_CONVEYOR_TENANT_ID,
-  KATA_TENANT_ID,
-  V4_CONVEYOR_TENANT_ID,
+  aaConveyorTenantId,
+  kataTenantId,
+  v4ConveyorTenantId,
 } from '../../../src/middleware/internal-tenant-only';
 import { KATA_ROUTE_CALLERS, LicenceOpenBody, assertKataCaller } from '../../../src/routes/katas';
 import { joinSystemKataAndon, pruneOrphanKataHolders } from '../../../src/services/kata-andon';
@@ -60,11 +60,14 @@ const { itDb } = createDbSuite('katas');
 
 const CUSTOMER = '00000000-0000-4000-8000-0000000c0de1';
 const OWNER = '00000000-0000-4000-8000-0000000000b1';
+const KATA = kataTenantId()!;
+const AA_CONVEYOR = aaConveyorTenantId()!;
+const V4_CONVEYOR = v4ConveyorTenantId()!;
 
 const projectIds: string[] = [];
 let sourceProject = '';
 /** The conveyor licence caller (the identity validateAuth would produce). */
-const caller = { id: 'licence-subject', email: '', name: 'coach', roles: [], tenantId: V4_CONVEYOR_TENANT_ID, authKind: 'licence' } as unknown as User;
+const caller = { id: 'licence-subject', email: '', name: 'coach', roles: [], tenantId: V4_CONVEYOR, authKind: 'licence' } as unknown as User;
 
 /** `tenant` null ⇒ an UNTAGGED project (RM can hold no pm_project for it: an archive asks RM nothing). */
 async function project(name: string, tenant: string | null): Promise<string> {
@@ -186,7 +189,7 @@ describe('open: a kata starts running and holds the cord', () => {
   itDb('a second open kata with the same signature is refused by the index (409 kata_signature_open)', async () => {
     const s = sig('dup-index');
     await runningKata(s);
-    const other = await project('kata dup', KATA_TENANT_ID);
+    const other = await project('kata dup', KATA);
     await expect(
       insertRunningKata({ id: other, source_project_id: sourceProject, source_tenant_id: CUSTOMER, symptom: 'x', opened_by: 'coach', signature: s }),
     ).rejects.toMatchObject({ statusCode: 409, code: 'kata_signature_open' });
@@ -320,7 +323,7 @@ describe('the open decision (one open kata per signature; amendment 7)', () => {
 
   itDb('the second open of a signature waits on the first decision and is LINKED to the kata it committed', async () => {
     const s = sig('lock-link');
-    const firstId = await project(`kata ${s}`, KATA_TENANT_ID);
+    const firstId = await project(`kata ${s}`, KATA);
     let release!: () => void;
     const gate = new Promise<void>((r) => (release = r));
     let locked!: () => void;
@@ -389,7 +392,7 @@ describe('open ordering (services/katas/open.ts; the Planka/RM steps are proven 
 
   itDb('the running row is inserted WITH its first card and re-checks the signature under its lock', async () => {
     const s = sig('with-card');
-    const id = await project(`kata ${s}`, KATA_TENANT_ID);
+    const id = await project(`kata ${s}`, KATA);
     const r = await insertRunningKata({
       id,
       source_project_id: sourceProject,
@@ -405,7 +408,7 @@ describe('open ordering (services/katas/open.ts; the Planka/RM steps are proven 
     await patchKata(id, { state: 'qa' });
     await patchKata(id, { state: 'published', published_version_id: 'v-pub' });
     // A published kata of the signature is open too: a racing insert is refused, nothing held.
-    const loser = await project(`kata ${s} loser`, KATA_TENANT_ID);
+    const loser = await project(`kata ${s} loser`, KATA);
     await expect(
       insertRunningKata({ id: loser, source_project_id: sourceProject, source_tenant_id: CUSTOMER, symptom: 's', opened_by: 'coach', signature: s }),
     ).rejects.toMatchObject({ statusCode: 409, code: 'kata_signature_open' });
@@ -646,7 +649,7 @@ describe('transitions (PATCH /api/katas/:id)', () => {
 describe('publish needs both versions; the signature never changes', () => {
   itDb('qa → published without base_version_id or published_version_id is 409 kata_versions_missing, nothing changed', async () => {
     const s = sig('pub-versions');
-    const id = await project(`kata ${s}`, KATA_TENANT_ID);
+    const id = await project(`kata ${s}`, KATA);
     await insertRunningKata({ id, source_project_id: sourceProject, source_tenant_id: CUSTOMER, symptom: 's', opened_by: 'coach', signature: s });
     await patchKata(id, { state: 'qa' });
     await expect(patchKata(id, { state: 'published', published_version_id: 'v-pub' })).rejects.toMatchObject({
@@ -825,7 +828,7 @@ describe('close and stop', () => {
   });
 
   itDb('stop of a TAGGED kata project with RM unreachable: 502 rm_project_close_failed, kata still running, project still active', async () => {
-    const { id } = await runningKata(sig('stop-rm-down'), undefined, { tenant: KATA_TENANT_ID });
+    const { id } = await runningKata(sig('stop-rm-down'), undefined, { tenant: KATA });
     await expect(stopKata(id, 'ops@kata.test')).rejects.toMatchObject({ statusCode: 502, code: 'rm_project_close_failed' });
     expect((await readKata(id))!.state).toBe('running');
     const [p] = await db.select({ status: projects.status }).from(projects).where(eq(projects.id, id));
@@ -835,7 +838,7 @@ describe('close and stop', () => {
   itDb('rollback request: refused without a base version, or when a LATER kata published on the same target_flow', async () => {
     const flow = `flow-${Date.now()}-${seq++}`;
     const noBase = sig('rb-no-base');
-    const nb = await project(`kata ${noBase}`, KATA_TENANT_ID);
+    const nb = await project(`kata ${noBase}`, KATA);
     await insertRunningKata({ id: nb, source_project_id: sourceProject, source_tenant_id: CUSTOMER, symptom: 's', opened_by: 'coach', signature: noBase });
     await patchKata(nb, { state: 'qa' });
     // Out of band (a pre-guard published row): no base recorded.
@@ -906,7 +909,7 @@ describe('close and stop', () => {
       expect(row.linked_cards.map((c) => c.card_id)).toContain('card-rep');
 
       const nb = sig('repeat-no-base');
-      const nbId = await project(`kata ${nb}`, KATA_TENANT_ID);
+      const nbId = await project(`kata ${nb}`, KATA);
       await insertRunningKata({ id: nbId, source_project_id: sourceProject, source_tenant_id: CUSTOMER, symptom: 's', opened_by: 'coach', signature: nb });
       await sql`UPDATE katas SET state = 'published', published_at = now(), cord_engaged_at = NULL WHERE id = ${nbId}`;
       await resetCord();
@@ -941,7 +944,7 @@ describe('a kata project never starts the conveyor (fr creates its first card it
   // the link then fails — so the row's absence is the observable "no start was attempted". The
   // board here lacks the six conveyor lists, so the link fails at once and nothing leaves fr.
   const linkInput = (frProjectId: string) => ({
-    tenantId: KATA_TENANT_ID,
+    tenantId: KATA,
     rmPmProjectId: '00000000-0000-4000-8000-00000000aaaa',
     frProjectId,
     plankaProjectId: null,
@@ -952,7 +955,7 @@ describe('a kata project never starts the conveyor (fr creates its first card it
     db.select().from(projectConveyorStartAttempts).where(eq(projectConveyorStartAttempts.project_id, projectId));
 
   itDb('startConveyor:false (the kata open) records no start attempt and sends no start', async () => {
-    const kataProject = await project('kata no-start', KATA_TENANT_ID);
+    const kataProject = await project('kata no-start', KATA);
     linkBoardThenStartConveyor({ ...linkInput(kataProject), startConveyor: false });
     expect(await drainDetachedWork()).toBe(true);
     expect(await attempts(kataProject)).toEqual([]);
@@ -1002,7 +1005,7 @@ const KATA_ROUTES: Record<string, { method: string; pattern: string }> = {
 
 describe('who reaches /api/katas', () => {
   test('no tenant role reaches any route — workspace-admin, tenant_admin and a member included', () => {
-    for (const user of [human(['tenant_admin', 'admin']), human(['workspace-admin']), human([]), human(['tenant_admin'], KATA_TENANT_ID)]) {
+    for (const user of [human(['tenant_admin', 'admin']), human(['workspace-admin']), human([]), human(['tenant_admin'], KATA)]) {
       for (const op of OPS) {
         expect(() => assertKataCaller(user, op)).toThrow(expect.objectContaining({ statusCode: 403, code: 'kata_caller_not_allowed' }));
       }
@@ -1013,7 +1016,7 @@ describe('who reaches /api/katas', () => {
     for (const op of OPS) {
       expect(() => assertKataCaller(licence(CUSTOMER), op)).toThrow(expect.objectContaining({ statusCode: 403 }));
     }
-    for (const tenant of [V4_CONVEYOR_TENANT_ID, AA_CONVEYOR_TENANT_ID]) {
+    for (const tenant of [V4_CONVEYOR, AA_CONVEYOR]) {
       for (const op of OPS) {
         const admitted = (KATA_ROUTE_CALLERS[op] as readonly string[]).includes('conveyor_licence');
         if (admitted) expect(assertKataCaller(licence(tenant), op)).toBe('conveyor_licence');
@@ -1024,7 +1027,7 @@ describe('who reaches /api/katas', () => {
 
   test('the licence is refused on every super-admin-only route, at the server door too (not allowlisted)', () => {
     for (const op of SUPER_ONLY) {
-      expect(() => assertKataCaller(licence(V4_CONVEYOR_TENANT_ID), op)).toThrow(expect.objectContaining({ statusCode: 403 }));
+      expect(() => assertKataCaller(licence(V4_CONVEYOR), op)).toThrow(expect.objectContaining({ statusCode: 403 }));
       const r = KATA_ROUTES[op]!;
       expect(LICENCE_ROUTE_ALLOWLIST.some((row) => row.method === r.method && row.pattern === r.pattern)).toBe(false);
     }

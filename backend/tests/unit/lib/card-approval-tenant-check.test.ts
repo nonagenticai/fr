@@ -15,10 +15,14 @@ import {
   renderCardApprovalTenantCheckMetrics,
 } from '../../../src/lib/card-approval-tenant-check';
 import {
-  AA_CONVEYOR_TENANT_ID,
-  EXECUTION_TENANT_ID,
-  INTERNAL_SYSTEM_TENANT_ID,
+  aaConveyorTenantId,
+  executionTenantId,
+  internalSystemTenantId,
 } from '../../../src/middleware/internal-tenant-only';
+
+const SYSTEM = internalSystemTenantId()!;
+const EXECUTION = executionTenantId()!;
+const AA_CONVEYOR = aaConveyorTenantId()!;
 
 const CUST_A = '01a0ef72-0000-4000-8000-0000000000a1';
 const CUST_B = '351fdc59-6747-4e48-b130-73d8cdb52bf9';
@@ -29,20 +33,20 @@ const c = (explicitTenant: string, referenceTenant: string | null, callerTenant?
 describe('classifyCardApprovalTenant — the approved rule', () => {
   test('equal ⇒ match', () => {
     expect(c(CUST_A, CUST_A)).toBe('match');
-    expect(c(INTERNAL_SYSTEM_TENANT_ID, INTERNAL_SYSTEM_TENANT_ID)).toBe('match');
+    expect(c(SYSTEM, SYSTEM)).toBe('match');
   });
 
   test('platform ↔ platform, different ⇒ allowed and counted (incl. EXEC and the conveyor tenant)', () => {
-    expect(c(EXECUTION_TENANT_ID, INTERNAL_SYSTEM_TENANT_ID)).toBe('platform_mismatch');
-    expect(c(AA_CONVEYOR_TENANT_ID, EXECUTION_TENANT_ID)).toBe('platform_mismatch');
+    expect(c(EXECUTION, SYSTEM)).toBe('platform_mismatch');
+    expect(c(AA_CONVEYOR, EXECUTION)).toBe('platform_mismatch');
     expect(isRefusedCardApprovalTenant('platform_mismatch')).toBe(false);
   });
 
   test('platform ↔ non-platform, either direction ⇒ refused', () => {
     // blocked-escalate's default-SYSTEM on a customer card:
-    expect(c(INTERNAL_SYSTEM_TENANT_ID, CUST_A)).toBe('refused_cross_boundary');
+    expect(c(SYSTEM, CUST_A)).toBe('refused_cross_boundary');
     // the measured orphan-tenant rows on an EXEC stream board:
-    expect(c(CUST_B, EXECUTION_TENANT_ID)).toBe('refused_cross_boundary');
+    expect(c(CUST_B, EXECUTION)).toBe('refused_cross_boundary');
   });
 
   test('two different non-platform tenants ⇒ refused', () => {
@@ -50,8 +54,8 @@ describe('classifyCardApprovalTenant — the approved rule', () => {
   });
 
   test('no reference: platform ⇒ allowed (outcome-ingestion shape: tenant, no boardId)', () => {
-    expect(c(INTERNAL_SYSTEM_TENANT_ID, null)).toBe('no_reference_platform');
-    expect(c(AA_CONVEYOR_TENANT_ID, null)).toBe('no_reference_platform');
+    expect(c(SYSTEM, null)).toBe('no_reference_platform');
+    expect(c(AA_CONVEYOR, null)).toBe('no_reference_platform');
   });
 
   test("no reference: the caller's own tenant ⇒ allowed; anything else ⇒ refused", () => {

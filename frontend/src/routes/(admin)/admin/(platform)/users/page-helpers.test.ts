@@ -1013,7 +1013,7 @@ describe('existing-tenant picker', () => {
     archived_at: null,
     ...extra,
   });
-  const CONVEYOR = '5f868d42-03f8-51f0-a93c-3e83070dc196';
+  const CONVEYOR = 'aaaaaaaa-0000-4000-8000-0000000000a6';
   const OWN = '11111111-2222-4333-8444-555555555555';
 
   it('isTenantId accepts a uuid and refuses a slug', () => {

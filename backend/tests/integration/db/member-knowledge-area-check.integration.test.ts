@@ -20,7 +20,7 @@ import { createDbSuite } from '../helpers/db-suite';
 
 const { itDb } = createDbSuite('member-knowledge-area-check');
 
-const TENANT = '0195f48b-1187-7000-8000-00000000c187';
+const TENANT = 'aaaaaaaa-0000-4000-8000-00000000c187';
 
 afterEach(async () => {
   await queryClient`DELETE FROM member_knowledge_areas WHERE tenant_id = ${TENANT}::uuid`;

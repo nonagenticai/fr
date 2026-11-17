@@ -1379,7 +1379,7 @@ export const approvals = pgTable('approvals', {
   //                       Planka journey shows it left BLOCKED after the approval
   //                       was created, so we did not re-send. Migration 159.
   //   'card_tenant_not_platform' — APPROVED signoff rows only: the card's owning
-  //                       tenant is not in PLATFORM_TENANT_IDS; never sent. 159.
+  //                       tenant is not in platformTenantIds(); never sent. 159.
   // NULL = not terminal, still a candidate.
   //
   // ⚠️ CORRECTED 2026-09-23: this list said "Exactly four values" and omitted

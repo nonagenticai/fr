@@ -20,20 +20,25 @@
 	//   2. EVERY project on the EXEC tenant (the internal AA pipeline) — any
 	//      project_type of the tenant's catalogue (requirements_management),
 	//      including undefined.
-	export const EXECUTION_TENANT_ID = '0195f48b-d000-7000-8000-000000000003';
-
 	export interface OrchestrationParams {
 		projectType?: string | null;
 		cveSweep?: boolean | null;
 		tenantId?: string | null;
+		/**
+		 * The `execution` workspace's id, resolved at runtime from
+		 * `/api/me/workspaces` (`workspaces.canonicalOf('execution')`). Never a
+		 * hardcoded UUID — fr is a public repo. Undefined until that list loads,
+		 * and then the comparison below is false (fail safe).
+		 */
+		executionTenantId?: string | null;
 	}
 
 	/** Mirrors backend shouldOrchestrateProjectStart exactly. */
 	export function orchestratesProjectStart(params: OrchestrationParams): boolean {
-		const { projectType, cveSweep, tenantId } = params;
+		const { projectType, cveSweep, tenantId, executionTenantId } = params;
 		if ((projectType ?? '').trim() === 'system_ops') return false;
 		if ((projectType ?? '').trim() === 'it' && cveSweep === true) return true;
-		return (tenantId ?? '') === EXECUTION_TENANT_ID;
+		return !!executionTenantId && tenantId === executionTenantId;
 	}
 
 	/**
@@ -51,6 +56,7 @@
 
 <script lang="ts">
 	import { auth } from '$lib/stores/auth.svelte';
+	import { workspaces } from '$lib/stores/workspaces.svelte';
 
 	let {
 		projectType,
@@ -61,8 +67,14 @@
 	} = $props();
 
 	const effectiveTenantId = $derived(auth.user?.tenant_id ?? '');
+	const executionTenantId = $derived(workspaces.canonicalOf('execution')?.id);
 	const show = $derived(
-		warnsAnalysisSkipped({ projectType, cveSweep, tenantId: effectiveTenantId })
+		warnsAnalysisSkipped({
+			projectType,
+			cveSweep,
+			tenantId: effectiveTenantId,
+			executionTenantId
+		})
 	);
 </script>
 

@@ -17,6 +17,21 @@
 // to run before any module evaluation. Configured in `bunfig.toml` under
 // `[test] preload` BEFORE `./tests/setup.ts`.
 
+// ⛔ RESERVED TENANT IDS — FABRICATED. fr is a PUBLIC repo: the real production
+// tenant uuids live only in gitops (Deployment env), never here. These values are
+// read by `src/lib/tenant-config.ts` (`FR_INTERNAL_SYSTEM_TENANT_ID`,
+// `FR_EXECUTION_TENANT_ID`, `FR_KATA_TENANT_ID`, `FR_AA_CONVEYOR_TENANT_ID`,
+// `FR_V4_CONVEYOR_TENANT_ID`). Every test asserts against these same synthetic
+// ids, so the suite has a self-contained contract and no production workspace is
+// named. Plain assignment (not `||=`): the test contract must win even if the
+// caller's shell exports real values. Accessors read at call time, so the
+// preload is early enough.
+process.env.FR_INTERNAL_SYSTEM_TENANT_ID = 'aaaaaaaa-0000-4000-8000-000000000001';
+process.env.FR_EXECUTION_TENANT_ID = 'aaaaaaaa-0000-4000-8000-000000000003';
+process.env.FR_KATA_TENANT_ID = 'aaaaaaaa-0000-4000-8000-000000000006';
+process.env.FR_AA_CONVEYOR_TENANT_ID = 'aaaaaaaa-0000-4000-8000-0000000000a5';
+process.env.FR_V4_CONVEYOR_TENANT_ID = 'aaaaaaaa-0000-4000-8000-0000000000a6';
+
 // ⛔ fr-agui P4d-2e — NO DATABASE_URL OUTSIDE CI = NO DATABASE, never devbox's local one.
 // Since 2026-10-21 neither src/config.ts nor services/agent-session.ts has a DSN default: an
 // unset DATABASE_URL refuses on first use. This preload stays as the TEST backstop (it predates

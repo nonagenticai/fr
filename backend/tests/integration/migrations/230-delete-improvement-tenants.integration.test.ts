@@ -18,7 +18,7 @@ import { createDbSuite } from '../helpers/db-suite';
 
 const { itDb } = createDbSuite('230-delete-improvement-tenants');
 
-const TENANT = '0195f48b-d000-7000-8000-000000000002';
+const TENANT = 'aaaaaaaa-0000-4000-8000-000000000002';
 const ASSET = `mig230-fixture-${process.pid}-${Date.now()}`;
 
 let createdWorkspace = false;

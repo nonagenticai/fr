@@ -82,7 +82,7 @@ const BOARD_READ_TIMEOUT_MS = 6_000;
  *     sum(octet_length(row_to_json(custom_field_value))) = 13 MB
  *
  * ⛔ AND THAT BOARD IS ON THIS PATH. It is the FIRST active stream of tenant
- * 0195f48b-…-0001 (`select planka_board_id from streams where is_active`), so
+ * aaaaaaaa-…-0001 (`select planka_board_id from streams where is_active`), so
  * every single `GET /api/cards?assignee=me` from that tenant made Planka
  * serialise ~41 MB of rows, pushed it over the wire, and fr parsed it to read
  * eight `{id,name}` pairs. The eight lists it wanted are ~400 bytes. That is

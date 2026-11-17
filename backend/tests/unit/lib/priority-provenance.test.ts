@@ -38,7 +38,10 @@ const LEVELS = ['p0', 'p1', 'p2', 'p3'].map((name, rank) => ({
   conveyor_may_set: rank !== 0,
 }));
 const lv = (n: string) => LEVELS.find((l) => l.name === n.toLowerCase()) ?? null;
-import { AA_CONVEYOR_TENANT_ID, PLATFORM_TENANT_IDS } from '../../../src/middleware/internal-tenant-only';
+import { aaConveyorTenantId, platformTenantIds } from '../../../src/middleware/internal-tenant-only';
+
+const PLATFORM = platformTenantIds();
+const AA_CONVEYOR = aaConveyorTenantId()!;
 import type { AppError } from '../../../src/utils/errors';
 
 const SUB = 'e2000000-0000-4000-8000-0000000014b1';
@@ -197,8 +200,8 @@ describe('parseConveyorRule — closed set A1|A2|B1|B2', () => {
 describe('conveyorTenantFromHeader — platform tenants only', () => {
   const req = (h?: string) => new Request('http://x/', { headers: h === undefined ? {} : { 'X-Tenant-Id': h } });
   test('every platform tenant is accepted', () => {
-    for (const t of PLATFORM_TENANT_IDS) expect(conveyorTenantFromHeader(req(t))).toBe(t);
-    expect(conveyorTenantFromHeader(req(AA_CONVEYOR_TENANT_ID))).toBe(AA_CONVEYOR_TENANT_ID);
+    for (const t of PLATFORM) expect(conveyorTenantFromHeader(req(t))).toBe(t);
+    expect(conveyorTenantFromHeader(req(AA_CONVEYOR))).toBe(AA_CONVEYOR);
   });
   test('missing → 403 conveyor_tenant_required', () => {
     for (const h of [undefined, '', '  ']) {
@@ -208,7 +211,7 @@ describe('conveyorTenantFromHeader — platform tenants only', () => {
     }
   });
   test('a non-platform tenant → 403 conveyor_tenant_forbidden', () => {
-    for (const h of ['e0000000-0000-4000-8000-0000000014a1', 'not-a-uuid', AA_CONVEYOR_TENANT_ID.toUpperCase()]) {
+    for (const h of ['e0000000-0000-4000-8000-0000000014a1', 'not-a-uuid', AA_CONVEYOR.toUpperCase()]) {
       const e = caught(() => conveyorTenantFromHeader(req(h)));
       expect(e.statusCode).toBe(403);
       expect(e.code).toBe('conveyor_tenant_forbidden');

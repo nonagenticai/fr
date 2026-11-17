@@ -2,7 +2,7 @@
 //
 // George 2026-10-27 DECISION: a super_admin switched into another tenant — or
 // their switched Copilot session — is OPERATOR activity, billed to
-// INTERNAL_SYSTEM_TENANT_ID, never to the customer.
+// internalSystemTenantId, never to the customer.
 //
 // fr's own usage spans already follow that (middleware/usage-spans.ts). The
 // Copilot's LLM usage does not go through fr's spans: the agent loop calls
@@ -27,7 +27,7 @@
 // correlation id until WM forwards an operator-target attribute.
 
 import { withRequestContext, tryGetRequestContext } from '../integrations/_lib/context';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../middleware/internal-tenant-only';
 import { switchedSuperAdminFrame } from './super-admin-tenant-audit';
 
 /** Run `fn` billed to the system tenant iff the current frame is a switched super_admin; else as-is. */
@@ -35,5 +35,9 @@ export async function asOperatorBilledCall<T>(fn: () => Promise<T>): Promise<T> 
   const frame = tryGetRequestContext();
   if (!frame || !switchedSuperAdminFrame(frame)) return fn();
   const { projectId: _projectId, endUserToken: _endUserToken, ...rest } = frame;
-  return withRequestContext({ ...rest, tenantId: INTERNAL_SYSTEM_TENANT_ID }, fn);
+  // ⛔ No system tenant configured means there is nothing to bill AS: run the
+  // call as-is rather than with an undefined tenant.
+  const billedTenant = internalSystemTenantId();
+  if (!billedTenant) return fn();
+  return withRequestContext({ ...rest, tenantId: billedTenant }, fn);
 }

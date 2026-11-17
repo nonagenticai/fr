@@ -50975,7 +50975,7 @@
             ],
             "title": "Tenant Id",
             "description": "Provisioning tenant; stamped onto the Deployment as a 'tenant-id' label and onto the ContainerInfo so tenant scoping survives even when the JSON registry entry is transiently lost and rebuilt from the live cluster.",
-            "example": "0195f48b-d000-7000-8000-000000000003"
+            "example": "aaaaaaaa-0000-4000-8000-000000000003"
           }
         },
         "additionalProperties": false,
@@ -60518,9 +60518,9 @@
         "description": "Tenant identifier (defaults to configured DEFAULT_TENANT_ID).",
         "schema": {
           "type": "string",
-          "default": "0195f48b-d000-7000-8000-000000000001"
+          "default": "aaaaaaaa-0000-4000-8000-000000000001"
         },
-        "example": "0195f48b-d000-7000-8000-000000000001"
+        "example": "aaaaaaaa-0000-4000-8000-000000000001"
       }
     }
   },

@@ -18,7 +18,7 @@ import { askBestMatchLabel, askScoreScale, askStatsFrom, citationLabel } from '.
 const FUSION = 'unavailable (fusion order, not scored)';
 const SIMILARITY = 'unavailable (vector similarity, not a match score)';
 
-const DOC_UUID = '0195f48b-d000-7000-8000-000000000042';
+const DOC_UUID = 'aaaaaaaa-0000-4000-8000-000000000042';
 
 describe('citationLabel — the real kag Citation shape (provenance nested under .source)', () => {
   it('names a citation by its nested source title and scalar page', () => {
@@ -52,7 +52,7 @@ describe('citationLabel — the real kag Citation shape (provenance nested under
     });
     expect(label).toBe('Untitled document • p. 2');
     expect(label).not.toContain(DOC_UUID);
-    expect(label).not.toContain('0195f48b');
+    expect(label).not.toContain('aaaaaaaa');
   });
 
   it('derives a readable filename from the url when there is no title', () => {
@@ -176,9 +176,9 @@ describe('citationLabel — the doc_id rung', () => {
 
   it('SUPPRESSES a UUID doc_id — dashed and undashed — in favour of the placeholder', () => {
     for (const id of [
-      '0195f48b-d000-7000-8000-000000000099',
-      '0195f48bd00070008000000000000099',
-      '0195F48B-D000-7000-8000-000000000099',
+      'aaaaaaaa-0000-4000-8000-000000000099',
+      'aaaaaaaa000040008000000000000099',
+      'AAAAAAAA-0000-4000-8000-000000000099',
     ]) {
       expect(citationLabel({ source: { doc_id: id, chunk_id: 'c1' } })).toBe('Untitled document');
     }

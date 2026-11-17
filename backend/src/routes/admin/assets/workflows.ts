@@ -21,7 +21,7 @@ import {
   isIntegrationError,
   integrationErrorResponse,
 } from '../../../integrations/_lib/errors';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../middleware/internal-tenant-only';
 import { jsonResponse } from '../../../utils/response';
 import { BadRequestError } from '../../../utils/errors';
 import { gateReadAsset } from './_lib/gate';
@@ -105,7 +105,7 @@ export async function handleListAdminWorkflows(req: Request): Promise<Response> 
   const ctx = getRequestContext();
   const active = ctx.tenantId;
   if (!active) return jsonResponse({ error: 'no_active_tenant' }, 400);
-  const isSystem = active === INTERNAL_SYSTEM_TENANT_ID;
+  const isSystem = active === internalSystemTenantId();
 
   // ⛔ STRICT TENANT SEPARATION (2026-09-30): production n8n is platform data.
   // A customer tenant gets the same envelope, empty, and n8n is never called.
@@ -136,7 +136,7 @@ export async function handleGetAdminWorkflow(
     }
     const wf = await getWorkflow(id);
     const ctx = getRequestContext();
-    const isSystem = ctx.tenantId === INTERNAL_SYSTEM_TENANT_ID;
+    const isSystem = ctx.tenantId === internalSystemTenantId();
     return jsonResponse({
       workflow: tagSystem(wf as unknown as AnyRecord, isSystem),
     });

@@ -30,8 +30,8 @@ const T0 = Date.parse('2026-11-03T10:00:00.000Z');
 
 function kata(over: Partial<KataView> = {}): KataView {
   return {
-    id: '0195f48b-aaaa-7000-8000-000000000001',
-    source_project_id: '0195f48b-bbbb-7000-8000-000000000002',
+    id: 'aaaaaaaa-0000-4000-8000-000000000001',
+    source_project_id: 'aaaaaaaa-0000-4000-8000-000000000002',
     source_tenant_id: null,
     source_card_id: 'c1',
     source_execution_id: null,
@@ -214,10 +214,10 @@ describe('n8n links', () => {
 
 describe('New kata — prefill round trip and validation', () => {
   it('the card action URL prefills the form', () => {
-    const href = newKataHref({ projectId: '0195f48b-bbbb-7000-8000-000000000002', cardId: 'c 1', tenantId: 't1' });
+    const href = newKataHref({ projectId: 'aaaaaaaa-0000-4000-8000-000000000002', cardId: 'c 1', tenantId: 't1' });
     expect(href.startsWith('/admin/kata?')).toBe(true);
     const p = readNewKataPrefill(new URL(href, 'https://fr').searchParams);
-    expect(p).toEqual({ open: true, tenant: 't1', project: '0195f48b-bbbb-7000-8000-000000000002', card: 'c 1', execution: '' });
+    expect(p).toEqual({ open: true, tenant: 't1', project: 'aaaaaaaa-0000-4000-8000-000000000002', card: 'c 1', execution: '' });
   });
 
   it('without ?new=1 the form stays closed', () => {
@@ -231,7 +231,7 @@ describe('New kata — prefill round trip and validation', () => {
       'Describe the symptom.',
     ]);
     expect(
-      validateNewKata({ project: '0195f48b-bbbb-7000-8000-000000000002', card: 'c1', execution: '', symptom: 'broken' }),
+      validateNewKata({ project: 'aaaaaaaa-0000-4000-8000-000000000002', card: 'c1', execution: '', symptom: 'broken' }),
     ).toEqual([]);
   });
 });

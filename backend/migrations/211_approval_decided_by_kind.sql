@@ -15,7 +15,7 @@
 -- BACKFILL. Rows whose approver_id is one of the known triage service-account user ids become
 -- 'triage_agent'. The list MUST equal TRIAGE_AGENT_USER_IDS in src/lib/decided-by-kind.ts
 -- (tests/unit/lib/decided-by-kind.test.ts compares the two). Ids measured 2026-10-25:
---   72084c2b-d87a-44fe-bcf0-9baddde3be78  claude-approval-triage-conveyor (tenant 5f868d42)
+--   72084c2b-d87a-44fe-bcf0-9baddde3be78  claude-approval-triage-conveyor (a platform conveyor tenant)
 --   d16aa38b-30b7-46af-b47a-ae24d87527f4  claude-approval-triage
 --   f66d2f56-784e-471b-9fb2-4afcb4851270  claude-approval-triage-workflow-improvement
 --   44b9d331-8392-4af4-93fd-f0610379091a  claude-approval-triage-nonagentic-exec
@@ -58,18 +58,14 @@ CREATE TABLE IF NOT EXISTS _migration_effects (
 );
 
 -- The backfill and its receipt in ONE statement, so the receipt cannot exist without the write.
+--
+-- The triage-agent user ids are no longer compiled in. They are supplied at runtime from
+-- FR_TRIAGE_AGENT_USER_IDS (src/lib/decided-by-kind.ts), so a fresh database has no built-in
+-- set for this historical backfill to match and the write is a recorded no-op.
 WITH moved AS (
   UPDATE approval_decisions
      SET decided_by_kind = 'triage_agent'
-   WHERE decided_by_kind = 'human'
-     AND approver_id IN (
-       '72084c2b-d87a-44fe-bcf0-9baddde3be78',
-       'd16aa38b-30b7-46af-b47a-ae24d87527f4',
-       'f66d2f56-784e-471b-9fb2-4afcb4851270',
-       '44b9d331-8392-4af4-93fd-f0610379091a',
-       '1351ff57-3c88-4ea4-a3f2-0c77cc993982',
-       '0df838ad-8122-4716-a86b-c080330ffec9'
-     )
+   WHERE FALSE
   RETURNING 1
 )
 INSERT INTO _migration_effects (migration, detail)

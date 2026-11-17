@@ -7,7 +7,7 @@
 // is `where(eq(projects.id, v.project_id))` and nothing else — no tenant filter,
 // no soft-delete filter — so a miss means no such project exists under ANY
 // tenant. And one of the ids being refused,
-// `0195f48b-d000-7000-8000-000000000004`, is the `prompt-improvement` WORKSPACE
+// `aaaaaaaa-0000-4000-8000-000000000004`, is the `prompt-improvement` WORKSPACE
 // id (migration 062): a tenant, not a project, so it could never have matched and
 // the event was structurally unanswerable. fr's refusal is CORRECT; the producer
 // is naming the wrong entity kind, and that is the fix that belongs upstream.
@@ -25,7 +25,9 @@ import { test, expect, describe, beforeAll } from 'bun:test';
 
 import { queryClient } from '../../../src/db/client';
 import { handleN8nExecutionEvent } from '../../../src/routes/webhooks';
-import { INTERNAL_SYSTEM_TENANT_ID } from '../../../src/middleware/internal-tenant-only';
+import { internalSystemTenantId } from '../../../src/middleware/internal-tenant-only';
+
+const SYSTEM = internalSystemTenantId()!;
 
 let reachable = false;
 
@@ -75,7 +77,7 @@ describe('an execution-event fr cannot answer is refused DIAGNOSABLY', () => {
     // producer never sent. A 2xx here means someone did exactly that.
     let threw = false;
     try {
-      await handleN8nExecutionEvent(eventReq(INTERNAL_SYSTEM_TENANT_ID));
+      await handleN8nExecutionEvent(eventReq(SYSTEM));
     } catch {
       threw = true;
     }
