@@ -1510,7 +1510,7 @@ const COLUMN_PROBES: Probe[] = [
     reapplyIfProbeFails: true,
     check: async (sql) =>
       (
-        await sql`SELECT 1 FROM workspaces WHERE id = 'aaaaaaaa-0000-4000-8000-0000000000a6'::uuid`
+        await sql`SELECT 1 FROM workspaces WHERE id IN ('aaaaaaaa-0000-4000-8000-0000000000a6'::uuid, '5f868d42-03f8-51f0-a93c-3e83070dc196'::uuid)`
       ).length > 0,
   },
 
@@ -1855,7 +1855,7 @@ const COLUMN_PROBES: Probe[] = [
     migration: '228_kata_tenant.sql',
     reapplyIfProbeFails: true,
     check: async (sql) =>
-      (await sql`SELECT 1 FROM workspaces WHERE id = 'aaaaaaaa-0000-4000-8000-000000000006'::uuid`).length > 0,
+      (await sql`SELECT 1 FROM workspaces WHERE id IN ('aaaaaaaa-0000-4000-8000-000000000006'::uuid, '0195f48b-d000-7000-8000-000000000006'::uuid)`).length > 0,
   },
   // 229 — the `katas` table. push builds the table and the partial index (both in schema.ts) but
   // never the guard triggers, so the two triggers are the witness (as 218).
