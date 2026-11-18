@@ -13,14 +13,17 @@
 --                     the value is reserved so a future policy writer never reads as 'human')
 --
 -- BACKFILL. Rows whose approver_id is one of the known triage service-account user ids become
--- 'triage_agent'. The list MUST equal TRIAGE_AGENT_USER_IDS in src/lib/decided-by-kind.ts
--- (tests/unit/lib/decided-by-kind.test.ts compares the two). Ids measured 2026-10-25:
---   72084c2b-d87a-44fe-bcf0-9baddde3be78  claude-approval-triage-conveyor (a platform conveyor tenant)
---   d16aa38b-30b7-46af-b47a-ae24d87527f4  claude-approval-triage
---   f66d2f56-784e-471b-9fb2-4afcb4851270  claude-approval-triage-workflow-improvement
---   44b9d331-8392-4af4-93fd-f0610379091a  claude-approval-triage-nonagentic-exec
---   1351ff57-3c88-4ea4-a3f2-0c77cc993982  claude-approval-triage-prompt-improvement
---   0df838ad-8122-4716-a86b-c080330ffec9  claude-approval-triage-procedure-improvement
+-- 'triage_agent'. Those ids are NOT compiled in any more: they are supplied at runtime from
+-- FR_TRIAGE_AGENT_USER_IDS (src/lib/decided-by-kind.ts), so a fresh database has no built-in set
+-- for this historical backfill to match and the write is a recorded no-op. The accounts it once
+-- covered, recorded here by name only — a user id is an identifier fr does not publish
+-- (measured 2026-10-25):
+--   claude-approval-triage-conveyor (a platform conveyor tenant)
+--   claude-approval-triage
+--   claude-approval-triage-workflow-improvement
+--   claude-approval-triage-nonagentic-exec
+--   claude-approval-triage-prompt-improvement
+--   claude-approval-triage-procedure-improvement
 -- No row is backfilled to 'rule': every historical approval_decisions insert site (API PUT,
 -- Telegram, Teams, Signal) is a seat for an identified approver, so there is no rule-written row
 -- to find. Writing 'rule' onto a guess would be a guess recorded as a fact.
