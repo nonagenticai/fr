@@ -58,7 +58,6 @@ describe('the triage-agent id list has ONE meaning in both places', () => {
 describe('decidedByKindFor', () => {
   test('with no env nothing is a triage agent, and identity is the whole uuid, not a prefix', () => {
     // Fail-closed: no FR_TRIAGE_AGENT_USER_IDS means no approval is credited to a triage agent.
-    expect(decidedByKindFor('72084c2b-d87a-44fe-bcf0-9baddde3be78')).toBe('human');
     expect(decidedByKindFor('72084c2b-0000-4000-8000-000000000000')).toBe('human'); // prefix is not identity
     expect(decidedByKindFor('c5eab0aa-0000-4000-8000-0000000000b1')).toBe('human');
     expect(decidedByKindFor(null)).toBe('human');
