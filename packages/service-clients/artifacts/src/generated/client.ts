@@ -49,6 +49,26 @@ import type {
   UploadResponse
 } from './models';
 
+const getHeaders = (...sources: (RequestInit['headers'] | Record<string, string | undefined>)[]) => {
+  const seen = new Set<string>();
+  const layers: [string, string | readonly string[]][][] = [];
+  for (const source of sources.reverse()) {
+    if (!source) continue;
+    const entries = source instanceof Headers
+      ? source.entries()
+      : Symbol.iterator in source
+        ? Array.from(source as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string])
+        : Object.entries<string | readonly string[] | undefined>(source);
+    const layer: [string, string | readonly string[]][] = [];
+    for (const [name, value] of entries) {
+      if (value !== undefined && !seen.has(name.toLowerCase())) layer.push([name, value]);
+    }
+    for (const [name] of layer) seen.add(name.toLowerCase());
+    layers.push(layer);
+  }
+  return Object.fromEntries(layers.reverse().flat()) as Extract<RequestInit['headers'], Record<string, unknown>>;
+};
+
 export type healthCheckResponse200 = {
   data: HealthResponse
   status: 200
@@ -82,25 +102,11 @@ export const getHealthCheckUrl = () => {
  */
 export const healthCheck = async (headers?: HealthCheckHeaders, options?: RequestInit): Promise<healthCheckResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getHealthCheckUrl(),
+  const res = await fetch(getHealthCheckUrl(),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -140,25 +146,11 @@ export const getHealthLiveUrl = () => {
  */
 export const healthLive = async (headers?: HealthLiveHeaders, options?: RequestInit): Promise<healthLiveResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getHealthLiveUrl(),
+  const res = await fetch(getHealthLiveUrl(),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -203,25 +195,11 @@ export const getHealthReadyUrl = () => {
  */
 export const healthReady = async (headers?: HealthReadyHeaders, options?: RequestInit): Promise<healthReadyResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getHealthReadyUrl(),
+  const res = await fetch(getHealthReadyUrl(),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -336,25 +314,11 @@ if(bodyUploadArtifact.planka_card_id !== undefined && bodyUploadArtifact.planka_
  formData.append(`planka_card_id`, bodyUploadArtifact.planka_card_id);
  }
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getUploadArtifactUrl(projectId),
+  const res = await fetch(getUploadArtifactUrl(projectId),
   {
     ...options,
     method: 'POST',
-    headers: { ...headers, ...getHeaders(options?.headers) },
+    headers: getHeaders(headers, options?.headers),
     body: formData
   }
 )
@@ -429,25 +393,11 @@ export const listArtifacts = async (projectId: string,
     params?: ListArtifactsParams,
     headers?: ListArtifactsHeaders, options?: RequestInit): Promise<listArtifactsResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getListArtifactsUrl(projectId,params),
+  const res = await fetch(getListArtifactsUrl(projectId,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -512,25 +462,11 @@ export const getArtifact = async (projectId: string,
     artifactId: string,
     headers?: GetArtifactHeaders, options?: RequestInit): Promise<getArtifactResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getGetArtifactUrl(projectId,artifactId),
+  const res = await fetch(getGetArtifactUrl(projectId,artifactId),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -595,25 +531,11 @@ export const deleteArtifact = async (projectId: string,
     artifactId: string,
     headers?: DeleteArtifactHeaders, options?: RequestInit): Promise<deleteArtifactResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getDeleteArtifactUrl(projectId,artifactId),
+  const res = await fetch(getDeleteArtifactUrl(projectId,artifactId),
   {
     ...options,
     method: 'DELETE',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -680,25 +602,11 @@ export const downloadArtifact = async (projectId: string,
     artifactId: string,
     headers?: DownloadArtifactHeaders, options?: RequestInit): Promise<downloadArtifactResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getDownloadArtifactUrl(projectId,artifactId),
+  const res = await fetch(getDownloadArtifactUrl(projectId,artifactId),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -772,25 +680,11 @@ export const setArtifactPublishStatus = async (projectId: string,
     publishStatusIn: PublishStatusIn,
     headers?: SetArtifactPublishStatusHeaders, options?: RequestInit): Promise<setArtifactPublishStatusResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getSetArtifactPublishStatusUrl(projectId,artifactId),
+  const res = await fetch(getSetArtifactPublishStatusUrl(projectId,artifactId),
   {
     ...options,
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json',...headers, ...getHeaders(options?.headers) },
+    headers: getHeaders({ 'Content-Type': 'application/json' }, headers, options?.headers),
     body: JSON.stringify(publishStatusIn)
   }
 )
@@ -861,25 +755,11 @@ export const updateArtifactMetadata = async (projectId: string,
     artifactMetadataIn: ArtifactMetadataIn,
     headers?: UpdateArtifactMetadataHeaders, options?: RequestInit): Promise<updateArtifactMetadataResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getUpdateArtifactMetadataUrl(projectId,artifactId),
+  const res = await fetch(getUpdateArtifactMetadataUrl(projectId,artifactId),
   {
     ...options,
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json',...headers, ...getHeaders(options?.headers) },
+    headers: getHeaders({ 'Content-Type': 'application/json' }, headers, options?.headers),
     body: JSON.stringify(artifactMetadataIn)
   }
 )
@@ -974,25 +854,11 @@ export const renderArtifact = async (projectId: string,
     params?: RenderArtifactParams,
     headers?: RenderArtifactHeaders, options?: RequestInit): Promise<renderArtifactResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getRenderArtifactUrl(projectId,artifactId,params),
+  const res = await fetch(getRenderArtifactUrl(projectId,artifactId,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1081,25 +947,11 @@ export const getManifest = async (projectId: string,
     params?: GetManifestParams,
     headers?: GetManifestHeaders, options?: RequestInit): Promise<getManifestResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getGetManifestUrl(projectId,scope,params),
+  const res = await fetch(getGetManifestUrl(projectId,scope,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1180,25 +1032,11 @@ export const submitArtifactReview = async (projectId: string,
     reviewIn: ReviewIn,
     headers?: SubmitArtifactReviewHeaders, options?: RequestInit): Promise<submitArtifactReviewResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getSubmitArtifactReviewUrl(projectId,artifactId),
+  const res = await fetch(getSubmitArtifactReviewUrl(projectId,artifactId),
   {
     ...options,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json',...headers, ...getHeaders(options?.headers) },
+    headers: getHeaders({ 'Content-Type': 'application/json' }, headers, options?.headers),
     body: JSON.stringify(reviewIn)
   }
 )
@@ -1286,25 +1124,11 @@ export const listArtifactReviews = async (projectId: string,
     params?: ListArtifactReviewsParams,
     headers?: ListArtifactReviewsHeaders, options?: RequestInit): Promise<listArtifactReviewsResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getListArtifactReviewsUrl(projectId,artifactId,params),
+  const res = await fetch(getListArtifactReviewsUrl(projectId,artifactId,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1381,25 +1205,11 @@ export const getArtifactsListCrossProjectUrl = (params?: ArtifactsListCrossProje
 export const artifactsListCrossProject = async (params?: ArtifactsListCrossProjectParams,
     headers?: ArtifactsListCrossProjectHeaders, options?: RequestInit): Promise<artifactsListCrossProjectResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getArtifactsListCrossProjectUrl(params),
+  const res = await fetch(getArtifactsListCrossProjectUrl(params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1483,25 +1293,11 @@ export const artifactsListByCardCrossProject = async (cardId: string,
     params?: ArtifactsListByCardCrossProjectParams,
     headers?: ArtifactsListByCardCrossProjectHeaders, options?: RequestInit): Promise<artifactsListByCardCrossProjectResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getArtifactsListByCardCrossProjectUrl(cardId,params),
+  const res = await fetch(getArtifactsListByCardCrossProjectUrl(cardId,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1569,25 +1365,11 @@ export const getArtifactsGetCrossProjectUrl = (artifactId: string,) => {
 export const artifactsGetCrossProject = async (artifactId: string,
     headers?: ArtifactsGetCrossProjectHeaders, options?: RequestInit): Promise<artifactsGetCrossProjectResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getArtifactsGetCrossProjectUrl(artifactId),
+  const res = await fetch(getArtifactsGetCrossProjectUrl(artifactId),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1680,25 +1462,11 @@ export const artifactsRenderCrossProject = async (artifactId: string,
     params?: ArtifactsRenderCrossProjectParams,
     headers?: ArtifactsRenderCrossProjectHeaders, options?: RequestInit): Promise<artifactsRenderCrossProjectResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getArtifactsRenderCrossProjectUrl(artifactId,params),
+  const res = await fetch(getArtifactsRenderCrossProjectUrl(artifactId,params),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
@@ -1737,25 +1505,11 @@ export const getRootUrl = () => {
  */
 export const root = async (headers?: RootHeaders, options?: RequestInit): Promise<rootResponse> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-const res = await fetch(getRootUrl(),
+  const res = await fetch(getRootUrl(),
   {
     ...options,
     method: 'GET',
-    headers: { ...headers, ...getHeaders(options?.headers) }
+    headers: getHeaders(headers, options?.headers)
 
   }
 )
