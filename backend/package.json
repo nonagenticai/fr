@@ -29,10 +29,10 @@
     "ci:test": "bash scripts/ci-test.sh"
   },
   "devDependencies": {
-    "@types/bun": "1.4.4",
+    "@types/bun": "1.4.5",
     "drizzle-kit": "^0.31.11",
     "openapi-typescript": "^7.13.0",
-    "orval": "8.47.0"
+    "orval": "8.48.0"
   },
   "peerDependencies": {
     "typescript": "^6.0.3"
@@ -47,12 +47,12 @@
     "@opentelemetry/sdk-node": "^0.301.1",
     "@opentelemetry/semantic-conventions": "^1.45.0",
     "bcrypt": "^6.0.0",
-    "cron-parser": "5.10.5",
+    "cron-parser": "5.10.6",
     "drizzle-orm": "^0.45.4",
     "fast-xml-parser": "5.12.1",
-    "jose": "^6.2.17",
+    "jose": "^6.2.18",
     "jsonpath-plus": "11.3.0",
-    "nodemailer": "^10.5.0",
+    "nodemailer": "^10.6.1",
     "postgres": "^4.1.1",
     "zod": "^4.6.6"
   }
